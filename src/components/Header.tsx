@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { getAssetPath } from "@/lib/utils";
 
 export default function Header() {
   return (
@@ -6,7 +7,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
         <Link href="/" className="transition-transform hover:scale-105">
           <img 
-            src="/images/ellegance_logo_text.png" 
+            src={getAssetPath("/images/ellegance_logo_text.png")} 
             alt="Ellegance" 
             className="h-10 md:h-12 w-auto drop-shadow-[0_0_8px_rgba(212,175,55,0.2)]"
           />

@@ -1,5 +1,6 @@
 import Link from "next/link";
 import RotatingText from "@/components/RotatingText";
+import { getAssetPath } from "@/lib/utils";
 
 const ROTATING_WORDS = ['tanečníci', 'rodina', 'Ellegance'];
 
@@ -10,7 +11,7 @@ export default function Home() {
       <section className="relative h-screen flex items-center justify-center overflow-hidden">
         <div className="absolute inset-0 z-0">
           <img 
-            src="/images/main_page_photo.jpg" 
+            src={getAssetPath("/images/main_page_photo.jpg")} 
             alt="Ellegance Ballroom" 
             className="w-full h-full object-cover animate-fade-in" 
           />
@@ -65,7 +66,7 @@ export default function Home() {
               <div className="absolute -inset-1 bg-gradient-to-b from-gold-500/10 to-transparent rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
               <div className="relative bg-obsidian-800/30 border border-white/5 backdrop-blur-xl rounded-[2rem] overflow-hidden flex flex-col shadow-2xl transition-all duration-500 group-hover:translate-y-[-8px]">
                 <div className="h-72 overflow-hidden relative">
-                  <img src="/images/miculesqu.png" alt="Miculescu Workshop" className="w-full h-full object-cover transition duration-1000 group-hover:scale-110" />
+                  <img src={getAssetPath("/images/miculesqu.png")} alt="Miculescu Workshop" className="w-full h-full object-cover transition duration-1000 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent to-transparent opacity-60"></div>
                 </div>
                 <div className="p-10 flex flex-col flex-grow">
@@ -91,7 +92,7 @@ export default function Home() {
               <div className="absolute -inset-1 bg-gradient-to-b from-gold-500/20 to-transparent rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
               <div className="relative bg-obsidian-800/40 border border-gold-500/20 backdrop-blur-xl rounded-[2rem] overflow-hidden flex flex-col shadow-2xl transition-all duration-500 group-hover:translate-y-[-8px]">
                 <div className="h-72 overflow-hidden relative">
-                  <img src="/images/kurz spolocenskychtancov.PNG" alt="Kurz spoločenských tancov" className="w-full h-full object-cover transition duration-1000 group-hover:scale-110" />
+                  <img src={getAssetPath("/images/kurz spolocenskychtancov.PNG")} alt="Kurz spoločenských tancov" className="w-full h-full object-cover transition duration-1000 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent to-transparent opacity-70"></div>
                   <div className="absolute top-6 right-6 bg-gold-500 text-obsidian-900 px-4 py-2 rounded-full text-[10px] font-bold uppercase tracking-widest shadow-lg">Nové termíny</div>
                 </div>
@@ -118,7 +119,7 @@ export default function Home() {
               <div className="absolute -inset-1 bg-gradient-to-b from-gold-500/10 to-transparent rounded-[2rem] blur-xl opacity-0 group-hover:opacity-100 transition duration-700"></div>
               <div className="relative bg-obsidian-800/30 border border-white/5 backdrop-blur-xl rounded-[2rem] overflow-hidden flex flex-col shadow-2xl transition-all duration-500 group-hover:translate-y-[-8px]">
                 <div className="h-72 overflow-hidden relative">
-                  <img src="/images/2_ z dane.JPG" alt="2 percentá z dane" className="w-full h-full object-cover transition duration-1000 group-hover:scale-110" />
+                  <img src={getAssetPath("/images/2_ z dane.JPG")} alt="2 percentá z dane" className="w-full h-full object-cover transition duration-1000 group-hover:scale-110" />
                   <div className="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent to-transparent opacity-60"></div>
                 </div>
                 <div className="p-10 flex flex-col flex-grow">

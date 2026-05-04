@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { getAssetPath } from "@/lib/utils";
 
 const SPONSORS = [
   { name: "KSK", src: "/images/logo-ksk-removebg-preview.png" },
@@ -43,7 +44,7 @@ export default function Footer() {
         <div className="flex flex-col items-center mb-10 text-center">
           <Link href="/" className="mb-8 transition-transform hover:scale-105 inline-block">
             <img 
-              src="/images/ellegance_logo_text.png" 
+              src={getAssetPath("/images/ellegance_logo_text.png")} 
               alt="Ellegance" 
               className="h-12 md:h-14 w-auto drop-shadow-[0_0_15px_rgba(212,175,55,0.3)]"
             />
@@ -83,7 +84,7 @@ export default function Footer() {
                                 border border-white/20">
                   <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:left-[100%] transition-all duration-1000"></div>
                   <img 
-                    src={sponsor.src}
+                    src={getAssetPath(sponsor.src)}
                     alt={sponsor.name}
                     className="max-w-full max-h-full object-contain filter brightness-0 opacity-80 group-hover:opacity-100 transition-all duration-500"
                   />
