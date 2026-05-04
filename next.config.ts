@@ -3,6 +3,7 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   output: 'export',
   basePath: '/Ellegance-website',
+  trailingSlash: true,
   images: {
     unoptimized: true,
   },
