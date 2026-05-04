@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { getAssetPath } from "@/lib/utils";
 
 export default function SutaznyTanecPage() {
   return (
@@ -137,7 +138,7 @@ export default function SutaznyTanecPage() {
               <Link href="/o-nas" className="btn-outline inline-block px-8 py-3 rounded-full font-sans text-xs font-bold tracking-widest uppercase">Viac o tíme</Link>
             </div>
             <div className="relative">
-              <img src="/assets/img/gallery_tango_1777364079860.png" alt="Súťažný Tanec Ellegance" className="w-full rounded-[2rem] object-cover h-[500px] shadow-2xl filter brightness-90 border border-white/5" />
+              <img src={getAssetPath("/assets/img/gallery_tango_1777364079860.png")} alt="Súťažný Tanec Ellegance" className="w-full rounded-[2rem] object-cover h-[500px] shadow-2xl filter brightness-90 border border-white/5" />
             </div>
           </div>
         </div>

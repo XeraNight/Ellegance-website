@@ -1,5 +1,6 @@
 import React from "react";
 import Image from "next/image";
+import { getAssetPath } from "@/lib/utils";
 
 export default function FotogaleriaPage() {
   return (
@@ -19,7 +20,7 @@ export default function FotogaleriaPage() {
           
           <div className="gallery-item relative rounded-xl overflow-hidden group col-span-1 lg:col-span-2 row-span-2 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
             <Image 
-              src="/assets/img/hero_ballroom_dance_1777364065805.png" 
+              src={getAssetPath("/assets/img/hero_ballroom_dance_1777364065805.png")} 
               alt="Gallery Image 1" 
               fill
               className="gallery-image object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
@@ -31,7 +32,7 @@ export default function FotogaleriaPage() {
 
           <div className="gallery-item relative rounded-xl overflow-hidden group opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
             <Image 
-              src="/assets/img/gallery_tango_1777364096830.png" 
+              src={getAssetPath("/assets/img/gallery_tango_1777364096830.png")} 
               alt="Gallery Image 2" 
               fill
               className="gallery-image object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
@@ -43,7 +44,7 @@ export default function FotogaleriaPage() {
 
           <div className="gallery-item relative rounded-xl overflow-hidden group opacity-0 animate-fade-in-up" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
             <Image 
-              src="/assets/img/gallery_latin_1777364111041.png" 
+              src={getAssetPath("/assets/img/gallery_latin_1777364111041.png")} 
               alt="Gallery Image 3" 
               fill
               className="gallery-image object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"
@@ -55,7 +56,7 @@ export default function FotogaleriaPage() {
 
           <div className="gallery-item relative rounded-xl overflow-hidden group col-span-1 sm:col-span-2 lg:col-span-3 row-span-1 md:row-span-2 opacity-0 animate-fade-in-up" style={{ animationDelay: '0.6s', animationFillMode: 'forwards' }}>
             <Image 
-              src="/assets/img/gallery_waltz_1777364079670.png" 
+              src={getAssetPath("/assets/img/gallery_waltz_1777364079670.png")} 
               alt="Gallery Image 4" 
               fill
               className="gallery-image object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105"

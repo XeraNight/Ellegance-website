@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { getAssetPath } from "@/lib/utils";
 
 export default function ONasPage() {
   return (
@@ -9,7 +10,7 @@ export default function ONasPage() {
       <section className="relative pt-40 pb-20 overflow-hidden bg-obsidian-800 border-b border-gold-500/10">
         <div className="absolute inset-0 z-0 opacity-10">
           <Image 
-            src="/assets/img/gallery_tango_1777364096830.png" 
+            src={getAssetPath("/assets/img/gallery_tango_1777364096830.png")} 
             alt="Background" 
             fill
             className="object-cover filter blur-sm grayscale"
@@ -35,7 +36,7 @@ export default function ONasPage() {
             <div className="grid md:grid-cols-2 gap-12 my-16 items-center">
               <div className="relative w-full h-[450px]">
                 <Image 
-                  src="/assets/img/hero_ballroom_dance_1777364065805.png" 
+                  src={getAssetPath("/assets/img/hero_ballroom_dance_1777364065805.png")} 
                   alt="O nás 1" 
                   fill
                   className="rounded-xl shadow-2xl object-cover border border-gold-500/20 grayscale hover:grayscale-0 transition-all duration-700"
@@ -65,7 +66,7 @@ export default function ONasPage() {
               </div>
               <div className="relative w-full h-[400px] order-1 md:order-2">
                 <Image 
-                  src="/assets/img/gallery_latin_1777364111041.png" 
+                  src={getAssetPath("/assets/img/gallery_latin_1777364111041.png")} 
                   alt="O nás 2" 
                   fill
                   className="rounded-xl shadow-2xl object-cover border border-gold-500/20 grayscale hover:grayscale-0 transition-all duration-700"
