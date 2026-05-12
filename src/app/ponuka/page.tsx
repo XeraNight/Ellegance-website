@@ -1,126 +1,181 @@
+"use client";
+
 import React from "react";
+import { motion } from "framer-motion";
+import BentoCard from "@/components/BentoCard";
+import PageBackground from "@/components/PageBackground";
+import HandwritingNote from "@/components/HandwritingNote";
+import CourseCategoryNav from "@/components/CourseCategoryNav";
+import RotatingText from "@/components/RotatingText";
 import Link from "next/link";
+import { getAssetPath } from "@/lib/utils";
 
 export default function PonukaPage() {
   return (
-    <>
-      {/* Page Header */}
-      <section className="pt-40 pb-16 bg-obsidian-900">
-        <div className="text-center px-4 max-w-3xl mx-auto">
-          <span className="block text-gold-500 font-sans tracking-[0.3em] uppercase text-xs font-bold mb-4 animate-fade-in-up">Kompletná ponuka</span>
-          <h1 className="font-serif text-5xl md:text-6xl font-bold text-white mb-6 animate-fade-in-up text-glow" style={{ animationDelay: '0.1s' }}>Tanečné Kurzy</h1>
-          <p className="text-gray-400 font-light text-lg animate-fade-in-up" style={{ animationDelay: '0.2s' }}>Vyberte si balíček, ktorý vyhovuje vašim cieľom. V cene kurzov sú výukové materiály a certifikát o absolvovaní.</p>
-        </div>
-      </section>
-
-      {/* Main Pricing Grid */}
-      <section className="py-12 bg-obsidian-900">
-        <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div className="relative bg-obsidian-900 min-h-screen text-white selection:bg-gold-500/30">
+      <PageBackground />
+      
+      {/* Editorial Header */}
+      <header className="relative pt-32 pb-16 px-6 z-10">
+        <div className="max-w-7xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="flex items-center justify-center gap-3 mb-6"
+          >
+            <div className="h-px w-8 bg-gold-500" />
+            <span className="text-gold-500 font-sans tracking-[0.4em] uppercase text-[10px] font-bold">
+              Tanečné Kurzy pre Verejnosť
+            </span>
+            <div className="h-px w-8 bg-gold-500" />
+          </motion.div>
           
-          {/* Spoločenské tance */}
-          <article id="dospeli" className="price-card rounded-2xl p-8 flex flex-col opacity-0 animate-fade-in-up" style={{ animationDelay: '0.3s', animationFillMode: 'forwards' }}>
-            <div className="text-gold-500 text-sm font-bold tracking-widest uppercase mb-2">Pre Dospelých & Páry</div>
-            <h3 className="font-serif text-3xl font-bold text-white mb-4">Spoločenské Tance</h3>
-            <p className="text-gray-400 font-light text-sm mb-6 flex-grow">Naučíme vás tancovať Waltz, Valčík, Foxtrot, Tango aj latino tance. Vďaka nášmu systému 5 úrovní získate istotu a s partnerom si užijete každú zábavu či ples.</p>
-            
-            <div className="mb-8">
-              <span className="font-serif text-4xl font-bold text-white">€75</span>
-              <span className="text-gray-500 font-light text-sm"> / osoba za 8 týždňov</span>
-            </div>
-            
-            <ul className="text-sm text-gray-300 font-light space-y-3 mb-8">
-              <li className="flex items-center gap-3"><svg className="w-5 h-5 text-gold-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> 8 lekcií po 90 minút</li>
-              <li className="flex items-center gap-3"><svg className="w-5 h-5 text-gold-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Výukové CD zadarmo</li>
-              <li className="flex items-center gap-3"><svg className="w-5 h-5 text-gold-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Postupný systém výučby</li>
-            </ul>
-            <Link href="/kontakt?kurz=spolocenske" className="btn-outline block w-full py-3 rounded-xl text-center font-bold tracking-widest uppercase text-xs">Prihlásiť sa</Link>
-          </article>
-
-          {/* Svadobný Tanec (Premium) */}
-          <article id="svadba" className="price-card premium rounded-2xl p-8 flex flex-col relative overflow-hidden opacity-0 animate-fade-in-up" style={{ animationDelay: '0.4s', animationFillMode: 'forwards' }}>
-            <div className="absolute top-0 right-0 bg-gold-500 text-obsidian-900 text-xs font-bold px-4 py-1 rounded-bl-lg tracking-widest uppercase">VIP Služba</div>
-            <div className="text-gold-500 text-sm font-bold tracking-widest uppercase mb-2">Pre Snúbencov</div>
-            <h3 className="font-serif text-3xl font-bold text-white mb-4">Svadobný Tanec</h3>
-            <p className="text-gray-400 font-light text-sm mb-6 flex-grow">Pripravíme vám prvý novomanželský tanec bez zbytočného stresu. Naučíme vás kroky a vytvoríme choreografiu priamo na vašu pieseň.</p>
-            
-            <div className="mb-8">
-              <span className="font-serif text-4xl font-bold text-white">od €150</span>
-              <span className="text-gray-500 font-light text-sm"> / balíček</span>
-            </div>
-            
-            <ul className="text-sm text-gray-300 font-light space-y-3 mb-8">
-              <li className="flex items-center gap-3"><svg className="w-5 h-5 text-gold-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> 100% Individuálny prístup</li>
-              <li className="flex items-center gap-3"><svg className="w-5 h-5 text-gold-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Strih hudby v cene</li>
-              <li className="flex items-center gap-3"><svg className="w-5 h-5 text-gold-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Návrh choreografie</li>
-            </ul>
-            <Link href="/kontakt?kurz=svadba" className="btn-gold block w-full py-3 rounded-xl text-center font-bold tracking-widest uppercase text-xs">Rezervovať termín</Link>
-          </article>
-
-          {/* Latin Fit */}
-          <article id="latinfit" className="price-card rounded-2xl p-8 flex flex-col opacity-0 animate-fade-in-up" style={{ animationDelay: '0.5s', animationFillMode: 'forwards' }}>
-            <div className="text-gold-500 text-sm font-bold tracking-widest uppercase mb-2">Pre Ženy (Sólo)</div>
-            <h3 className="font-serif text-3xl font-bold text-white mb-4">Latin Fit & Salsa</h3>
-            <p className="text-gray-400 font-light text-sm mb-6 flex-grow">Zatancujte si sólo na latino rytmy. Urobíte niečo pre svoju kondíciu a objavíte v sebe novú ženskú eleganciu.</p>
-            
-            <div className="mb-8">
-              <span className="font-serif text-4xl font-bold text-white">€8</span>
-              <span className="text-gray-500 font-light text-sm"> / lekcia (zvyčajne v bloku)</span>
-            </div>
-            
-            <ul className="text-sm text-gray-300 font-light space-y-3 mb-8">
-              <li className="flex items-center gap-3"><svg className="w-5 h-5 text-gold-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Nepotrebujete partnera</li>
-              <li className="flex items-center gap-3"><svg className="w-5 h-5 text-gold-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Formovanie postavy</li>
-              <li className="flex items-center gap-3"><svg className="w-5 h-5 text-gold-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg> Skvelá hudba a energia</li>
-            </ul>
-            <Link href="/kontakt?kurz=latinfit" className="btn-outline block w-full py-3 rounded-xl text-center font-bold tracking-widest uppercase text-xs">Prihlásiť sa</Link>
-          </article>
-
+          <h1 className="font-serif text-5xl md:text-8xl font-bold mb-8 leading-tight">
+            Tanec pre <br />
+            <RotatingText 
+              texts={["Všetkých", "Radosť", "Vášeň", "Svadbu", "Deti"]} 
+              mainClassName="text-gold-500"
+              staggerDuration={0.1}
+            />
+          </h1>
+          
+          <p className="max-w-2xl mx-auto text-gray-500 text-sm md:text-base font-light leading-relaxed">
+            Ponúkame rôzne tanečné kurzy pre širokú verejnosť. Od energetického Latin Fit až po elegantné svadobné choreografie.
+          </p>
         </div>
-      </section>
+      </header>
 
-      {/* Additional Offerings */}
-      <section className="py-16 bg-obsidian-800 border-t border-gold-500/10 pb-32">
-        <div className="max-w-7xl mx-auto px-6">
-          <h2 className="font-serif text-3xl font-bold text-white mb-12 text-center">Ďalšie možnosti v klube</h2>
-          <div className="grid md:grid-cols-2 gap-6">
-            {/* Tango */}
-            <div className="flex items-center gap-6 p-6 bg-obsidian-900 rounded-xl border border-gold-500/10 hover:border-gold-500/30 transition-colors">
-              <div className="w-16 h-16 rounded-full bg-gold-500/10 flex-shrink-0 flex items-center justify-center text-gold-500">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-              </div>
+      <CourseCategoryNav />
+
+      <main className="relative z-10 max-w-7xl mx-auto px-6 pb-32">
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-auto">
+          
+          {/* Latin Fit Section (8 cols) */}
+          <BentoCard id="latin" className="md:col-span-8 p-8 md:p-12 scroll-mt-32">
+            <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
-                <h4 className="font-serif text-xl text-white mb-1">Tango Argentíno</h4>
-                <p className="text-sm text-gray-400 font-light mb-2">Vášeň a hĺbka komunikácie v páre. <strong>Cena: 50€/kurz</strong>.</p>
-                <Link href="/kontakt?kurz=tango" className="text-gold-500 text-xs tracking-widest uppercase font-bold hover:underline">Zistiť viac</Link>
+                <span className="text-pink-500 font-bold tracking-[0.2em] uppercase text-[10px] mb-2 block">Pre ženy a dievčatá</span>
+                <h2 className="font-serif text-4xl font-bold mb-4">Latin Fit <span className="text-pink-500">&</span> Salsa</h2>
+                <p className="text-gray-400 text-sm font-light leading-relaxed mb-6">
+                  Lekcie latinsko-amerických tancov pre dámy, kde nepotrebujete partnera. 
+                  Objavte tance ako salsa, bachata, chacha, rumba a jive.
+                </p>
+                <div className="flex gap-4 mb-8">
+                  <div className="text-2xl font-serif font-bold text-white">8€ <span className="text-xs font-sans text-gray-500 font-light">/ lekcia</span></div>
+                </div>
+                <Link href="/kontakt?kurz=latinfit" className="btn-outline px-8 py-3 rounded-full text-[10px] font-bold tracking-widest uppercase">
+                  Rezervovať lekciu
+                </Link>
+              </div>
+              <div className="bg-gradient-to-br from-pink-500/10 to-transparent p-6 rounded-3xl border border-pink-500/10">
+                <ul className="space-y-4">
+                  {["Nepotrebujete partnera", "Formovanie postavy", "Skvelá komunita", "Vhodné pre začiatočníčky"].map(item => (
+                    <li key={item} className="flex items-center gap-3 text-xs text-gray-300 font-light">
+                      <span className="text-pink-500">✓</span> {item}
+                    </li>
+                  ))}
+                </ul>
               </div>
             </div>
+          </BentoCard>
 
-            {/* Kids / Competitive */}
-            <div id="sutaze" className="flex items-center gap-6 p-6 bg-obsidian-900 rounded-xl border border-gold-500/10 hover:border-gold-500/30 transition-colors">
-              <div className="w-16 h-16 rounded-full bg-gold-500/10 flex-shrink-0 flex items-center justify-center text-gold-500">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
-              </div>
-              <div>
-                <h4 className="font-serif text-xl text-white mb-1">Deti & Súťažný Tanec</h4>
-                <p className="text-sm text-gray-400 font-light mb-2">Výchova mladých talentov s jasnou cestou až do profi športu.</p>
-                <Link href="/kontakt?kurz=deti" className="text-gold-500 text-xs tracking-widest uppercase font-bold hover:underline">Zistiť viac</Link>
-              </div>
-            </div>
+          {/* Svadobné Tance Intro (4 cols) */}
+          <BentoCard id="svadba" className="md:col-span-4 p-8 scroll-mt-32 flex flex-col justify-center">
+            <h2 className="font-serif text-3xl font-bold mb-4">Svadobné Tance</h2>
+            <p className="text-gray-400 text-xs font-light leading-relaxed mb-6">
+              Pripravíme vás na váš veľký deň. Od základných krokov až po dychberúcu choreografiu.
+            </p>
+            <HandwritingNote className="text-base" rotation={5}>
+              "Zachránime aj drevených ženíchov"
+            </HandwritingNote>
+          </BentoCard>
 
-            {/* Commercial */}
-            <div className="flex items-center gap-6 p-6 bg-obsidian-900 rounded-xl border border-gold-500/10 hover:border-gold-500/30 transition-colors md:col-span-2">
-              <div className="w-16 h-16 rounded-full bg-gold-500/10 flex-shrink-0 flex items-center justify-center text-gold-500">
-                <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
-              </div>
-              <div>
-                <h4 className="font-serif text-xl text-white mb-1">Komerčná Ponuka (Prenájom & Eventy)</h4>
-                <p className="text-sm text-gray-400 font-light mb-2">Prenájom priestorov Hornej a Dolnej sály, alebo zorganizovanie tanečného eventu / plesu na kľúč (Ellegance Dance Cup a iné).</p>
-                <Link href="/kontakt?kurz=prenajom" className="text-gold-500 text-xs tracking-widest uppercase font-bold hover:underline">Kontaktujte nás pre cenovú ponuku</Link>
-              </div>
-            </div>
+          {/* Svadobné Balíky (Split 12 cols into 6/6 or 4/8) */}
+          <div className="md:col-span-12 grid md:grid-cols-2 gap-6">
+            <BentoCard className="p-8 border-white/5 bg-obsidian-800/20">
+              <span className="text-gold-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Základný Balík</span>
+              <h3 className="font-serif text-2xl font-bold mb-4">Svadobná Pohoda</h3>
+              <div className="text-3xl font-serif font-bold text-white mb-4">140€</div>
+              <ul className="text-xs text-gray-400 space-y-3 mb-8">
+                <li>• 4 x 45 minút individuálne</li>
+                <li>• Vlastný výber hudby</li>
+                <li>• Základná choreografia</li>
+              </ul>
+              <Link href="/kontakt?kurz=svadba-basic" className="text-gold-500 text-[10px] font-bold tracking-widest uppercase hover:underline">Vybrať základ →</Link>
+            </BentoCard>
+            <BentoCard className="p-8 border-gold-500/20 bg-gradient-to-br from-gold-500/5 to-transparent relative">
+              <div className="absolute top-6 right-6 px-3 py-1 bg-gold-500 text-obsidian-900 text-[8px] font-bold rounded-full uppercase tracking-widest">Najobľúbenejšie</div>
+              <span className="text-gold-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Premium Balík</span>
+              <h3 className="font-serif text-2xl font-bold mb-4">Svadobná Hviezda</h3>
+              <div className="text-3xl font-serif font-bold text-white mb-4">250€</div>
+              <ul className="text-xs text-gray-400 space-y-3 mb-8">
+                <li>• 8 x 60 minút individuálne</li>
+                <li>• Waltz, Valčík, Polka a Čardáš</li>
+                <li>• Nácvik možný priamo na mieste</li>
+              </ul>
+              <Link href="/kontakt?kurz=svadba-premium" className="btn-gold block text-center py-3 rounded-xl text-[10px] font-bold tracking-widest uppercase">Chcem Premium</Link>
+            </BentoCard>
           </div>
+
+          {/* Spoločenské Tance (12 cols - Magazine Style) */}
+          <BentoCard id="spolocenske" className="md:col-span-12 p-12 scroll-mt-32">
+            <div className="grid md:grid-cols-12 gap-12 items-center">
+              <div className="md:col-span-7">
+                <h2 className="font-serif text-4xl md:text-5xl font-bold mb-6 text-blue-400">Spoločenské Tance</h2>
+                <p className="text-gray-400 text-sm font-light leading-relaxed mb-8 max-w-xl">
+                  Začíname poznávacím základným levelom, kde si osvojíte základy 9 spoločenských tancov. 
+                  Ideálny spôsob, ako si oddýchnuť a načerpať novú energiu po práci.
+                </p>
+                <div className="flex items-center gap-8">
+                  <div>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest block mb-1">Trvanie</span>
+                    <span className="text-sm font-bold">8 týždňov - 8 lekcií</span>
+                  </div>
+                  <div className="h-8 w-px bg-white/10" />
+                  <div>
+                    <span className="text-[10px] text-gray-500 uppercase tracking-widest block mb-1">Cena</span>
+                    <span className="text-sm font-bold">75€ / osoba</span>
+                  </div>
+                </div>
+              </div>
+              <div className="md:col-span-5 relative">
+                 <blockquote className="border-l-2 border-blue-500/30 pl-8 py-4 italic text-gray-400 text-lg">
+                  "U nás môžete načerpať novú energiu, alebo nájsť nový zmysel života!"
+                </blockquote>
+                <HandwritingNote className="absolute -bottom-10 right-0 text-blue-400/50" rotation={-4}>
+                  "Tancovať vie každý..."
+                </HandwritingNote>
+              </div>
+            </div>
+          </BentoCard>
+
+          {/* Tango Argentíno (6 cols) */}
+          <BentoCard id="tango" className="md:col-span-6 p-10 scroll-mt-32 bg-gradient-to-br from-red-500/5 to-transparent">
+            <span className="text-red-500 font-bold tracking-[0.2em] uppercase text-[10px] mb-2 block">Vášeň a hĺbka</span>
+            <h2 className="font-serif text-3xl font-bold mb-4">Tango Argentíno</h2>
+            <p className="text-gray-400 text-xs font-light leading-relaxed mb-6">
+              Pre Tango neexistujú vekové hranice. Naučíme vás základné kroky i zložité choreografie v priebehu pár lekcií.
+            </p>
+            <div className="flex justify-between items-end">
+              <div className="text-2xl font-serif font-bold text-white">50€</div>
+              <Link href="/kontakt?kurz=tango" className="btn-outline px-6 py-2 rounded-full text-[10px] font-bold tracking-widest uppercase">Prihlásiť sa</Link>
+            </div>
+          </BentoCard>
+
+          {/* Detská Prípravka (6 cols) */}
+          <BentoCard id="deti" className="md:col-span-6 p-10 scroll-mt-32 border-dashed">
+            <h2 className="font-serif text-3xl font-bold mb-4">Tanečná Prípravka</h2>
+            <p className="text-gray-400 text-xs font-light leading-relaxed mb-6">
+              Tanec pre deti už od 4 rokov. Lekcie sú vedené formou zábavy a hier, kde rozvíjame pohybovú zdatnosť.
+            </p>
+            <div className="flex items-center justify-between">
+               <span className="text-[10px] text-gray-500 uppercase tracking-widest">Od 4 rokov</span>
+               <Link href="/kontakt?kurz=deti" className="text-gold-500 text-[10px] font-bold tracking-widest uppercase hover:underline">Mám záujem →</Link>
+            </div>
+          </BentoCard>
+
         </div>
-      </section>
-    </>
+      </main>
+    </div>
   );
 }

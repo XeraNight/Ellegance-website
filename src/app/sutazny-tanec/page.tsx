@@ -1,148 +1,504 @@
-import React from "react";
+"use client";
+
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
-import { getAssetPath } from "@/lib/utils";
+import { getAssetPath, cn } from "@/lib/utils";
+import { motion, AnimatePresence, useMotionValue, useTransform, animate, useInView } from "framer-motion";
+
+const HERO_IMAGES = [
+  getAssetPath("/images/IMG_1658.jpeg"),
+  getAssetPath("/images/IMG_1680.jpeg"),
+  getAssetPath("/images/IMG_1686.jpeg"),
+  getAssetPath("/images/IMG_1693.jpeg"),
+  getAssetPath("/images/IMG_1699.jpeg"),
+];
+
+function Counter({ end, suffix = "", prefix = "" }: { end: number, suffix?: string, prefix?: string }) {
+  const nodeRef = useRef(null);
+  const isInView = useInView(nodeRef, { once: true, margin: "-100px" });
+  const count = useMotionValue(0);
+  const [displayValue, setDisplayValue] = useState(0);
+
+  useEffect(() => {
+    if (isInView) {
+      const controls = animate(count, end, { 
+        duration: 2, 
+        ease: "easeOut",
+        onUpdate: (latest) => setDisplayValue(Math.round(latest))
+      });
+      return () => controls.stop();
+    }
+  }, [isInView, end, count]);
+
+  return <span ref={nodeRef}>{prefix}{displayValue}{suffix}</span>;
+}
 
 export default function SutaznyTanecPage() {
+  const [currentImage, setCurrentImage] = useState(0);
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null);
+  const [expandedIdx, setExpandedIdx] = useState<number | null>(null);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % HERO_IMAGES.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Lock body scroll when overlay is open
+  useEffect(() => {
+    if (expandedIdx !== null) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [expandedIdx]);
+
+  const selectedInstructor = expandedIdx !== null ? INSTRUCTORS[expandedIdx] : null;
+
   return (
     <>
-      {/* Page Header */}
-      <header className="relative pt-40 pb-20 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <div className="absolute inset-0 bg-gradient-to-b from-obsidian-900 via-obsidian-800 to-obsidian-900"></div>
-          <div className="bg-blob blob-1" style={{ background: 'rgba(212, 175, 55, 0.08)', width: '800px', height: '800px', top: '-200px', left: '50%', transform: 'translateX(-50%)' }}></div>
-        </div>
-        
-        <div className="max-w-5xl mx-auto px-6 relative z-10 text-center">
-          <span className="inline-block py-1 px-4 rounded-full bg-white/5 border border-white/10 backdrop-blur-md text-gold-500 font-sans tracking-[0.2em] font-semibold uppercase text-xs mb-6 animate-fade-in-up opacity-0" style={{ animationDelay: '0.1s' }}>
-            Vrcholový Tanečný Šport
-          </span>
-          <h1 className="font-serif text-5xl md:text-7xl font-bold text-white mb-6 animate-fade-in-up opacity-0" style={{ animationDelay: '0.2s' }}>
-            Vychovávame <i className="text-gold-500 font-light">šampiónov</i>
-          </h1>
-          <p className="text-gray-400 text-lg md:text-xl font-light max-w-3xl mx-auto animate-fade-in-up opacity-0" style={{ animationDelay: '0.3s' }}>
-            Náš klub sa dlhodobo radí k slovenskej špičke v tanečnom športe. Spájame tvrdú drinu, profesionálny systém a vášeň pre umenie. Pridajte sa k nám na ceste za medailami.
-          </p>
-        </div>
-      </header>
+      {/* ... Hero Section ... */}
+      <section className="relative h-screen w-full overflow-hidden bg-obsidian-900">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={currentImage}
+            initial={{ opacity: 0, scale: 1.1 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 1.5, ease: "easeOut" }}
+            className="absolute inset-0"
+          >
+            <img
+              src={HERO_IMAGES[currentImage]}
+              alt="Competitive Dance"
+              className="h-full w-full object-cover"
+            />
+            <div className="absolute inset-0 bg-gradient-to-r from-obsidian-900/80 via-obsidian-900/20 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-t from-obsidian-900 via-transparent to-transparent opacity-60" />
+          </motion.div>
+        </AnimatePresence>
 
-      {/* Staty / Úspechy */}
+        <div className="absolute inset-0 z-10 flex flex-col justify-end pb-24 px-6 md:px-12 lg:px-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5, duration: 1 }}
+            className="max-w-4xl"
+          >
+            <h1 className="font-serif text-6xl md:text-8xl font-bold text-white mb-8 leading-tight">
+              Vychovávame <br />
+              <span className="text-gold-500 italic font-light">Šampiónov</span>
+            </h1>
+            <p className="text-gray-300 text-lg md:text-xl font-light max-w-2xl leading-relaxed mb-10">
+              Náš klub sa dlhodobo radí k slovenskej špičke v tanečnom športe. Spájame tvrdú drinu, profesionálny systém a radosť z tanca.
+            </p>
+            
+            <div className="flex items-center gap-8">
+              <Link href="/kontakt" className="btn-gold px-12 py-4 rounded-full text-xs font-bold uppercase tracking-[0.2em] hover:scale-105 transition-transform">
+                Pridajte sa k nám
+              </Link>
+              <div className="hidden md:flex flex-col gap-1">
+                <span className="text-[10px] text-gray-500 uppercase tracking-widest">Sledujte nás</span>
+                <span className="text-white text-xs font-serif italic">#ellegance_danceclub</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Stats Section */}
       <section className="py-12 border-t border-b border-gold-500/10 bg-obsidian-800/50">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
             <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.4s' }}>
-              <div className="font-serif text-5xl text-gold-500 mb-2">20+</div>
+              <div className="font-serif text-5xl text-gold-500 mb-2">
+                <Counter end={36} suffix="+" />
+              </div>
               <div className="text-xs text-gray-500 uppercase tracking-widest font-bold">Rokov skúseností</div>
             </div>
             <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.5s' }}>
-              <div className="font-serif text-5xl text-gold-500 mb-2">350+</div>
+              <div className="font-serif text-5xl text-gold-500 mb-2">
+                <Counter end={350} suffix="+" />
+              </div>
               <div className="text-xs text-gray-500 uppercase tracking-widest font-bold">Získaných medailí</div>
             </div>
             <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.6s' }}>
-              <div className="font-serif text-5xl text-gold-500 mb-2">12</div>
+              <div className="font-serif text-5xl text-gold-500 mb-2">
+                <Counter end={12} />
+              </div>
               <div className="text-xs text-gray-500 uppercase tracking-widest font-bold">Reprezentantov SR</div>
             </div>
             <div className="animate-fade-in-up opacity-0" style={{ animationDelay: '0.7s' }}>
-              <div className="font-serif text-5xl text-gold-500 mb-2">Top 5</div>
+              <div className="font-serif text-5xl text-gold-500 mb-2">
+                <Counter end={5} prefix="Top " />
+              </div>
               <div className="text-xs text-gray-500 uppercase tracking-widest font-bold">Klubov na Slovensku</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Cesta Tanečníka (Timeline) */}
-      <section id="deti" className="py-24 relative z-20">
-        <div className="max-w-5xl mx-auto px-6">
-          <div className="text-center mb-20">
-            <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-4">Cesta <span className="text-gold-500 italic font-light">Tanečníka</span></h2>
-            <p className="text-gray-400 max-w-2xl mx-auto">Ako prebieha vývoj talentu v našom klube? Náš systém zaručuje postupný, bezpečný a motivujúci rast pre každé dieťa a mládež.</p>
-          </div>
-          
-          <div className="relative pl-12 md:pl-0">
-            {/* Timeline lines - handled with custom Tailwind classes in globals.css if needed, or inline styles */}
-            <div className="absolute left-6 md:left-1/2 md:-ml-px top-0 bottom-0 w-[2px] bg-gradient-to-b from-gold-500/50 to-gold-500/10"></div>
-
-            {/* Krok 1 */}
-            <div className="relative mb-16 md:mb-24 flex justify-between items-center w-full md:flex-row-reverse group">
-              <div className="order-1 md:w-5/12"></div>
-              <div className="z-20 absolute left-[12px] md:left-1/2 md:-ml-3 w-6 h-6 rounded-full bg-obsidian-900 border-4 border-gold-500 group-hover:scale-125 transition-transform"></div>
-              <div className="order-1 md:w-5/12 pl-6 md:pl-0 md:text-right segment-card p-8">
-                <span className="text-gold-500 text-xs font-bold tracking-widest uppercase mb-2 block">Krok 1 (Deti 5-9 rokov)</span>
-                <h3 className="font-serif text-2xl font-bold text-white mb-3">Tanečná Prípravka</h3>
-                <p className="text-gray-400 font-light text-sm">Všetko začína hravou formou. Deti získavajú správne držanie tela, rytmiku, koordináciu a základy tanca. Budujeme disciplínu a lásku k pohybu v bezpečnom prostredí.</p>
-              </div>
-            </div>
-
-            {/* Krok 2 */}
-            <div className="relative mb-16 md:mb-24 flex justify-between items-center w-full group">
-              <div className="order-1 md:w-5/12"></div>
-              <div className="z-20 absolute left-[12px] md:left-1/2 md:-ml-3 w-6 h-6 rounded-full bg-obsidian-900 border-4 border-gold-500 group-hover:scale-125 transition-transform"></div>
-              <div className="order-1 md:w-5/12 pl-6 md:pl-0 segment-card p-8">
-                <span className="text-gold-500 text-xs font-bold tracking-widest uppercase mb-2 block">Krok 2</span>
-                <h3 className="font-serif text-2xl font-bold text-white mb-3">Základný Klubový Tréning</h3>
-                <p className="text-gray-400 font-light text-sm">Prechod na reálne zostavy. Deti začínajú tancovať v pároch alebo v sólo dívčích skupinách. Učia sa prvé 4 základné tance a zúčastňujú sa svojich prvých hobby súťaží.</p>
-              </div>
-            </div>
-
-            {/* Krok 3 */}
-            <div className="relative mb-16 md:mb-24 flex justify-between items-center w-full md:flex-row-reverse group">
-              <div className="order-1 md:w-5/12"></div>
-              <div className="z-20 absolute left-[12px] md:left-1/2 md:-ml-3 w-6 h-6 rounded-full bg-obsidian-900 border-4 border-gold-500 group-hover:scale-125 transition-transform shadow-[0_0_15px_rgba(212,175,55,0.5)]"></div>
-              <div className="order-1 md:w-5/12 pl-6 md:pl-0 md:text-right segment-card p-8 border-gold-500/30 bg-[rgba(10,10,10,0.8)]">
-                <span className="text-gold-500 text-xs font-bold tracking-widest uppercase mb-2 block">Krok 3 (Vrcholový šport)</span>
-                <h3 className="font-serif text-2xl font-bold text-white mb-3">Súťažný Výkonnostný Šport</h3>
-                <p className="text-gray-400 font-light text-sm">Zaradenie do národného a medzinárodného registru súťažiacich. 10 tancov na vysokej úrovni (STT aj LAT), pravidelné sústredenia, medzinárodné súťaže a individuálny mentoring u top lektorov klubu.</p>
-              </div>
-            </div>
-
-          </div>
-          
-          <div className="text-center mt-12">
-            <Link href="/kontakt?kurz=deti" className="btn-gold inline-block px-10 py-4 rounded-full font-sans text-sm font-bold tracking-widest uppercase">
-              Prihlásiť dieťa na skúšobný tréning
-            </Link>
-          </div>
-        </div>
-      </section>
-
-      {/* Tréneri a Odbornosť */}
-      <section className="py-24 bg-obsidian-900/50 relative overflow-hidden">
-        <div className="bg-blob blob-2" style={{ background: 'rgba(212, 175, 55, 0.05)', width: '800px', top: '0', left: '-20%' }}></div>
+      {/* SECTION 2: Tréneri & Odbornosť */}
+      <section className="py-32 bg-obsidian-900 relative overflow-hidden">
         <div className="max-w-7xl mx-auto px-6 relative z-10">
-          <div className="grid md:grid-cols-2 gap-16 items-center">
-            <div>
-              <h2 className="font-serif text-4xl md:text-5xl font-bold text-white mb-6">Tréneri so <span className="text-gold-500 italic font-light">svetovými</span> skúsenosťami</h2>
-              <p className="text-gray-400 font-light leading-relaxed mb-6 text-lg">
-                Aby ste boli najlepší, musíte sa učiť od najlepších. Náš trénersky kolektív tvoria certifikovaní odborníci s najvyššou trénerskou triedou.
-              </p>
-              <ul className="space-y-4 mb-8">
-                <li className="flex items-start gap-4">
-                  <div className="mt-1 w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0 text-gold-500">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
-                  </div>
-                  <p className="text-gray-300 font-light text-sm">Garantujeme <strong>špičkovú metodiku</strong> podľa medzinárodných štandardov (WDSF).</p>
-                </li>
-                <li className="flex items-start gap-4">
-                  <div className="mt-1 w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0 text-gold-500">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
-                  </div>
-                  <p className="text-gray-300 font-light text-sm">Organizujeme pravidelné workshopy a kempy s <strong>medzinárodnými lektormi</strong> z celého sveta.</p>
-                </li>
-                <li className="flex items-start gap-4">
-                  <div className="mt-1 w-6 h-6 rounded-full bg-gold-500/20 flex items-center justify-center flex-shrink-0 text-gold-500">
-                    <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path></svg>
-                  </div>
-                  <p className="text-gray-300 font-light text-sm">Sme hrdí organizátori prestížnych medzinárodných a národných pohárov a súťaží v Košiciach.</p>
-                </li>
-              </ul>
-              <Link href="/o-nas" className="btn-outline inline-block px-8 py-3 rounded-full font-sans text-xs font-bold tracking-widest uppercase">Viac o tíme</Link>
-            </div>
-            <div className="relative">
-              <img src={getAssetPath("/assets/img/gallery_tango_1777364079860.png")} alt="Súťažný Tanec Ellegance" className="w-full rounded-[2rem] object-cover h-[500px] shadow-2xl filter brightness-90 border border-white/5" />
-            </div>
+          <div className="flex flex-col items-center text-center mb-24">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              className="flex items-center gap-3 mb-6"
+            >
+              <div className="h-px w-8 bg-gold-500" />
+              <span className="text-gold-500 font-sans tracking-[0.4em] uppercase text-[10px] font-bold">Naši lektori</span>
+              <div className="h-px w-8 bg-gold-500" />
+            </motion.div>
+            <motion.h2 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="font-serif text-5xl md:text-7xl font-bold text-white mb-6 leading-tight"
+            >
+              Tréneri so <span className="text-gold-500 italic font-light">svetovými</span> skúsenosťami
+            </motion.h2>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-20 lg:gap-x-12">
+            {INSTRUCTORS.map((instructor, idx) => (
+              <InstructorCard 
+                key={instructor.name} 
+                instructor={instructor} 
+                index={idx} 
+                isActive={expandedIdx === idx}
+                isDimmed={(hoveredIdx !== null && hoveredIdx !== idx) || (expandedIdx !== null && expandedIdx !== idx)}
+                onHover={() => setHoveredIdx(idx)}
+                onLeave={() => setHoveredIdx(null)}
+                onToggle={() => setExpandedIdx(expandedIdx === idx ? null : idx)}
+              />
+            ))}
           </div>
         </div>
+
+        {/* Global Achievement Overlay (The "Bublina") */}
+        <AnimatePresence>
+          {expandedIdx !== null && selectedInstructor && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-10 bg-obsidian-950/60 backdrop-blur-sm pointer-events-auto"
+              onClick={() => setExpandedIdx(null)}
+            >
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.9, y: 50 }}
+                animate={{ opacity: 1, scale: 1, y: 0 }}
+                exit={{ opacity: 0, scale: 0.9, y: 50 }}
+                className="w-full max-w-6xl bg-obsidian-900/95 backdrop-blur-2xl border border-white/10 rounded-[2rem] md:rounded-[3rem] shadow-[0_30px_100px_rgba(0,0,0,0.8)] p-8 md:p-16 relative overflow-y-auto max-h-[90vh] custom-scrollbar"
+                onClick={(e) => e.stopPropagation()}
+              >
+                {/* Close Button - Sticky/Fixed relative to bubble */}
+                <button 
+                  onClick={() => setExpandedIdx(null)}
+                  className="absolute top-6 right-6 md:top-10 md:right-10 w-12 h-12 rounded-full bg-white/5 hover:bg-gold-500 hover:text-obsidian-900 flex items-center justify-center text-white transition-all duration-300 z-50 group shadow-xl"
+                  aria-label="Zatvoriť"
+                >
+                  <svg className="w-6 h-6 transform group-hover:rotate-90 transition-transform duration-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                <div className="flex flex-col gap-10 md:gap-14">
+                  <div className="flex items-center gap-6 md:gap-8">
+                    <div className="w-20 h-20 md:w-24 md:h-24 rounded-2xl md:rounded-3xl overflow-hidden border-2 border-gold-500/30 shadow-2xl shrink-0">
+                      <img src={selectedInstructor.image} className="w-full h-full object-cover" alt="" />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl md:text-5xl font-serif font-bold text-white mb-2 md:mb-3">{selectedInstructor.name}</h3>
+                      <div className="flex items-center gap-3">
+                        <div className="h-px w-6 bg-gold-500/50" />
+                        <p className="text-gold-500 text-[10px] md:text-xs uppercase tracking-[0.3em] font-black">Profil & Kariérne úspechy</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-10 md:gap-16 relative">
+                    {/* Vertical Dividers - Hidden on mobile */}
+                    <div className="hidden md:block absolute left-1/3 top-0 bottom-0 w-[1px] bg-gradient-to-b from-white/10 via-white/5 to-transparent" />
+                    <div className="hidden md:block absolute left-2/3 top-0 bottom-0 w-[1px] bg-gradient-to-b from-white/10 via-white/5 to-transparent" />
+
+                    {/* Column 1 */}
+                    <AchievementColumn 
+                      items={selectedInstructor.achievements.slice(0, Math.ceil(selectedInstructor.achievements.length / 3))} 
+                      startIndex={0}
+                    />
+                    {/* Column 2 */}
+                    <AchievementColumn 
+                      items={selectedInstructor.achievements.slice(Math.ceil(selectedInstructor.achievements.length / 3), Math.ceil(selectedInstructor.achievements.length / 3 * 2))} 
+                      startIndex={Math.ceil(selectedInstructor.achievements.length / 3)}
+                    />
+                    {/* Column 3 */}
+                    <AchievementColumn 
+                      items={selectedInstructor.achievements.slice(Math.ceil(selectedInstructor.achievements.length / 3 * 2))} 
+                      startIndex={Math.ceil(selectedInstructor.achievements.length / 3 * 2)}
+                    />
+                  </div>
+                </div>
+
+                {/* Decorative Elements */}
+                <div className="absolute -right-20 -bottom-20 w-80 h-80 bg-gold-500/5 rounded-full blur-[100px] pointer-events-none" />
+                <div className="absolute -left-20 -top-20 w-60 h-60 bg-blue-500/5 rounded-full blur-[80px] pointer-events-none" />
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </section>
     </>
   );
 }
+
+function AchievementColumn({ items, startIndex }: { items: string[], startIndex: number }) {
+  return (
+    <div className="space-y-6">
+      {items.map((item, i) => (
+        <motion.div
+          key={i}
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ delay: (startIndex + i) * 0.05 }}
+          className="flex items-start gap-4 group/item"
+        >
+          <div className="shrink-0 mt-1.5 w-4 h-4 rounded-full border border-gold-500/30 flex items-center justify-center">
+            <div className="w-1 h-1 rounded-full bg-gold-500 shadow-[0_0_8px_rgba(212,175,55,0.8)]" />
+          </div>
+          <span className="text-gray-300 text-sm leading-relaxed group-hover/item:text-white transition-colors">{item}</span>
+        </motion.div>
+      ))}
+    </div>
+  );
+}
+
+function InstructorCard({ instructor, index, isActive, isDimmed, onHover, onLeave, onToggle }: any) {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const isStaggered = index % 2 !== 0;
+
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    setMousePos({ x, y });
+  };
+
+  const handleMouseLeave = () => {
+    setMousePos({ x: 0, y: 0 });
+    onLeave();
+  };
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      animate={{ 
+        opacity: isActive ? 1 : (isDimmed ? 0.6 : 1),
+        scale: isActive ? 1.02 : (isDimmed ? 0.98 : 1),
+        filter: isActive ? "blur(0px)" : (isDimmed ? "blur(4px)" : "blur(0px)"),
+        zIndex: isActive ? 50 : (isDimmed ? 10 : 20)
+      }}
+      transition={{ 
+        duration: 0.4,
+        ease: [0.23, 1, 0.32, 1]
+      }}
+      onMouseMove={handleMouseMove}
+      onMouseEnter={onHover}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        perspective: 1000,
+      }}
+      className={cn(
+        "relative flex flex-col group transition-all duration-500",
+        isStaggered ? "lg:mt-20" : ""
+      )}
+    >
+      {/* 3D Tilt Wrapper */}
+      <motion.div
+        animate={{
+          rotateY: mousePos.x * 20,
+          rotateX: -mousePos.y * 20,
+        }}
+        transition={{ type: "spring", stiffness: 150, damping: 20 }}
+        className="relative z-10"
+      >
+        {/* Photo Container */}
+        <div className="relative rounded-2xl overflow-hidden aspect-[4/5] shadow-2xl border border-white/5 bg-white/10 group-hover:border-gold-500/30 transition-colors duration-500">
+          <img 
+            src={instructor.image} 
+            alt={instructor.name} 
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-obsidian-950 via-transparent to-transparent opacity-90" />
+          
+          {/* Shine effect */}
+          <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-gradient-to-tr from-transparent via-white to-transparent -translate-x-full group-hover:translate-x-full transition-all duration-1000 pointer-events-none" />
+
+          {/* Expand Arrow */}
+          <button 
+            onClick={(e) => { e.stopPropagation(); onToggle(); }}
+            className="absolute bottom-6 right-6 w-12 h-12 rounded-full bg-gold-500 flex items-center justify-center text-obsidian-900 shadow-2xl z-20 hover:scale-110 transition-transform active:scale-95"
+          >
+            <motion.svg 
+              animate={{ rotate: isActive ? 180 : 0 }}
+              className="w-5 h-5" 
+              fill="none" 
+              viewBox="0 0 24 24" 
+              stroke="currentColor" 
+              strokeWidth={3}
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            </motion.svg>
+          </button>
+
+          <div className="absolute bottom-6 left-6 pr-16 pointer-events-none">
+            <p className="text-white text-2xl font-serif font-bold leading-tight group-hover:text-gold-500 transition-colors">{instructor.name}</p>
+            <p className="text-gold-500/80 text-[10px] uppercase tracking-[0.2em] mt-2 font-bold">{instructor.role}</p>
+          </div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+const INSTRUCTORS = [
+  {
+    name: "Štefan Stropko",
+    role: "Lektor a choreograf",
+    image: getAssetPath("/images/Stefan Stropko.png"),
+    achievements: [
+      "Lektor tanečnej prípravky pre deti od 3 rokov",
+      "Lektor spoločenských tancov pre deti od 6 rokov",
+      "Lektor a choreograf svadobných tancov",
+      "Lektor venčekových kurzov",
+      "Majster Slovenska vo formáciách",
+      "Finalista GOC v tanci na vozíku v štandardných a latinsko-amerických tancoch",
+      "Majster sveta v tanci na vozíku (LAT a Freestyle): 2019 (Nemecko, Bonn)",
+      "Finalista majstrovstiev sveta v tanci na vozíku (STT): 2023 (Taliansko, Genoa)",
+      "Finalista majstrovstiev Európy v tanci na vozíku (STT a Freestyle): 2024 (Česko, Praha)"
+    ]
+  },
+  {
+    name: "Petra Chomová",
+    role: "Lektorka tanečnej prípravky",
+    image: getAssetPath("/images/Petra Chomová.png"),
+    achievements: [
+      "Lektorka tanečnej prípravky pre deti od 3 rokov",
+      "Lektorka spoločenských tancov pre deti od 6 rokov",
+      "1. miesto na Európskom pohári Showtime dance vo formáciách - 2024",
+      "Finalistka Majstrovstiev sveta v tanci na vozíku v štandardných tancoch - 2023",
+      "Vicemajsterka Európy v tanci na vozíku v štandardných tancoch - 2024",
+      "3. miesto na svetovom pohári v tanci na vozíku vo Freestyle: 2024 (Antalya, Turecko)",
+      "3. miesto na svetovom pohári v tanci na vozíku vo Freestyle: 2024 (Košice)"
+    ]
+  },
+  {
+    name: "Linda Sanislová",
+    role: "Lektorka tanečnej prípravky",
+    image: getAssetPath("/images/Linda Sanislová.png"),
+    achievements: [
+      "Lektorka spoločenských tancov pre deti od 6 rokov",
+      "Lektorka tanečného športu - štandardných tancov v kat. deti a mládež",
+      "Majsterka Slovenska v plesových choreografiách - 2023",
+      "Finalistka MSR v 10 tancoch do 21 rokov - 2023"
+    ]
+  },
+  {
+    name: "Yelyzaveta Peregudová",
+    role: "Lektorka spoločenských tancov",
+    image: getAssetPath("/images/Yelizaveta Peregudová.png"),
+    achievements: [
+      "Lektorka tanečného športu - latinsko-amerických tancov (deti, mládež, dospelí)",
+      "Vicemajsterka Európy v kategórii deti: 2016 (Assen, Holandsko)",
+      "Majsterka sveta v kategórii deti: 2017 (Paríž, Francúzsko)",
+      "Majsterka Európy: 2017 (Blackpool, Anglicko)",
+      "Absolútna víťazka súťaže Blackpool (4 prvé miesta): 2017 (Anglicko)",
+      "3. miesto na majstrovstvách Európy (juniori): 2018 (Blackpool)",
+      "Finalistka súťaže Blackpool (juniori): 2018 (Anglicko)",
+      "Pozvaný hosť na Showtime – Liang, Čína",
+      "3. miesto na majstrovstvách sveta (mládež): 2021 (Neapol, Taliansko)",
+      "Vicemajsterka Slovenska v kategórii mládež - 2023",
+      "Finalistka MSR v kategórii mládež - 2025",
+      "Kandidátka na Majsterku športu Ukrajiny",
+      "Laureátka ocenenia primátora mesta „Pýcha Kharkova“"
+    ]
+  },
+  {
+    name: "Zuzana Šiminská",
+    role: "Lektorka tanečnej prípravky",
+    image: getAssetPath("/images/Zuzaná šimická.png"),
+    achievements: [
+      "Diplomovaná trénerka 1. kvalifikačného stupňa",
+      "Lektorka tanečnej prípravky pre deti od 3 rokov",
+      "Lektorka spoločenských tancov pre deti od 6 rokov",
+      "Lektorka latino tancov pre dievčatá",
+      "Lektorka kurzov Latin Fit",
+      "Vicemajsterka MSR v LAT (Junior 1) - 2012",
+      "Vicemajsterka MSR v LAT (Junior 2) - 2014",
+      "Finalistka MSR LAT do 21 rokov - 2019",
+      "Semifinalistka MSR LAT dospelých - 2020"
+    ]
+  },
+  {
+    name: "Ing. Dominika Vidašičová",
+    role: "Lektorka a trénerka",
+    image: getAssetPath("/images/Dominika Vidašičová.png"),
+    achievements: [
+      "Diplomovaná trénerka 1. kvalifikačného stupňa",
+      "Lektorka Tanga Argentína",
+      "Lektorka venčekových kurzov",
+      "Lektorka a choreografka svadobných tancov",
+      "Lektorka kurzov spoločenských tancov pre dospelých",
+      "Diplomovaná lektorka Port De Bras",
+      "Diplomovaná nutričná poradkyňa",
+      "Vicemajsterka Majstrovstiev Slovenska v plesových choreografiách",
+      "Vicemajsterka Európskeho pohára v plesových choreografiách"
+    ]
+  },
+  {
+    name: "Mgr. Helenka Kašická",
+    role: "Administratíva a PARA DANCE",
+    image: getAssetPath("/images/Helenka Kašická.png"),
+    achievements: [
+      "Administratívny správca tanečného klubu (prihlášky, registrácie, platby)",
+      "Lektorka súťažného tanca v Para dance",
+      "Lektorka kurzov tanca na vozíku",
+      "10-násobná Majsterka Sveta v tanci na vozíku",
+      "Niekoľkonásobná Majsterka Európy v tanci na vozíku"
+    ]
+  },
+  {
+    name: "Ing. Peter Vidašič",
+    role: "Hlavný tréner a prezident",
+    image: getAssetPath("/images/Peter Vidašič.png"),
+    achievements: [
+      "Prezident tanečného klubu – BOSS",
+      "Lektor tanečného športu – LAT a STT (deti, mládež, dospelí a seniori)",
+      "Lektor komerčných tancov",
+      "Choreograf pre showdance, freestyle a plesové choreografie",
+      "Diplomovaný tréner 3. kvalifikačného stupňa",
+      "Diplomovaný učiteľ tanca",
+      "TOP rozhodca S stupňa",
+      "Medzinárodný rozhodca a lektor v Para dance",
+      "Reprezentačný tréner Para dance (SZTPŠ)",
+      "Finalista MSR v LAT (dospelí) a STT/LAT (mládež)",
+      "Majster Slovenska vo formáciách (STT a LAT)",
+      "Semifinalista MS vo formáciách",
+      "Finalista medzinárodných súťaží v STT a LAT",
+      "Vicemajster sveta v tanci na vozíku (LAT): 2008 (Minsk), 2010 (Hannover), 2013 (Tokyo), 2015 (Rím)",
+      "Majster sveta v tanci na vozíku (STT): 2013 (Tokyo), 2015 (Rím)",
+      "Majster sveta v tanci na vozíku (Freestyle): 2015 (Rím)",
+      "4-násobný Majster Európy v Para dance (LAT, STT, Freestyle) 2016",
+      "Projekty: Bailando (5. miesto), Modré z neba, Integrácia, Slovensko má talent, Na kolesách proti rakovine, Hodina deťom, Kaviareň slávia"
+    ]
+  }
+];
+

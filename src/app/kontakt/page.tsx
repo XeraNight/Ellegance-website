@@ -127,7 +127,21 @@ function KontaktForm() {
                 <div className="mt-1 text-gold-500"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg></div>
                 <div>
                   <h4 className="text-white font-bold text-xs uppercase tracking-widest mb-2">E-mail</h4>
-                  <p className="text-sm text-gray-400 font-light">info@ellegance.sk</p>
+                  <p className="text-sm text-gray-400 font-light underline decoration-gold-500/30 underline-offset-4">info@tkellegance.sk</p>
+                </div>
+              </div>
+
+              {/* Billing Info Section */}
+              <div className="pt-6 border-t border-gold-500/10 flex flex-col gap-4">
+                <h4 className="text-white/40 font-bold text-[9px] uppercase tracking-[0.3em] mb-2">Fakturačné údaje</h4>
+                <div className="grid grid-cols-1 gap-2">
+                  <p className="text-sm text-gray-400 flex justify-between gap-4 italic"><span className="font-serif">IČO:</span> <span className="text-gray-300">42096456</span></p>
+                  <p className="text-sm text-gray-400 flex justify-between gap-4 italic"><span className="font-serif">DIČ:</span> <span className="text-gray-300">2022417144</span></p>
+                  <p className="text-sm text-gray-400 flex justify-between gap-4 italic"><span className="font-serif">IČ DPH:</span> <span className="text-gray-300">SK2022417144</span></p>
+                  <p className="text-[13px] text-gray-400 flex flex-col md:flex-row md:justify-between gap-1 md:gap-4 italic mt-2">
+                    <span className="font-serif">IBAN:</span> 
+                    <span className="text-gold-500/80 font-mono text-[11px] md:text-xs">SK60 0200 0000 0023 4422 7355</span>
+                  </p>
                 </div>
               </div>
             </div>

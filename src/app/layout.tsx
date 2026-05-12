@@ -1,11 +1,16 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display, Dancing_Script, Nunito, Caveat } from "next/font/google";
+import { Inter, Playfair_Display, Dancing_Script, Nunito, Caveat, Roboto_Flex } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const inter = Inter({
   variable: "--font-sans",
+  subsets: ["latin"],
+});
+
+const robotoFlex = Roboto_Flex({
+  variable: "--font-roboto-flex",
   subsets: ["latin"],
 });
 
@@ -41,7 +46,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="sk" className="scroll-smooth">
-      <body className={`${inter.variable} ${playfair.variable} ${dancingScript.variable} ${nunito.variable} ${caveat.variable} font-sans antialiased bg-obsidian-900 text-gray-300 min-h-screen flex flex-col selection:bg-gold-500 selection:text-obsidian-900`}>
+      <body className={`${inter.variable} ${playfair.variable} ${dancingScript.variable} ${nunito.variable} ${caveat.variable} ${robotoFlex.variable} font-sans antialiased bg-obsidian-900 text-gray-300 min-h-screen flex flex-col selection:bg-gold-500 selection:text-obsidian-900`}>
         
         <Header />
 

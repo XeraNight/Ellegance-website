@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { getAssetPath } from "@/lib/utils";
+import { useRef } from "react";
+import VariableProximity from "./animations/VariableProximity";
 
 const SPONSORS = [
   { name: "KSK", src: "/images/logo-ksk-removebg-preview.png" },
@@ -16,9 +18,11 @@ const SPONSORS = [
 ];
 
 export default function Footer() {
+  const containerRef = useRef(null);
+
   return (
     <footer className="relative bg-[#020202] mt-24">
-      {/* Lando-style Dramatic Wave Divider */}
+      {/* ... Divider ... */}
       <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0] -translate-y-[99%]">
         <svg 
           viewBox="0 0 1200 120" 
@@ -50,20 +54,20 @@ export default function Footer() {
             />
           </Link>
 
-          <div className="grid grid-cols-2 gap-16 md:gap-32">
+          <div ref={containerRef} className="grid grid-cols-2 gap-16 md:gap-32">
             <div className="flex flex-col gap-3">
               <span className="text-gold-500 uppercase tracking-[0.3em] text-[10px] font-bold mb-1">Stránky</span>
-              <Link href="/" className="text-white/60 hover:text-white text-sm font-light tracking-wide transition-all">Domov</Link>
-              <Link href="/o-nas" className="text-white/60 hover:text-white text-sm font-light tracking-wide transition-all">O nás</Link>
-              <Link href="/ponuka" className="text-white/60 hover:text-white text-sm font-light tracking-wide transition-all">Ponuka</Link>
-              <Link href="/kontakt" className="text-white/60 hover:text-white text-sm font-light tracking-wide transition-all">Kontakt</Link>
+              <FooterLink href="/" label="Domov" containerRef={containerRef} />
+              <FooterLink href="/o-nas" label="O nás" containerRef={containerRef} />
+              <FooterLink href="/ponuka" label="Ponuka" containerRef={containerRef} />
+              <FooterLink href="/kontakt" label="Kontakt" containerRef={containerRef} />
             </div>
             <div className="flex flex-col gap-3">
               <span className="text-gold-500 uppercase tracking-[0.3em] text-[10px] font-bold mb-1">Sledujte nás</span>
-              <a href="#" className="text-white/60 hover:text-white text-sm font-light tracking-wide transition-all">Instagram</a>
-              <a href="#" className="text-white/60 hover:text-white text-sm font-light tracking-wide transition-all">Facebook</a>
-              <a href="#" className="text-white/60 hover:text-white text-sm font-light tracking-wide transition-all">TikTok</a>
-              <a href="#" className="text-white/60 hover:text-white text-sm font-light tracking-wide transition-all">YouTube</a>
+              <FooterLink href="https://www.instagram.com/ellegance_danceclub/" label="Instagram" containerRef={containerRef} isExternal />
+              <FooterLink href="https://www.facebook.com/ellegance.koce" label="Facebook" containerRef={containerRef} isExternal />
+              <FooterLink href="https://www.tiktok.com/@ellegance_danceclub" label="TikTok" containerRef={containerRef} isExternal />
+              <FooterLink href="https://www.youtube.com/@ellegance_danceclub" label="YouTube" containerRef={containerRef} isExternal />
             </div>
           </div>
         </div>
@@ -106,5 +110,23 @@ export default function Footer() {
         </div>
       </div>
     </footer>
+  );
+}
+
+function FooterLink({ href, label, containerRef, isExternal }: { href: string; label: string; containerRef: any; isExternal?: boolean }) {
+  const Component = isExternal ? 'a' : Link;
+  const props = isExternal ? { href, target: "_blank", rel: "noopener noreferrer" } : { href };
+
+  return (
+    <Component {...props as any} className="text-white/60 hover:text-white text-sm font-light tracking-wide transition-all block">
+      <VariableProximity
+        label={label}
+        fromFontVariationSettings="'wght' 300, 'opsz' 9"
+        toFontVariationSettings="'wght' 800, 'opsz' 40"
+        containerRef={containerRef}
+        radius={100}
+        falloff="linear"
+      />
+    </Component>
   );
 }
