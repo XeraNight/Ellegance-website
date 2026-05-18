@@ -25,22 +25,22 @@ export default function PonukaPage() {
           >
             <div className="h-px w-8 bg-gold-500" />
             <span className="text-gold-500 font-sans tracking-[0.4em] uppercase text-[10px] font-bold">
-              Tanečné Kurzy pre Verejnosť
+              Kompletná Ponuka Ellegance
             </span>
             <div className="h-px w-8 bg-gold-500" />
           </motion.div>
           
           <h1 className="font-serif text-5xl md:text-8xl font-bold mb-8 leading-tight">
-            Tanec pre <br />
+            Viac než len <br />
             <RotatingText 
-              texts={["Všetkých", "Radosť", "Vášeň", "Svadbu", "Deti"]} 
+              texts={["Kurzy", "Tanec", "Vášeň", "Vystúpenia", "Zábava"]} 
               mainClassName="text-gold-500"
               staggerDuration={0.1}
             />
           </h1>
           
           <p className="max-w-2xl mx-auto text-gray-500 text-sm md:text-base font-light leading-relaxed">
-            Ponúkame rôzne tanečné kurzy pre širokú verejnosť. Od energetického Latin Fit až po elegantné svadobné choreografie.
+            Objavte svet tanca v jeho plnej kráse. Od pravidelných kurzov pre deti aj dospelých, cez individuálnu prípravu na svadbu, až po profesionálne tanečné vystúpenia pre vaše eventy.
           </p>
         </div>
       </header>
@@ -48,7 +48,8 @@ export default function PonukaPage() {
       <CourseCategoryNav />
 
       <main className="relative z-10 max-w-7xl mx-auto px-6 pb-32">
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-auto">
+        {/* SECTION 1: Tanečné Kurzy Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 auto-rows-auto mb-24">
           
           {/* Latin Fit Section (8 cols) */}
           <BentoCard id="latin" className="md:col-span-8 p-8 md:p-12 scroll-mt-32">
@@ -90,7 +91,7 @@ export default function PonukaPage() {
             </HandwritingNote>
           </BentoCard>
 
-          {/* Svadobné Balíky (Split 12 cols into 6/6 or 4/8) */}
+          {/* Svadobné Balíky */}
           <div className="md:col-span-12 grid md:grid-cols-2 gap-6">
             <BentoCard className="p-8 border-white/5 bg-obsidian-800/20">
               <span className="text-gold-500 text-[10px] font-bold uppercase tracking-widest mb-2 block">Základný Balík</span>
@@ -117,7 +118,7 @@ export default function PonukaPage() {
             </BentoCard>
           </div>
 
-          {/* Spoločenské Tance (12 cols - Magazine Style) */}
+          {/* Spoločenské Tance */}
           <BentoCard id="spolocenske" className="md:col-span-12 p-12 scroll-mt-32">
             <div className="grid md:grid-cols-12 gap-12 items-center">
               <div className="md:col-span-7">
@@ -142,14 +143,11 @@ export default function PonukaPage() {
                  <blockquote className="border-l-2 border-blue-500/30 pl-8 py-4 italic text-gray-400 text-lg">
                   "U nás môžete načerpať novú energiu, alebo nájsť nový zmysel života!"
                 </blockquote>
-                <HandwritingNote className="absolute -bottom-10 right-0 text-blue-400/50" rotation={-4}>
-                  "Tancovať vie každý..."
-                </HandwritingNote>
               </div>
             </div>
           </BentoCard>
 
-          {/* Tango Argentíno (6 cols) */}
+          {/* Tango Argentíno */}
           <BentoCard id="tango" className="md:col-span-6 p-10 scroll-mt-32 bg-gradient-to-br from-red-500/5 to-transparent">
             <span className="text-red-500 font-bold tracking-[0.2em] uppercase text-[10px] mb-2 block">Vášeň a hĺbka</span>
             <h2 className="font-serif text-3xl font-bold mb-4">Tango Argentíno</h2>
@@ -162,7 +160,7 @@ export default function PonukaPage() {
             </div>
           </BentoCard>
 
-          {/* Detská Prípravka (6 cols) */}
+          {/* Detská Prípravka */}
           <BentoCard id="deti" className="md:col-span-6 p-10 scroll-mt-32 border-dashed">
             <h2 className="font-serif text-3xl font-bold mb-4">Tanečná Prípravka</h2>
             <p className="text-gray-400 text-xs font-light leading-relaxed mb-6">
@@ -173,8 +171,54 @@ export default function PonukaPage() {
                <Link href="/kontakt?kurz=deti" className="text-gold-500 text-[10px] font-bold tracking-widest uppercase hover:underline">Mám záujem →</Link>
             </div>
           </BentoCard>
-
         </div>
+
+        {/* SECTION 2: Venčekové Slávnosti (New integration) */}
+        <div id="venceky" className="scroll-mt-32 mb-24">
+          <BentoCard className="p-8 md:p-16 border-gold-500/10">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <div className="relative rounded-2xl overflow-hidden aspect-video lg:aspect-square">
+                <img src={getAssetPath("/images/kurz spolocenskychtancov.PNG")} alt="Venčeky" className="absolute inset-0 w-full h-full object-cover" />
+              </div>
+              <div className="space-y-8">
+                <div className="space-y-4">
+                  <span className="text-gold-500 uppercase tracking-widest text-[10px] font-bold">Spoločenská Výchova</span>
+                  <h2 className="text-4xl md:text-6xl font-serif font-bold text-white tracking-tighter">Venčekové <br /> Slávnosti</h2>
+                </div>
+                <p className="text-gray-400 text-lg font-light leading-relaxed">
+                  Tradičná príprava na prvý veľký bál. Okrem tanca učíme mladých ľudí aj základom spoločenskej etikety a sebavedomému vystupovaniu.
+                </p>
+                <Link href="/kontakt?sluzba=venceky" className="btn-gold inline-block px-10 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                  Viac o venčekoch
+                </Link>
+              </div>
+            </div>
+          </BentoCard>
+        </div>
+
+        {/* SECTION 3: Tanečné Vystúpenia (New integration) */}
+        <div id="vystupenia" className="scroll-mt-32">
+          <BentoCard className="p-8 md:p-16 bg-gradient-to-br from-obsidian-800 to-black/40">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
+              <div className="space-y-8 order-2 lg:order-1 text-right lg:text-left">
+                <div className="space-y-4">
+                  <span className="text-gold-500 uppercase tracking-widest text-[10px] font-bold">Profesionálna Show</span>
+                  <h2 className="text-4xl md:text-6xl font-serif font-bold text-white tracking-tighter">Eventy & <br /> Vystúpenia</h2>
+                </div>
+                <p className="text-gray-400 text-lg font-light leading-relaxed">
+                  Dodajte svojmu podujatiu eleganciu a vášeň. Ponúkame širokú škálu tanečných choreografií – od energickej latiny až po klasický štandard.
+                </p>
+                <Link href="/kontakt?sluzba=vystupenia" className="btn-outline px-10 py-4 rounded-full text-[10px] font-bold uppercase tracking-widest">
+                  Objednať vystúpenie
+                </Link>
+              </div>
+              <div className="relative rounded-2xl overflow-hidden aspect-video lg:aspect-square order-1 lg:order-2">
+                <img src={getAssetPath("/images/miculesqu.png")} alt="Vystúpenia" className="absolute inset-0 w-full h-full object-cover" />
+              </div>
+            </div>
+          </BentoCard>
+        </div>
+
       </main>
     </div>
   );
