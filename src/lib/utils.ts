@@ -9,5 +9,6 @@ export const BASE_PATH = process.env.NODE_ENV === 'production' ? '/Ellegance-web
 
 export function getAssetPath(path: string) {
   const cleanPath = path.startsWith('/') ? path.substring(1) : path;
-  return BASE_PATH ? `${BASE_PATH}/${cleanPath}` : `/${cleanPath}`;
+  const encodedPath = cleanPath.split('/').map(encodeURIComponent).join('/');
+  return BASE_PATH ? `${BASE_PATH}/${encodedPath}` : `/${encodedPath}`;
 }

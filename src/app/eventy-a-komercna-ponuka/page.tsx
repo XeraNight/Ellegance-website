@@ -76,7 +76,7 @@ export default function EventyAKomercnaPonukaPage() {
             className="relative w-full max-w-[35vw] h-auto max-h-[65vh] aspect-[4/5] rounded-2xl overflow-hidden shadow-2xl shadow-gold-500/10 border border-white/5 mx-auto lg:mx-0"
           >
             <img 
-              src={getAssetPath("/images/kurz spolocenskychtancov.PNG")} 
+              src={getAssetPath("/images/kurz_spolocenskych_tancov.png")} 
               alt="Venčekové slávnosti" 
               className="absolute inset-0 w-full h-full object-cover"
             />
@@ -197,7 +197,7 @@ function HallSwitcher() {
   const [dolnaImages, setDolnaImages] = useState([
     getAssetPath("/images/image copy 3.png"),
     getAssetPath("/images/image copy 2.png"),
-    getAssetPath("/images/kurz spolocenskychtancov.PNG"),
+    getAssetPath("/images/kurz_spolocenskych_tancov.png"),
     getAssetPath("/images/image.png"),
   ]);
 

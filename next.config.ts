@@ -9,7 +9,7 @@ const nextConfig: NextConfig = {
   },
   experimental: {},
   // @ts-ignore
-  allowedDevOrigins: ['192.168.1.19', '172.20.10.7', 'localhost:3000'],
+  allowedDevOrigins: ['192.168.1.19', '172.20.10.7', 'localhost:3000', '192.168.1.17'],
 };
 
 export default nextConfig;

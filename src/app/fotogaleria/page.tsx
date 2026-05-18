@@ -14,7 +14,7 @@ const GALLERY_ITEMS = [
   { id: 3, category: "Latin Fit", src: "/assets/img/gallery_latin_1777364111041.png", title: "Energia Latiny", size: "small" },
   { id: 4, category: "Párové súťaže", src: "/assets/img/gallery_tango_1777364096830.png", title: "Vášeň na parkete", size: "medium" },
   { id: 5, category: "Vystúpenia", src: "/images/IMG_1658.jpeg", title: "Showdance vystúpenie", size: "large" },
-  { id: 6, category: "Kurzy", src: "/images/kurz spolocenskychtancov.PNG", title: "Základy tanca", size: "medium" },
+  { id: 6, category: "Kurzy", src: "/images/kurz_spolocenskych_tancov.png", title: "Základy tanca", size: "medium" },
   { id: 7, category: "Vystúpenia", src: "/images/IMG_1680.jpeg", title: "Komerčná show", size: "small" },
   { id: 8, category: "Kurzy", src: "/images/IMG_1686.jpeg", title: "Detské kurzy", size: "medium" },
   { id: 9, category: "Párové súťaže", src: "/images/main_page_photo.jpg", title: "Vrcholová súťaž", size: "large" },

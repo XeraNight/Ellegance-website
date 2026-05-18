@@ -92,7 +92,7 @@ function HallSwitcher() {
   const [dolnaImages, setDolnaImages] = useState([
     getAssetPath("/images/image copy 3.png"),
     getAssetPath("/images/image copy 2.png"),
-    getAssetPath("/images/kurz spolocenskychtancov.PNG"),
+    getAssetPath("/images/kurz_spolocenskych_tancov.png"),
     getAssetPath("/images/image.png"),
   ]);
 

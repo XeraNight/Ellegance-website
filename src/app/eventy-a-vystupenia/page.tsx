@@ -66,7 +66,7 @@ export default function EventyAVystupeniaPage() {
             viewport={{ once: true }}
             className="relative rounded-3xl overflow-hidden aspect-[4/5] border border-white/5 shadow-2xl"
           >
-            <img src={getAssetPath("/images/kurz spolocenskychtancov.PNG")} alt="Venčeky" className="absolute inset-0 w-full h-full object-cover" />
+            <img src={getAssetPath("/images/kurz_spolocenskych_tancov.png")} alt="Venčeky" className="absolute inset-0 w-full h-full object-cover" />
           </motion.div>
 
           <motion.div 

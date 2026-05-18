@@ -178,7 +178,7 @@ export default function PonukaPage() {
           <BentoCard className="p-8 md:p-16 border-gold-500/10">
             <div className="grid lg:grid-cols-2 gap-16 items-center">
               <div className="relative rounded-2xl overflow-hidden aspect-video lg:aspect-square">
-                <img src={getAssetPath("/images/kurz spolocenskychtancov.PNG")} alt="Venčeky" className="absolute inset-0 w-full h-full object-cover" />
+                <img src={getAssetPath("/images/kurz_spolocenskych_tancov.png")} alt="Venčeky" className="absolute inset-0 w-full h-full object-cover" />
               </div>
               <div className="space-y-8">
                 <div className="space-y-4">
