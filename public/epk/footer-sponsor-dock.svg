@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
+  <defs>
+    <linearGradient id="fadeUp" x1="0%" y1="100%" x2="0%" y2="0%">
+      <stop offset="0%" stop-color="#050505" stop-opacity="0.9" />
+      <stop offset="100%" stop-color="#050505" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <rect x="0" y="1420" width="1080" height="500" fill="url(#fadeUp)" />
+  <rect x="90" y="1720" width="200" height="60" fill="rgba(255,255,255,0.1)" rx="8" />
+  <text x="190" y="1755" font-family="Arial, sans-serif" font-size="24" fill="#FFFFFF" text-anchor="middle" opacity="0.5">Sponsor 1</text>
+  
+  <rect x="440" y="1720" width="200" height="60" fill="rgba(255,255,255,0.1)" rx="8" />
+  <text x="540" y="1755" font-family="Arial, sans-serif" font-size="24" fill="#FFFFFF" text-anchor="middle" opacity="0.5">Sponsor 2</text>
+  
+  <rect x="790" y="1720" width="200" height="60" fill="rgba(255,255,255,0.1)" rx="8" />
+  <text x="890" y="1755" font-family="Arial, sans-serif" font-size="24" fill="#FFFFFF" text-anchor="middle" opacity="0.5">Sponsor 3</text>
+</svg>

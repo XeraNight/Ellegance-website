@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <circle cx="200" cy="200" r="180" fill="none" stroke="#D4AF37" stroke-width="4" stroke-dasharray="4,8" />
+  <circle cx="200" cy="200" r="160" fill="transparent" stroke="#D4AF37" stroke-width="4" />
+  
+  <path id="curve-zlato" fill="transparent" d="M 60,200 A 140,140 0 0,1 340,200" />
+  <text font-family="Arial, sans-serif" font-weight="bold" font-size="26" fill="#D4AF37" letter-spacing="3">
+    <textPath href="#curve-zlato" startOffset="50%" text-anchor="middle">IDEM PRE ZLATO</textPath>
+  </text>
+  
+  <text x="200" y="230" font-family="Arial, sans-serif" font-weight="black" font-size="64" fill="#FFFFFF" text-anchor="middle">#1</text>
+</svg>

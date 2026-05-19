@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <circle cx="200" cy="200" r="180" fill="none" stroke="#D4AF37" stroke-width="4" stroke-dasharray="8,8" />
+  <circle cx="200" cy="200" r="160" fill="transparent" stroke="#D4AF37" stroke-width="2" />
+  
+  <path id="curve" fill="transparent" d="M 60,200 A 140,140 0 0,1 340,200" />
+  <text font-family="Arial, sans-serif" font-weight="bold" font-size="28" fill="#D4AF37" letter-spacing="4">
+    <textPath href="#curve" startOffset="50%" text-anchor="middle">SUPPORTED BY</textPath>
+  </text>
+  
+  <rect x="120" y="160" width="160" height="100" fill="rgba(255,255,255,0.05)" rx="10" />
+  <text x="200" y="215" font-family="Arial, sans-serif" font-size="20" fill="#FFFFFF" text-anchor="middle" opacity="0.3">Logo</text>
+</svg>

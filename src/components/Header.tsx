@@ -78,8 +78,15 @@ export default function Header() {
               })}
             </div>
 
+            <Link 
+              href="/kontakt" 
+              className="hidden xl:flex btn-gold px-8 py-3 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] hover:scale-105 transition-transform shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.2)]"
+            >
+              Kontaktujte nás
+            </Link>
+
             {/* Hamburger Button */}
-            <label className="hamburger z-[101]">
+            <label className="hamburger z-[101] xl:hidden">
               <input 
                 type="checkbox" 
                 checked={isMenuOpen} 

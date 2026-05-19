@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350">
+  <g stroke="#D4AF37" fill="none">
+    <!-- Top Left -->
+    <path d="M64 214 L64 64 L214 64" stroke-width="4" />
+    <path d="M76 214 L76 76 L214 76" stroke-width="1.5" />
+    <!-- Top Right -->
+    <path d="M1016 214 L1016 64 L866 64" stroke-width="4" />
+    <path d="M1004 214 L1004 76 L866 76" stroke-width="1.5" />
+    <!-- Bottom Left -->
+    <path d="M64 1136 L64 1286 L214 1286" stroke-width="4" />
+    <path d="M76 1136 L76 1274 L214 1274" stroke-width="1.5" />
+    <!-- Bottom Right -->
+    <path d="M1016 1136 L1016 1286 L866 1286" stroke-width="4" />
+    <path d="M1004 1136 L1004 1274 L866 1274" stroke-width="1.5" />
+  </g>
+</svg>

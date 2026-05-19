@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
+  <circle cx="200" cy="200" r="180" fill="transparent" stroke="#FFFFFF" stroke-width="2" />
+  <circle cx="200" cy="200" r="160" fill="none" stroke="#D4AF37" stroke-width="2" />
+  
+  <path id="curve-budem" fill="transparent" d="M 60,200 A 140,140 0 0,1 340,200" />
+  <text font-family="Arial, sans-serif" font-weight="bold" font-size="28" fill="#FFFFFF" letter-spacing="4">
+    <textPath href="#curve-budem" startOffset="50%" text-anchor="middle">BUDEM TAM!</textPath>
+  </text>
+  
+  <!-- Checkmark -->
+  <path d="M 160 210 L 190 240 L 250 170" fill="none" stroke="#D4AF37" stroke-width="12" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
