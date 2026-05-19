@@ -39,25 +39,6 @@ export default function PressKitPage() {
       </div>
 
       <div className="max-w-5xl mx-auto px-6 relative z-10">
-        <div className="flex flex-col items-center text-center mb-16">
-          <motion.span 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="text-gold-500 uppercase tracking-[0.4em] text-[10px] font-black mb-6"
-          >
-            Médiá & Branding
-          </motion.span>
-          
-          <motion.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="text-5xl md:text-7xl font-[family-name:var(--font-outfit)] font-bold text-white mb-4 tracking-tight"
-          >
-            Press <span className="text-gold-500 font-light italic">kit</span>
-          </motion.h1>
-        </div>
-
         {/* Intro Section with iPhone Mockup */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center mb-32">
           <motion.div 
@@ -66,7 +47,16 @@ export default function PressKitPage() {
             transition={{ delay: 0.3 }}
             className="flex flex-col items-start text-left space-y-6"
           >
-            <h2 className="font-[family-name:var(--font-outfit)] text-4xl md:text-5xl font-bold text-white leading-tight">
+            <div className="flex flex-col items-start mb-4">
+              <span className="text-gold-500 uppercase tracking-[0.4em] text-[10px] font-black mb-4">
+                Médiá & Branding
+              </span>
+              <h1 className="text-5xl md:text-7xl font-[family-name:var(--font-outfit)] font-bold text-white tracking-tight">
+                Press <span className="text-gold-500 font-light italic">kit</span>
+              </h1>
+            </div>
+            
+            <h2 className="font-[family-name:var(--font-outfit)] text-3xl md:text-4xl font-bold text-white leading-tight">
               Tvoríte <span className="text-gold-500">obsah</span> pre sociálne siete?
             </h2>
             <p className="text-gray-400 text-lg leading-relaxed font-light">
@@ -191,29 +181,6 @@ export default function PressKitPage() {
 
         {/* EPK Components Section */}
         <div className="w-full max-w-5xl mx-auto mb-32 pt-16 border-t border-white/5">
-          <div className="flex flex-col items-center text-center mb-16">
-            <motion.span 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="text-gold-500 uppercase tracking-[0.4em] text-[10px] font-black mb-4"
-            >
-              Pre tvorcov
-            </motion.span>
-            
-            <motion.h2 
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="text-3xl md:text-5xl font-[family-name:var(--font-outfit)] font-bold text-white mb-4 tracking-tight"
-            >
-              Elektronický <span className="text-gold-500 font-light italic">Press Kit</span> (EPK)
-            </motion.h2>
-            <p className="text-gray-400 text-sm max-w-2xl font-light">
-              Stiahnite si naše profesionálne navrhnuté komponenty. Sú pripravené ako čisté priehľadné SVG vrstvy, ktoré môžete priamo prekrývať cez vaše fotky a videá na Instagrame bez akéhokoľvek orezávania zeleného pozadia.
-            </p>
-          </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[
@@ -237,7 +204,7 @@ export default function PressKitPage() {
                   <div className="absolute inset-0 opacity-20 pointer-events-none" style={{ backgroundImage: 'linear-gradient(45deg, #111 25%, transparent 25%), linear-gradient(-45deg, #111 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #111 75%), linear-gradient(-45deg, transparent 75%, #111 75%)', backgroundSize: '20px 20px', backgroundPosition: '0 0, 0 10px, 10px -10px, -10px 0px' }}></div>
                   
                   <Image
-                    src={`/epk/${asset.file}`}
+                    src={getAssetPath(`/epk/${asset.file}`)}
                     alt={asset.name}
                     fill
                     className="object-contain p-8 md:p-12 transition-transform duration-700 group-hover:scale-105 z-10 drop-shadow-2xl"

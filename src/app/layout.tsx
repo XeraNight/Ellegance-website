@@ -3,6 +3,7 @@ import { Inter, Playfair_Display, Dancing_Script, Nunito, Caveat, Roboto_Flex, P
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import CookiePopup from "@/components/CookiePopup";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -59,6 +60,7 @@ export default function RootLayout({
       <body className={`${inter.variable} ${jakarta.variable} ${outfit.variable} ${playfair.variable} ${dancingScript.variable} ${nunito.variable} ${caveat.variable} ${robotoFlex.variable} font-sans antialiased bg-obsidian-900 text-gray-300 min-h-screen flex flex-col selection:bg-gold-500 selection:text-obsidian-900`}>
         
         <Header />
+        <CookiePopup />
 
         {/* Main Content */}
         <main className="flex-grow">

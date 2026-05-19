@@ -1,5 +1,6 @@
 "use client";
 import React, { useState } from 'react';
+import { getAssetPath } from '@/lib/utils';
 
 interface InstagramOverlayProps {
   imageSrc: string;
@@ -27,7 +28,7 @@ export default function InstagramOverlay({ imageSrc, mode = "feed" }: InstagramO
         <div className="flex items-center justify-between mt-6">
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-full overflow-hidden border border-white/30 bg-black flex items-center justify-center">
-              <img src="/images/ellegance_logo_full.png" alt="Profile" className="w-[80%] h-[80%] object-contain" />
+              <img src={getAssetPath("/images/ellegance_logo_full.png")} alt="Profile" className="w-[80%] h-[80%] object-contain" />
             </div>
             <span className="text-[13px] font-semibold text-white drop-shadow-md tracking-wide">tk_ellegance</span>
           </div>
@@ -91,7 +92,7 @@ export default function InstagramOverlay({ imageSrc, mode = "feed" }: InstagramO
       <div className="flex items-center justify-between px-3 py-3">
         <div className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-full overflow-hidden bg-zinc-900 border border-white/10 flex items-center justify-center p-1">
-             <img src="/images/ellegance_logo_full.png" alt="Profile" className="w-full h-full object-contain" />
+             <img src={getAssetPath("/images/ellegance_logo_full.png")} alt="Profile" className="w-full h-full object-contain" />
           </div>
           <span className="text-[13px] font-semibold tracking-tight">tk_ellegance</span>
         </div>

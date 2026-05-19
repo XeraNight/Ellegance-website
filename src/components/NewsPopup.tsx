@@ -8,11 +8,21 @@ export default function NewsPopup() {
   const [isVisible, setIsVisible] = useState(false);
 
   useEffect(() => {
-    // Show after 1 second to ensure it's noticed almost immediately
-    const timer = setTimeout(() => {
-      setIsVisible(true);
-    }, 1000);
-    return () => clearTimeout(timer);
+    if (typeof window !== "undefined" && (window as any).cookiesAcceptedAlready) {
+      const timer = setTimeout(() => {
+        setIsVisible(true);
+      }, 500);
+      return () => clearTimeout(timer);
+    }
+
+    const handleCookiesAccepted = () => {
+      setTimeout(() => {
+        setIsVisible(true);
+      }, 500);
+    };
+
+    window.addEventListener("cookiesAccepted", handleCookiesAccepted);
+    return () => window.removeEventListener("cookiesAccepted", handleCookiesAccepted);
   }, []);
 
   const handleClose = () => {
