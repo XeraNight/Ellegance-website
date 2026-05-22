@@ -173,13 +173,17 @@ export default function Footer() {
 
         {/* Bottom Copyright */}
         <div className="mt-10 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
-          <span className="text-gray-600 text-[10px] uppercase tracking-widest">
+          <span className="text-gray-400 text-[10px] uppercase tracking-widest">
             © {new Date().getFullYear()} Ellegance Dance Club. Všetky práva vyhradené.
           </span>
           <div className="flex gap-8">
-            <Link href="/privacy" className="text-gray-600 text-[9px] uppercase tracking-[0.2em] hover:text-gold-500 transition-colors">Ochrana osobných údajov</Link>
-            <Link href="/terms" className="text-gray-600 text-[9px] uppercase tracking-[0.2em] hover:text-gold-500 transition-colors">Obchodné podmienky</Link>
-            <Link href="#" className="text-gray-600 text-[9px] uppercase tracking-[0.2em] hover:text-gold-500 transition-colors">Nastavenie Cookies</Link>
+            <Link href="/privacy" className="text-gray-400 text-[9px] uppercase tracking-[0.2em] hover:text-gold-500 transition-colors">Ochrana osobných údajov</Link>
+            <button 
+              onClick={() => window.dispatchEvent(new Event("openCookieSettings"))} 
+              className="text-gray-400 text-[9px] uppercase tracking-[0.2em] hover:text-gold-500 transition-colors focus:outline-none cursor-pointer"
+            >
+              Nastavenie Cookies
+            </button>
           </div>
         </div>
       </div>

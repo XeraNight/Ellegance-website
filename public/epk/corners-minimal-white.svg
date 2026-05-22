@@ -1,32 +1,50 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350">
-  <defs>
-    <linearGradient id="fadeH1" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="fadeV1" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="fadeH2" x1="100%" y1="0%" x2="0%" y2="0%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
-    </linearGradient>
-    <linearGradient id="fadeV2" x1="0%" y1="100%" x2="0%" y2="0%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="1" />
-      <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
-    </linearGradient>
-  </defs>
-  <!-- Top Left -->
-  <rect x="64" y="64" width="150" height="4" fill="url(#fadeH1)" />
-  <rect x="64" y="64" width="4" height="150" fill="url(#fadeV1)" />
-  <!-- Top Right -->
-  <rect x="866" y="64" width="150" height="4" fill="url(#fadeH2)" />
-  <rect x="1012" y="64" width="4" height="150" fill="url(#fadeV1)" />
-  <!-- Bottom Left -->
-  <rect x="64" y="1282" width="150" height="4" fill="url(#fadeH1)" />
-  <rect x="64" y="1136" width="4" height="150" fill="url(#fadeV2)" />
-  <!-- Bottom Right -->
-  <rect x="866" y="1282" width="150" height="4" fill="url(#fadeH2)" />
-  <rect x="1012" y="1136" width="4" height="150" fill="url(#fadeV2)" />
+  <!-- Minimalist Editorial view-finder corner ticks -->
+  <g stroke="#FFFFFF" stroke-width="1.5" fill="none">
+    
+    <!-- 1. TOP LEFT CORNER -->
+    <g transform="translate(60, 60)">
+      <!-- Main corner viewfinder L -->
+      <path d="M 0 80 L 0 0 L 80 0" stroke-linecap="round" />
+      <!-- Offset technical dot -->
+      <circle cx="16" cy="16" r="2" fill="#FFFFFF" stroke="none" />
+      <!-- Micro scale ticks -->
+      <line x1="0" y1="40" x2="6" y2="40" stroke-width="1" opacity="0.6" />
+      <line x1="40" y1="0" x2="40" y2="6" stroke-width="1" opacity="0.6" />
+    </g>
+
+    <!-- 2. TOP RIGHT CORNER -->
+    <g transform="translate(1020, 60) scale(-1, 1)">
+      <path d="M 0 80 L 0 0 L 80 0" stroke-linecap="round" />
+      <circle cx="16" cy="16" r="2" fill="#FFFFFF" stroke="none" />
+      <line x1="0" y1="40" x2="6" y2="40" stroke-width="1" opacity="0.6" />
+      <line x1="40" y1="0" x2="40" y2="6" stroke-width="1" opacity="0.6" />
+    </g>
+
+    <!-- 3. BOTTOM LEFT CORNER -->
+    <g transform="translate(60, 1290) scale(1, -1)">
+      <path d="M 0 80 L 0 0 L 80 0" stroke-linecap="round" />
+      <circle cx="16" cy="16" r="2" fill="#FFFFFF" stroke="none" />
+      <line x1="0" y1="40" x2="6" y2="40" stroke-width="1" opacity="0.6" />
+      <line x1="40" y1="0" x2="40" y2="6" stroke-width="1" opacity="0.6" />
+    </g>
+
+    <!-- 4. BOTTOM RIGHT CORNER -->
+    <g transform="translate(1020, 1290) scale(-1, -1)">
+      <path d="M 0 80 L 0 0 L 80 0" stroke-linecap="round" />
+      <circle cx="16" cy="16" r="2" fill="#FFFFFF" stroke="none" />
+      <line x1="0" y1="40" x2="6" y2="40" stroke-width="1" opacity="0.6" />
+      <line x1="40" y1="0" x2="40" y2="6" stroke-width="1" opacity="0.6" />
+    </g>
+
+    <!-- Edge Center Tick Marks (Camera viewfinder style) -->
+    <!-- Top Center -->
+    <path d="M 540 50 L 540 65 M 530 60 L 550 60" stroke-width="1" opacity="0.7" />
+    <!-- Bottom Center -->
+    <path d="M 540 1300 L 540 1285 M 530 1290 L 550 1290" stroke-width="1" opacity="0.7" />
+    <!-- Left Center -->
+    <path d="M 50 675 L 65 675 M 60 665 L 60 685" stroke-width="1" opacity="0.7" />
+    <!-- Right Center -->
+    <path d="M 1030 675 L 1015 675 M 1020 665 L 1020 685" stroke-width="1" opacity="0.7" />
+  </g>
 </svg>

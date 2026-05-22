@@ -66,7 +66,6 @@ export default function KomercnaPonukaPage() {
             whileInView={{ opacity: 1, x: 0 }}
             className="text-gold-500 uppercase tracking-[0.5em] text-[10px] font-black mb-2"
           >
-            Technical Specs
           </motion.span>
           <h2 className="text-4xl md:text-5xl font-bold text-white uppercase tracking-tighter">
             Vybavenie <span className="text-gold-500 italic font-light lowercase">sál</span>
@@ -177,7 +176,7 @@ function HallSwitcher() {
         </div>
 
         <div className="flex flex-col gap-6 w-full">
-          <Link href="/kontakt" className="btn-gold self-start px-12 py-4 rounded-full text-[10px] font-bold tracking-[0.2em] uppercase hover:scale-105 transition-transform shadow-xl shadow-gold-500/20 text-center">
+          <Link href="/kontakt" className="btn-gold self-start px-12 py-4 rounded-full text-[12px] font-bold tracking-[0.2em] uppercase hover:scale-105 transition-transform shadow-xl shadow-gold-500/20 text-center">
             Rezervovať priestor
           </Link>
 

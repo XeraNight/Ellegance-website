@@ -1,11 +1,90 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
-  <circle cx="200" cy="200" r="180" fill="none" stroke="#D4AF37" stroke-width="4" stroke-dasharray="4,8" />
-  <circle cx="200" cy="200" r="160" fill="transparent" stroke="#D4AF37" stroke-width="4" />
+  <defs>
+    <!-- Rich Golden Gradients -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082" />
+      <stop offset="30%" stop-color="#D4AF37" />
+      <stop offset="70%" stop-color="#A27B1C" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+    <linearGradient id="goldGlow" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#AA7C11" />
+      <stop offset="50%" stop-color="#FDF3CD" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+    <radialGradient id="shieldBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#141312" stop-opacity="0.9" />
+      <stop offset="85%" stop-color="#080808" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.98" />
+    </radialGradient>
+    
+    <!-- Outer Glow for the Champion #1 -->
+    <filter id="championGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+    
+    <filter id="luxuryShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Dark glassmorphic background plate -->
+  <circle cx="200" cy="200" r="185" fill="url(#shieldBg)" filter="url(#luxuryShadow)" stroke="url(#goldGrad)" stroke-width="1.5" />
   
-  <path id="curve-zlato" fill="transparent" d="M 60,200 A 140,140 0 0,1 340,200" />
-  <text font-family="Arial, sans-serif" font-weight="bold" font-size="26" fill="#D4AF37" letter-spacing="3">
-    <textPath href="#curve-zlato" startOffset="50%" text-anchor="middle">IDEM PRE ZLATO</textPath>
+  <!-- Outer sharp starburst border (subtle details) -->
+  <circle cx="200" cy="200" r="172" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-dasharray="3 9" stroke-linecap="round" />
+  
+  <!-- Solid luxury framing rings -->
+  <circle cx="200" cy="200" r="162" fill="none" stroke="url(#goldGrad)" stroke-width="2.5" />
+  <circle cx="200" cy="200" r="132" fill="none" stroke="url(#goldGrad)" stroke-width="1" opacity="0.6" />
+
+  <!-- Circular Text Path Definition (Arch) -->
+  <path id="textArchTop" fill="none" d="M 58,200 A 142,142 0 0,1 342,200" />
+  <path id="textArchBottom" fill="none" d="M 342,200 A 142,142 0 0,1 58,200" />
+
+  <!-- Champion Curved Typography -->
+  <text font-family="'Outfit', 'Inter', 'Montserrat', sans-serif" font-weight="900" font-size="20" fill="url(#goldGlow)" letter-spacing="4.5">
+    <textPath href="#textArchTop" startOffset="50%" text-anchor="middle">IDEM PRE ZLATO</textPath>
   </text>
   
-  <text x="200" y="230" font-family="Arial, sans-serif" font-weight="black" font-size="64" fill="#FFFFFF" text-anchor="middle">#1</text>
+  <text font-family="'Outfit', 'Inter', 'Montserrat', sans-serif" font-weight="700" font-size="12" fill="#FFFFFF" letter-spacing="8" opacity="0.75">
+    <textPath href="#textArchBottom" startOffset="50%" text-anchor="middle">• CHAMPION SPIRIT •</textPath>
+  </text>
+
+  <!-- Laurel Wreath Wrapping the Center -->
+  <g stroke="url(#goldGrad)" stroke-width="1.5" fill="none" stroke-linecap="round" opacity="0.7">
+    <!-- Wreath left branch -->
+    <path d="M 135,210 Q 130,265 185,275" />
+    <path d="M 132,225 C 122,230 128,245 138,240" fill="url(#goldGrad)" />
+    <path d="M 142,245 C 132,252 140,265 148,258" fill="url(#goldGrad)" />
+    <path d="M 158,260 C 150,268 160,278 166,270" fill="url(#goldGrad)" />
+    
+    <!-- Wreath right branch -->
+    <path d="M 265,210 Q 270,265 215,275" />
+    <path d="M 268,225 C 278,230 272,245 262,240" fill="url(#goldGrad)" />
+    <path d="M 258,245 C 268,252 260,265 252,258" fill="url(#goldGrad)" />
+    <path d="M 242,260 C 250,268 240,278 234,270" fill="url(#goldGrad)" />
+  </g>
+
+  <!-- Big Glowing Star Behind the Number One -->
+  <g transform="translate(200, 195) scale(0.9)">
+    <!-- Sunburst Radiating Lines -->
+    <g stroke="url(#goldGrad)" stroke-width="0.75" opacity="0.3">
+      <line x1="0" y1="-80" x2="0" y2="80" />
+      <line x1="-80" y1="0" x2="80" y2="0" />
+      <line x1="-56" y1="-56" x2="56" y2="56" />
+      <line x1="-56" y1="56" x2="56" y2="-56" />
+    </g>
+
+    <!-- Masterful Polished #1 -->
+    <text x="0" y="24" font-family="'Outfit', 'Impact', sans-serif" font-weight="900" font-size="78" fill="url(#goldGlow)" text-anchor="middle" filter="url(#championGlow)" drop-shadow="0 4px 10px rgba(0,0,0,0.6)">#1</text>
+  </g>
+
+  <!-- Three decorative stars at the bottom intersection -->
+  <g fill="url(#goldGrad)" transform="translate(0, 10)">
+    <polygon points="200,256 203,261 209,261 204,265 206,270 200,267 194,270 196,265 191,261 197,261" />
+    <polygon points="180,252 182,256 187,256 183,259 184,264 180,261 176,264 177,259 173,256 178,256" opacity="0.7"/>
+    <polygon points="220,252 222,256 227,256 223,259 224,264 220,261 216,264 217,259 213,256 218,256" opacity="0.7"/>
+  </g>
 </svg>

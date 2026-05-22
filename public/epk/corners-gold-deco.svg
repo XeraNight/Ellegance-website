@@ -1,16 +1,90 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1350" width="1080" height="1350">
-  <g stroke="#D4AF37" fill="none">
-    <!-- Top Left -->
-    <path d="M64 214 L64 64 L214 64" stroke-width="4" />
-    <path d="M76 214 L76 76 L214 76" stroke-width="1.5" />
-    <!-- Top Right -->
-    <path d="M1016 214 L1016 64 L866 64" stroke-width="4" />
-    <path d="M1004 214 L1004 76 L866 76" stroke-width="1.5" />
-    <!-- Bottom Left -->
-    <path d="M64 1136 L64 1286 L214 1286" stroke-width="4" />
-    <path d="M76 1136 L76 1274 L214 1274" stroke-width="1.5" />
-    <!-- Bottom Right -->
-    <path d="M1016 1136 L1016 1286 L866 1286" stroke-width="4" />
-    <path d="M1004 1136 L1004 1274 L866 1274" stroke-width="1.5" />
+  <defs>
+    <!-- Luxury Gold Gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082" />
+      <stop offset="35%" stop-color="#D4AF37" />
+      <stop offset="70%" stop-color="#9A7415" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+    
+    <linearGradient id="goldGradH" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#A27B1C" />
+      <stop offset="50%" stop-color="#FFE082" />
+      <stop offset="100%" stop-color="#A27B1C" />
+    </linearGradient>
+
+    <!-- Drop shadow for the corner brackets -->
+    <filter id="bracketShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.5"/>
+    </filter>
+  </defs>
+
+  <!-- Complete bounding framing lines (very thin, premium overlay) -->
+  <rect x="50" y="50" width="980" height="1250" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" opacity="0.4" />
+  <rect x="62" y="62" width="956" height="1226" fill="none" stroke="url(#goldGrad)" stroke-width="0.75" opacity="0.25" />
+
+  <g stroke="url(#goldGrad)" fill="none" filter="url(#bracketShadow)">
+    <!-- 1. TOP LEFT CORNER (Art Deco masterpiece) -->
+    <g transform="translate(50, 50)">
+      <!-- Main thick bracket -->
+      <path d="M 0 120 L 0 0 L 120 0" stroke-width="5" stroke-linecap="square" />
+      <!-- Nested thin bracket -->
+      <path d="M 12 120 L 12 12 L 120 12" stroke-width="1.5" />
+      <!-- Secondary framing line -->
+      <path d="M 28 85 L 28 28 L 85 28" stroke-width="0.75" opacity="0.8" />
+      <!-- Diagonal backing connector -->
+      <line x1="0" y1="40" x2="40" y2="0" stroke-width="1.5" />
+      <line x1="12" y1="52" x2="52" y2="12" stroke-width="0.75" opacity="0.8" />
+      <!-- Decorative diamond center at the corner intersection -->
+      <polygon points="12,12 18,6 12,0 6,6" fill="url(#goldGrad)" stroke="none" />
+      <polygon points="28,28 32,24 28,20 24,24" fill="url(#goldGrad)" stroke="none" opacity="0.8" />
+    </g>
+
+    <!-- 2. TOP RIGHT CORNER -->
+    <g transform="translate(1030, 50) scale(-1, 1)">
+      <path d="M 0 120 L 0 0 L 120 0" stroke-width="5" stroke-linecap="square" />
+      <path d="M 12 120 L 12 12 L 120 12" stroke-width="1.5" />
+      <path d="M 28 85 L 28 28 L 85 28" stroke-width="0.75" opacity="0.8" />
+      <line x1="0" y1="40" x2="40" y2="0" stroke-width="1.5" />
+      <line x1="12" y1="52" x2="52" y2="12" stroke-width="0.75" opacity="0.8" />
+      <polygon points="12,12 18,6 12,0 6,6" fill="url(#goldGrad)" stroke="none" />
+      <polygon points="28,28 32,24 28,20 24,24" fill="url(#goldGrad)" stroke="none" opacity="0.8" />
+    </g>
+
+    <!-- 3. BOTTOM LEFT CORNER -->
+    <g transform="translate(50, 1300) scale(1, -1)">
+      <path d="M 0 120 L 0 0 L 120 0" stroke-width="5" stroke-linecap="square" />
+      <path d="M 12 120 L 12 12 L 120 12" stroke-width="1.5" />
+      <path d="M 28 85 L 28 28 L 85 28" stroke-width="0.75" opacity="0.8" />
+      <line x1="0" y1="40" x2="40" y2="0" stroke-width="1.5" />
+      <line x1="12" y1="52" x2="52" y2="12" stroke-width="0.75" opacity="0.8" />
+      <polygon points="12,12 18,6 12,0 6,6" fill="url(#goldGrad)" stroke="none" />
+      <polygon points="28,28 32,24 28,20 24,24" fill="url(#goldGrad)" stroke="none" opacity="0.8" />
+    </g>
+
+    <!-- 4. BOTTOM RIGHT CORNER -->
+    <g transform="translate(1030, 1300) scale(-1, -1)">
+      <path d="M 0 120 L 0 0 L 120 0" stroke-width="5" stroke-linecap="square" />
+      <path d="M 12 120 L 12 12 L 120 12" stroke-width="1.5" />
+      <path d="M 28 85 L 28 28 L 85 28" stroke-width="0.75" opacity="0.8" />
+      <line x1="0" y1="40" x2="40" y2="0" stroke-width="1.5" />
+      <line x1="12" y1="52" x2="52" y2="12" stroke-width="0.75" opacity="0.8" />
+      <polygon points="12,12 18,6 12,0 6,6" fill="url(#goldGrad)" stroke="none" />
+      <polygon points="28,28 32,24 28,20 24,24" fill="url(#goldGrad)" stroke="none" opacity="0.8" />
+    </g>
+  </g>
+
+  <!-- Ornate top-middle and bottom-middle horizontal headers (Luxury branding details) -->
+  <g fill="url(#goldGrad)" transform="translate(540, 50)">
+    <!-- Top small decorative diamond/crown intersection -->
+    <polygon points="0,6 12,14 0,22 -12,14" opacity="0.8" />
+    <circle cx="0" cy="2" r="3" />
+    <path d="M -80,14 L -20,14 M 20,14 L 80,14" stroke="url(#goldGrad)" stroke-width="1" opacity="0.5" />
+  </g>
+  <g fill="url(#goldGrad)" transform="translate(540, 1300)">
+    <polygon points="0,-6 12,-14 0,-22 -12,-14" opacity="0.8" />
+    <circle cx="0" cy="-2" r="3" />
+    <path d="M -80,-14 L -20,-14 M 20,-14 L 80,-14" stroke="url(#goldGrad)" stroke-width="1" opacity="0.5" />
   </g>
 </svg>

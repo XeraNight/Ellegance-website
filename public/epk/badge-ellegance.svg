@@ -1,12 +1,78 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="400" height="400">
-  <circle cx="200" cy="200" r="180" fill="none" stroke="#D4AF37" stroke-width="4" stroke-dasharray="8,8" />
-  <circle cx="200" cy="200" r="160" fill="transparent" stroke="#D4AF37" stroke-width="2" />
+  <defs>
+    <!-- Premium Golden Gradients -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082" />
+      <stop offset="30%" stop-color="#D4AF37" />
+      <stop offset="70%" stop-color="#A27B1C" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+    <linearGradient id="goldGlow" x1="0%" y1="100%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#AA7C11" />
+      <stop offset="50%" stop-color="#FDF3CD" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+    <radialGradient id="shieldBg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#141312" stop-opacity="0.9" />
+      <stop offset="85%" stop-color="#080808" stop-opacity="0.95" />
+      <stop offset="100%" stop-color="#000000" stop-opacity="0.98" />
+    </radialGradient>
+    
+    <!-- Smooth drop shadow for luxury feel -->
+    <filter id="luxuryShadow" x="-10%" y="-10%" width="120%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.6"/>
+      <feDropShadow dx="0" dy="2" stdDeviation="4" flood-color="#D4AF37" flood-opacity="0.15"/>
+    </filter>
+  </defs>
+
+  <!-- Dark glassmorphic background plate -->
+  <circle cx="200" cy="200" r="185" fill="url(#shieldBg)" filter="url(#luxuryShadow)" stroke="url(#goldGrad)" stroke-width="1.5" />
   
-  <path id="curve-ellegance" fill="transparent" d="M 60,200 A 140,140 0 0,1 340,200" />
-  <text font-family="Arial, sans-serif" font-weight="bold" font-size="32" fill="#D4AF37" letter-spacing="4">
-    <textPath href="#curve-ellegance" startOffset="50%" text-anchor="middle">ELLEGANCE</textPath>
+  <!-- Outer delicate beaded ring -->
+  <circle cx="200" cy="200" r="172" fill="none" stroke="url(#goldGrad)" stroke-width="2.5" stroke-dasharray="1 6" stroke-linecap="round" />
+  
+  <!-- Middle solid framing ring -->
+  <circle cx="200" cy="200" r="162" fill="none" stroke="url(#goldGrad)" stroke-width="1" opacity="0.6" />
+  <circle cx="200" cy="200" r="132" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" />
+
+  <!-- Circular Text Path Definition (Arch) -->
+  <path id="textArchTop" fill="none" d="M 58,200 A 142,142 0 0,1 342,200" />
+  <path id="textArchBottom" fill="none" d="M 342,200 A 142,142 0 0,1 58,200" />
+
+  <!-- Elegant Curved Typography -->
+  <text font-family="'Outfit', 'Inter', 'Montserrat', sans-serif" font-weight="800" font-size="19" fill="url(#goldGlow)" letter-spacing="5">
+    <textPath href="#textArchTop" startOffset="50%" text-anchor="middle">TANEČNÝ KLUB</textPath>
   </text>
   
-  <text x="200" y="220" font-family="Georgia, serif" font-size="28" fill="#FFFFFF" text-anchor="middle" font-style="italic">Košice</text>
-  <path d="M 150 240 L 250 240" stroke="#D4AF37" stroke-width="1" />
+  <text font-family="'Outfit', 'Inter', 'Montserrat', sans-serif" font-weight="500" font-size="14" fill="#FFFFFF" letter-spacing="7" opacity="0.9">
+    <textPath href="#textArchBottom" startOffset="50%" text-anchor="middle">• ELLEGANCE KOŠICE •</textPath>
+  </text>
+
+  <!-- Ornate Decorative Stars -->
+  <g fill="url(#goldGrad)">
+    <!-- Left Star Group -->
+    <polygon points="62,200 65,193 72,190 65,187 62,180 59,187 52,190 59,193" />
+    <!-- Right Star Group -->
+    <polygon points="338,200 341,193 348,190 341,187 338,180 335,187 328,190 335,193" />
+  </g>
+
+  <!-- Center Graphic: Luxury Monogram & Crown -->
+  <g transform="translate(0, -5)">
+    <!-- Royal Crown Vector -->
+    <path d="M 172,142 L 178,154 L 188,146 L 200,160 L 212,146 L 222,154 L 228,142 L 235,168 L 165,168 Z" fill="url(#goldGrad)" />
+    <circle cx="172" cy="140" r="2.5" fill="#FFFFFF" />
+    <circle cx="188" cy="144" r="2.5" fill="#FFFFFF" />
+    <circle cx="200" cy="137" r="3.5" fill="#FFFFFF" />
+    <circle cx="212" cy="144" r="2.5" fill="#FFFFFF" />
+    <circle cx="228" cy="140" r="2.5" fill="#FFFFFF" />
+    
+    <!-- Royal Wreath framing the center -->
+    <path d="M 148,190 Q 148,235 200,238 Q 252,235 252,190" fill="none" stroke="url(#goldGrad)" stroke-width="1.5" stroke-linecap="round" opacity="0.5" />
+    
+    <!-- Masterful Serif "E" Monogram -->
+    <text x="200" y="212" font-family="'Playfair Display', 'Georgia', serif" font-weight="700" font-size="52" fill="url(#goldGlow)" font-style="italic" text-anchor="middle" filter="drop-shadow(0px 3px 6px rgba(0,0,0,0.5))">E</text>
+    
+    <!-- Small Est. Text -->
+    <text x="200" y="252" font-family="'Outfit', sans-serif" font-weight="600" font-size="9" fill="url(#goldGrad)" letter-spacing="4" text-anchor="middle">EST. 2008</text>
+  </g>
 </svg>

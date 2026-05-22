@@ -10,14 +10,14 @@ import NewsModal, { NewsItem } from "@/components/NewsModal";
 const ROTATING_WORDS = ['tanečníci', 'rodina', 'Ellegance'];
 
 const CAMP_DATA: NewsItem = {
-  id: "camp-2025",
+  id: "camp-2026",
   title: "Letný kemp Ellegance",
   subtitle: "5 dní tanca, zábavy a nových kamarátstiev",
   badge: "Summer 2025",
-  image: "/images/kurz_spolocenskych_tancov.png",
-  date: "14. – 18. júl 2025",
-  location: "Košice",
-  venue: "Tanečné štúdio Dance House, Féjová 123, 040 01 Košice",
+  image: "/images/image copy.png",
+  date: "20. – 25. júl 2026",
+  location: "Košice, Slovakia",
+  venue: "Féjová 123, 040 01 Košice",
   categories: "Deti (7-11 rokov) • Juniors (12-15 rokov) • Teens (16+) • Pokročilí",
   trainers: [
     { name: "Zuzana K.", image: "/images/peter_vidasic.jpg" },
@@ -35,7 +35,7 @@ const CAMP_DATA: NewsItem = {
   whatToBring: "Pohodlné tanečné oblečenie, tenisky, fľašu na vodu, uterák, dobrú náladu 🥰",
   food: "Obed a pitný režim zabezpečený",
   price: "45 € / deň (okrem individuálnych lekcií). Zľava pri prihlásení do 31. 5. 2025: 200 € / 5 dní",
-  contact: { email: "info@dancehouse.sk", phone: "+421 905 123 456" }
+  contact: { email: "info@tkellegance.sk", phone: "+421 902 529 395" }
 };
 
 export default function Home() {
@@ -110,7 +110,7 @@ export default function Home() {
                   <div className="flex-[5] lg:hidden">
                     <div className="rounded-2xl overflow-hidden border border-white/10 shadow-2xl h-full min-h-[160px]">
                       <img 
-                        src={getAssetPath("/image.png")} 
+                        src={getAssetPath("/baner.png")} 
                         alt="Ellegance Banner" 
                         className="w-full h-full object-cover" 
                       />
@@ -151,7 +151,7 @@ export default function Home() {
               <div className="sticky top-32 group">
                 <div className="rounded-[2rem] overflow-hidden border border-white/10 shadow-2xl">
                   <img 
-                    src={getAssetPath("/image.png")} 
+                    src={getAssetPath("/baner.png")} 
                     alt="Ellegance Banner" 
                     className="w-full h-auto" 
                   />

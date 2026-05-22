@@ -1,4 +1,57 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 1920" width="1080" height="1920">
-  <rect x="0" y="0" width="1080" height="1920" fill="none" stroke="#0a0a0a" stroke-width="40" />
-  <rect x="20" y="20" width="1040" height="1880" fill="none" stroke="#D4AF37" stroke-width="4" />
+  <defs>
+    <!-- Royal Gold Gradient -->
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FFE082" />
+      <stop offset="35%" stop-color="#D4AF37" />
+      <stop offset="70%" stop-color="#9A7415" />
+      <stop offset="100%" stop-color="#D4AF37" />
+    </linearGradient>
+    
+    <!-- Outer Glow for text/logo at bottom -->
+    <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="6" flood-color="#000000" flood-opacity="0.8"/>
+    </filter>
+  </defs>
+
+  <!-- Bounding framing border (very thin, high-end look) -->
+  <rect x="40" y="40" width="1000" height="1840" fill="none" stroke="url(#goldGrad)" stroke-width="2" opacity="0.65" filter="url(#goldGlow)" />
+  <rect x="52" y="52" width="976" height="1816" fill="none" stroke="url(#goldGrad)" stroke-width="0.75" opacity="0.3" />
+
+  <!-- Deluxe Corner Brackets -->
+  <g stroke="url(#goldGrad)" stroke-width="1" fill="none" opacity="0.8">
+    <!-- Top-Left Corner Bracket -->
+    <path d="M 40 100 L 40 40 L 100 40" stroke-width="4" />
+    <path d="M 52 100 L 52 52 L 100 52" />
+    <circle cx="68" cy="68" r="3" fill="url(#goldGrad)" stroke="none" />
+    
+    <!-- Top-Right Corner Bracket -->
+    <path d="M 1040 100 L 1040 40 L 980 40" stroke-width="4" />
+    <path d="M 1028 100 L 1028 52 L 980 52" />
+    <circle cx="1012" cy="68" r="3" fill="url(#goldGrad)" stroke="none" />
+
+    <!-- Bottom-Left Corner Bracket -->
+    <path d="M 40 1820 L 40 1880 L 100 1880" stroke-width="4" />
+    <path d="M 52 1820 L 52 1868 L 100 1868" />
+    <circle cx="68" cy="1852" r="3" fill="url(#goldGrad)" stroke="none" />
+
+    <!-- Bottom-Right Corner Bracket -->
+    <path d="M 1040 1820 L 1040 1880 L 980 1880" stroke-width="4" />
+    <path d="M 1028 1820 L 1028 1868 L 980 1868" />
+    <circle cx="1012" cy="1852" r="3" fill="url(#goldGrad)" stroke="none" />
+  </g>
+
+  <!-- Elegant Bottom Signature Watermark -->
+  <g transform="translate(540, 1800)" filter="url(#goldGlow)">
+    <!-- Small Stylized Crown -->
+    <path d="M -15,-20 L -11,-12 L -5,-17 L 0,-8 L 5,-17 L 11,-12 L 15,-20 L 20,-3 L -20,-3 Z" fill="url(#goldGrad)" />
+    <circle cx="0" cy="-22" r="1.5" fill="#FFFFFF" />
+    
+    <!-- Royal Brand Wreath Frame -->
+    <path d="M -30,-12 Q -30,10 0,11 Q 30,10 30,-12" fill="none" stroke="url(#goldGrad)" stroke-width="0.75" opacity="0.4" />
+    
+    <!-- Elegant Serif Brand Text -->
+    <text x="0" y="32" font-family="'Outfit', 'Inter', sans-serif" font-weight="900" font-size="16" fill="url(#goldGrad)" letter-spacing="8" text-anchor="middle">ELLEGANCE</text>
+    <text x="0" y="48" font-family="'Outfit', sans-serif" font-weight="500" font-size="8" fill="#FFFFFF" letter-spacing="5" text-anchor="middle" opacity="0.7">DANCE CLUB</text>
+  </g>
 </svg>

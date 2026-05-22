@@ -7,125 +7,359 @@ interface CookiePopupProps {
   onAccept?: () => void;
 }
 
+interface CookieChoices {
+  necessary: boolean;
+  analytics: boolean;
+  marketing: boolean;
+  preferences: boolean;
+  timestamp: string;
+}
+
 export default function CookiePopup({ onAccept }: CookiePopupProps) {
   const [isVisible, setIsVisible] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+
+  // Granular settings state
+  const [analytics, setAnalytics] = useState(false);
+  const [marketing, setMarketing] = useState(false);
+  const [preferences, setPreferences] = useState(false);
 
   useEffect(() => {
-    // Show immediately on every refresh as requested
-    setIsVisible(true);
+    if (typeof window !== "undefined") {
+      const savedChoices = localStorage.getItem("cookie_consent_choices");
+      if (!savedChoices) {
+        // If no consent saved yet, show the banner
+        setIsVisible(true);
+      } else {
+        try {
+          const parsed = JSON.parse(savedChoices) as CookieChoices;
+          setAnalytics(parsed.analytics || false);
+          setMarketing(parsed.marketing || false);
+          setPreferences(parsed.preferences || false);
+          if (parsed.analytics || parsed.marketing) {
+            (window as any).cookiesAcceptedAlready = true;
+          }
+        } catch (e) {
+          console.error("Error parsing cookie choices", e);
+        }
+      }
+    }
+
+    // Listener to open settings from the footer
+    const handleOpenSettings = () => {
+      if (typeof window !== "undefined") {
+        const savedChoices = localStorage.getItem("cookie_consent_choices");
+        if (savedChoices) {
+          try {
+            const parsed = JSON.parse(savedChoices) as CookieChoices;
+            setAnalytics(parsed.analytics || false);
+            setMarketing(parsed.marketing || false);
+            setPreferences(parsed.preferences || false);
+          } catch (e) {}
+        }
+      }
+      setIsSettingsOpen(true);
+      setIsVisible(true);
+    };
+
+    window.addEventListener("openCookieSettings", handleOpenSettings);
+    return () => {
+      window.removeEventListener("openCookieSettings", handleOpenSettings);
+    };
   }, []);
 
-  const handleAccept = () => {
+  const saveChoices = (choices: { analytics: boolean; marketing: boolean; preferences: boolean }) => {
+    const fullChoices: CookieChoices = {
+      necessary: true,
+      analytics: choices.analytics,
+      marketing: choices.marketing,
+      preferences: choices.preferences,
+      timestamp: new Date().toISOString(),
+    };
+
+    if (typeof window !== "undefined") {
+      localStorage.setItem("cookie_consent_choices", JSON.stringify(fullChoices));
+      if (choices.analytics || choices.marketing) {
+        (window as any).cookiesAcceptedAlready = true;
+      } else {
+        (window as any).cookiesAcceptedAlready = false;
+      }
+      window.dispatchEvent(new Event("cookiesAccepted"));
+    }
+
     setIsVisible(false);
+    setIsSettingsOpen(false);
+
     if (onAccept) {
       onAccept();
     }
-    if (typeof window !== "undefined") {
-      (window as any).cookiesAcceptedAlready = true;
-      window.dispatchEvent(new Event("cookiesAccepted"));
-    }
+  };
+
+  const handleAcceptAll = () => {
+    saveChoices({ analytics: true, marketing: true, preferences: true });
+  };
+
+  const handleRejectAll = () => {
+    saveChoices({ analytics: false, marketing: false, preferences: false });
+  };
+
+  const handleSaveSettings = () => {
+    saveChoices({ analytics, marketing, preferences });
   };
 
   return (
     <AnimatePresence>
       {isVisible && (
         <div className="fixed inset-0 z-[10000] flex items-center justify-center p-4 pointer-events-none">
-          {/* Backdrop (optional, but requested "so user first clicks away") */}
+          {/* Backdrop for legal focus */}
           <motion.div 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="absolute inset-0 bg-black/40 backdrop-blur-sm pointer-events-auto"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm pointer-events-auto"
           />
           
           <motion.div
-            initial={{ opacity: 0, y: 50, scale: 0.9 }}
+            layout
+            initial={{ opacity: 0, y: 50, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            className="[--shadow:rgba(60,64,67,0.3)_0_1px_2px_0,rgba(60,64,67,0.15)_0_2px_6px_2px] w-4/5 h-auto rounded-2xl bg-white [box-shadow:var(--shadow)] max-w-[300px] pointer-events-auto relative z-10"
+            className={`w-full max-w-[320px] ${
+              isSettingsOpen ? "md:max-w-[440px]" : "md:max-w-[340px]"
+            } h-auto rounded-2xl bg-zinc-950 border border-gold-500/20 shadow-[0_15px_50px_rgba(0,0,0,0.8)] pointer-events-auto relative z-10 overflow-hidden transition-all duration-300`}
           >
-            <div className="flex flex-col items-center justify-between pt-9 px-6 pb-6 relative">
-              <span className="relative mx-auto -mt-16 mb-8">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  height="46"
-                  width="65"
-                >
-                  <path
-                    stroke="#000"
-                    fill="#EAB789"
-                    d="M49.157 15.69L44.58.655l-12.422 1.96L21.044.654l-8.499 2.615-6.538 5.23-4.576 9.153v11.114l4.576 8.5 7.846 5.23 10.46 1.96 7.845-2.614 9.153 2.615 11.768-2.615 7.846-7.846 1.96-5.884.655-7.191-7.846-1.308-6.537-3.922z"
-                  ></path>
-                  <path
-                    fill="#9C6750"
-                    d="M32.286 3.749c-6.94 3.65-11.69 11.053-11.69 19.591 0 8.137 4.313 15.242 10.724 19.052a20.513 20.513 0 01-8.723 1.937c-11.598 0-21-9.626-21-21.5 0-11.875 9.402-21.5 21-21.5 3.495 0 6.79.874 9.689 2.42z"
-                    clipRule="evenodd"
-                    fillRule="evenodd"
-                  ></path>
-                  <path
-                    fill="#634647"
-                    d="M64.472 20.305a.954.954 0 00-1.172-.824 4.508 4.508 0 01-3.958-.934.953.953 0 00-1.076-.11c-.46.252-.977.383-1.502.382a3.154 3.154 0 01-2.97-2.11.954.954 0 00-.833-.634 4.54 4.54 0 01-4.205-4.507c.002-.23.022-.46.06-.687a.952.952 0 00-.213-.767 3.497 3.497 0 01-.614-3.5.953.953 0 00-.382-1.138 3.522 3.522 0 01-1.5-3.992.951.951 0 00-.762-1.227A22.611 22.611 0 0032.3 2.16 22.41 22.41 0 0022.657.001a22.654 22.654 0 109.648 43.15 22.644 22.644 0 0032.167-22.847zM22.657 43.4a20.746 20.746 0 110-41.493c2.566-.004 5.11.473 7.501 1.407a22.64 22.64 0 00.003 38.682 20.6 20.6 0 01-7.504 1.404zm19.286 0a20.746 20.746 0 112.131-41.384 5.417 5.417 0 001.918 4.635 5.346 5.346 0 00-.133 1.182A5.441 5.441 0 0046.879 11a5.804 5.804 0 00-.028.568 6.456 6.456 0 005.38 6.345 5.053 5.053 0 006.378 2.472 6.412 6.412 0 004.05 1.12 20.768 20.768 0 01-20.716 21.897z"
-                  ></path>
-                  <path
-                    fill="#644647"
-                    d="M54.962 34.3a17.719 17.719 0 01-2.602 2.378.954.954 0 001.14 1.53 19.637 19.637 0 002.884-2.634.955.955 0 00-1.422-1.274z"
-                  ></path>
-                  <path
-                    strokeWidth="1.8"
-                    stroke="#644647"
-                    fill="#845556"
-                    d="M44.5 32.829c-.512 0-1.574.215-2 .5-.426.284-.342.263-.537.736a2.59 2.59 0 104.98.99c0-.686-.458-1.241-.943-1.726-.485-.486-.814-.5-1.5-.5zm-30.916-2.5c-.296 0-.912.134-1.159.311-.246.177-.197.164-.31.459a1.725 1.725 0 00-.086.932c.058.312.2.6.41.825.21.226.477.38.768.442.291.062.593.03.867-.092s.508-.329.673-.594a1.7 1.7 0 00.253-.896c0-.428-.266-.774-.547-1.076-.281-.302-.471-.31-.869-.311zm17.805-11.375c-.143-.492-.647-1.451-1.04-1.78-.392-.33-.348-.255-.857-.31a2.588 2.588 0 10.441 5.06c.66-.194 1.064-.788 1.395-1.39.33-.601.252-.92.06-1.58zm-22 2c-.143-.492-.647-1.451-1.04-1.78-.391-.33-.347-.255-.856-.31a2.589 2.589 0 10.44 5.06c.66-.194 1.064-.788 1.395-1.39.33-.601.252-.92.06-1.58zM38.112 7.329c-.395 0-1.216.179-1.545.415-.328.236-.263.218-.415.611-.151.393-.19.826-.114 1.243.078.417.268.8.548 1.1.28.301.636.506 1.024.59.388.082.79.04 1.155-.123.366-.163.678-.438.898-.792.22-.354.337-.77.337-1.195 0-.57-.354-1.031-.73-1.434-.374-.403-.628-.415-1.158-.415zm-19.123.703c.023-.296-.062-.92-.219-1.18-.157-.26-.148-.21-.432-.347a1.726 1.726 0 00-.922-.159 1.654 1.654 0 00-.856.344 1.471 1.471 0 00-.501.73c-.085.285-.077.589.023.872.1.282.287.532.538.718a1.7 1.7 0 00.873.323c.427.033.793-.204 1.116-.46.324-.256.347-.445.38-.841z"
-                  ></path>
-                  <path
-                    fill="#634647"
-                    d="M15.027 15.605a.954.954 0 00-1.553 1.108l1.332 1.863a.955.955 0 001.705-.77.955.955 0 00-.153-.34l-1.331-1.861z"
-                  ></path>
-                  <path
-                    fill="#644647"
-                    d="M43.31 23.21a.954.954 0 101.553-1.11l-1.266-1.772a.954.954 0 10-1.552 1.11l1.266 1.772z"
-                  ></path>
-                  <path
-                    fill="#634647"
-                    d="M19.672 35.374a.954.954 0 00-.954.953v2.363a.954.954 0 001.907 0v-2.362a.954.954 0 00-.953-.954z"
-                  ></path>
-                  <path
-                    fill="#644647"
-                    d="M33.129 29.18l-2.803 1.065a.953.953 0 00-.053 1.764.957.957 0 00.73.022l2.803-1.065a.953.953 0 00-.677-1.783v-.003zm24.373-3.628l-2.167.823a.956.956 0 00-.054 1.764.954.954 0 00.73.021l2.169-.823a.954.954 0 10-.678-1.784v-.001z"
-                  ></path>
-                </svg>
-              </span>
+            {/* Upper golden decorative light reflection */}
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-gold-500/50 to-transparent z-20" />
 
-              <h5 className="text-sm font-semibold mb-2 text-left mr-auto text-zinc-700">
-                Ochrana súkromia
-              </h5>
+            <div className="p-6 relative flex flex-col h-full">
+              <AnimatePresence mode="wait">
+                {!isSettingsOpen ? (
+                  /* 1. PRIMARY BANNER VIEW */
+                  <motion.div
+                    key="banner"
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: 20 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex flex-col items-center"
+                  >
+                    <span className="relative mx-auto mt-2 mb-6 drop-shadow-[0_0_10px_rgba(234,183,137,0.2)]">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        height="46"
+                        width="65"
+                        viewBox="0 0 65 46"
+                      >
+                        <path
+                          stroke="#000"
+                          fill="#EAB789"
+                          d="M49.157 15.69L44.58.655l-12.422 1.96L21.044.654l-8.499 2.615-6.538 5.23-4.576 9.153v11.114l4.576 8.5 7.846 5.23 10.46 1.96 7.845-2.614 9.153 2.615 11.768-2.615 7.846-7.846 1.96-5.884.655-7.191-7.846-1.308-6.537-3.922z"
+                        ></path>
+                        <path
+                          fill="#a37c59"
+                          d="M32.286 3.749c-6.94 3.65-11.69 11.053-11.69 19.591 0 8.137 4.313 15.242 10.724 19.052a20.513 20.513 0 01-8.723 1.937c-11.598 0-21-9.626-21-21.5 0-11.875 9.402-21.5 21-21.5 3.495 0 6.79.874 9.689 2.42z"
+                          clipRule="evenodd"
+                          fillRule="evenodd"
+                        ></path>
+                        <path
+                          fill="#634647"
+                          d="M64.472 20.305a.954.954 0 00-1.172-.824 4.508 4.508 0 01-3.958-.934.953.953 0 00-1.076-.11c-.46.252-.977.383-1.502.382a3.154 3.154 0 01-2.97-2.11.954.954 0 00-.833-.634 4.54 4.54 0 01-4.205-4.507c.002-.23.022-.46.06-.687a.952.952 0 00-.213-.767 3.497 3.497 0 01-.614-3.5.953.953 0 00-.382-1.138 3.522 3.522 0 01-1.5-3.992.951.951 0 00-.762-1.227A22.611 22.611 0 0032.3 2.16 22.41 22.41 0 0022.657.001a22.654 22.654 0 109.648 43.15 22.644 22.644 0 0032.167-22.847zM22.657 43.4a20.746 20.746 0 110-41.493c2.566-.004 5.11.473 7.501 1.407a22.64 22.64 0 00.003 38.682 20.6 20.6 0 01-7.504 1.404zm19.286 0a20.746 20.746 0 112.131-41.384 5.417 5.417 0 001.918 4.635 5.346 5.346 0 00-.133 1.182A5.441 5.441 0 0046.879 11a5.804 5.804 0 00-.028.568 6.456 6.456 0 005.38 6.345 5.053 5.053 0 006.378 2.472 6.412 6.412 0 004.05 1.12 20.768 20.768 0 01-20.716 21.897z"
+                        ></path>
+                        <path
+                          fill="#644647"
+                          d="M54.962 34.3a17.719 17.719 0 01-2.602 2.378.954.954 0 001.14 1.53 19.637 19.637 0 002.884-2.634.955.955 0 00-1.422-1.274z"
+                        ></path>
+                        <path
+                          strokeWidth="1.8"
+                          stroke="#644647"
+                          fill="#845556"
+                          d="M44.5 32.829c-.512 0-1.574.215-2 .5-.426.284-.342.263-.537.736a2.59 2.59 0 104.98.99c0-.686-.458-1.241-.943-1.726-.485-.486-.814-.5-1.5-.5zm-30.916-2.5c-.296 0-.912.134-1.159.311-.246.177-.197.164-.31.459a1.725 1.725 0 00-.086.932c.058.312.2.6.41.825.21.226.477.38.768.442.291.062.593.03.867-.092s.508-.329.673-.594a1.7 1.7 0 00.253-.896c0-.428-.266-.774-.547-1.076-.281-.302-.471-.31-.869-.311zm17.805-11.375c-.143-.492-.647-1.451-1.04-1.78-.392-.33-.348-.255-.857-.31a2.588 2.588 0 10.441 5.06c.66-.194 1.064-.788 1.395-1.39.33-.601.252-.92.06-1.58zm-22 2c-.143-.492-.647-1.451-1.04-1.78-.391-.33-.347-.255-.856-.31a2.589 2.589 0 10.44 5.06c.66-.194 1.064-.788 1.395-1.39.33-.601.252-.92.06-1.58zM38.112 7.329c-.395 0-1.216.179-1.545.415-.328.236-.263.218-.415.611-.151.393-.19.826-.114 1.243.078.417.268.8.548 1.1.28.301.636.506 1.024.59.388.082.79.04 1.155-.123.366-.163.678-.438.898-.792.22-.354.337-.77.337-1.195 0-.57-.354-1.031-.73-1.434-.374-.403-.628-.415-1.158-.415zm-19.123.703c.023-.296-.062-.92-.219-1.18-.157-.26-.148-.21-.432-.347a1.726 1.726 0 00-.922-.159 1.654 1.654 0 00-.856.344 1.471 1.471 0 00-.501.73c-.085.285-.077.589.023.872.1.282.287.532.538.718a1.7 1.7 0 00.873.323c.427.033.793-.204 1.116-.46.324-.256.347-.445.38-.841z"
+                        ></path>
+                        <path
+                          fill="#634647"
+                          d="M15.027 15.605a.954.954 0 00-1.553 1.108l1.332 1.863a.955.955 0 001.705-.77.955.955 0 00-.153-.34l-1.331-1.861z"
+                        ></path>
+                        <path
+                          fill="#644647"
+                          d="M43.31 23.21a.954.954 0 101.553-1.11l-1.266-1.772a.954.954 0 10-1.552 1.11l1.266 1.772z"
+                        ></path>
+                        <path
+                          fill="#634647"
+                          d="M19.672 35.374a.954.954 0 00-.954.953v2.363a.954.954 0 001.907 0v-2.362a.954.954 0 00-.953-.954z"
+                        ></path>
+                        <path
+                          fill="#644647"
+                          d="M33.129 29.18l-2.803 1.065a.953.953 0 00-.053 1.764.957.957 0 00.73.022l2.803-1.065a.953.953 0 00-.677-1.783v-.003zm24.373-3.628l-2.167.823a.956.956 0 00-.054 1.764.954.954 0 00.73.021l2.169-.823a.954.954 0 10-.678-1.784v-.001z"
+                        ></path>
+                      </svg>
+                    </span>
 
-              <p className="w-full mb-4 text-sm text-justify text-zinc-600">
-                Spracovávame vaše osobné údaje pre meranie a zlepšovanie našich stránok a služieb.
-                <br />
-                Pre viac informácií si prečítajte naše
-                <a
-                  className="mb-2 text-sm cursor-pointer font-semibold transition-colors hover:text-[#634647] underline underline-offset-2 ml-1"
-                >
-                  Zásady ochrany osobných údajov
-                </a>.
-              </p>
+                    <h5 className="text-base font-serif text-white mb-2 text-center">
+                      Ochrana súkromia (Cookies)
+                    </h5>
 
-              <div className="flex w-full items-center justify-between">
-                <button
-                  className="mb-2 text-sm mr-auto text-zinc-600 cursor-pointer font-semibold transition-colors hover:text-[#634647] hover:underline underline-offset-2"
-                >
-                  Možnosti
-                </button>
-                <button
-                  onClick={handleAccept}
-                  className="font-semibold cursor-pointer py-2 px-8 w-max break-keep text-sm rounded-lg transition-colors text-[#634647] hover:text-[#ddad81] bg-[#ddad81] hover:bg-[#634647]"
-                  type="button"
-                >
-                  Prijať
-                </button>
-              </div>
+                    <p className="w-full mb-6 text-[11px] text-center text-gray-400 font-light leading-relaxed">
+                      Tento tanečný web používa súbory cookies na zabezpečenie základného fungovania, analýzu návštevnosti a cielený marketing. Súhlas vyjadríte kliknutím na „Prijať všetky“. Nastavenia môžete kedykoľvek prispôsobiť alebo odvolať.
+                      <br />
+                      <a
+                        href="/privacy"
+                        target="_blank"
+                        className="mt-2 inline-block font-medium text-gold-500 hover:text-gold-400 hover:underline transition-colors decoration-gold-500/30 underline-offset-4"
+                      >
+                        Zásady ochrany osobných údajov
+                      </a>
+                    </p>
+
+                    {/* Action buttons inside banner */}
+                    <div className="flex flex-col w-full gap-2.5">
+                      <button
+                        onClick={handleAcceptAll}
+                        className="btn-gold w-full py-2.5 rounded-full font-serif text-sm italic tracking-wider shadow-md cursor-pointer text-center"
+                        type="button"
+                      >
+                        Prijať všetky
+                      </button>
+                      
+                      <div className="flex w-full gap-2 mt-1">
+                        <button
+                          onClick={handleRejectAll}
+                          className="w-1/2 font-sans py-2 text-xs rounded-full border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer"
+                          type="button"
+                        >
+                          Odmietnuť všetky
+                        </button>
+                        
+                        <button
+                          onClick={() => setIsSettingsOpen(true)}
+                          className="w-1/2 font-sans py-2 text-xs rounded-full border border-gold-500/20 text-gold-500 hover:text-gold-400 hover:bg-gold-500/[0.03] transition-all cursor-pointer"
+                          type="button"
+                        >
+                          Prispôsobiť
+                        </button>
+                      </div>
+                    </div>
+                  </motion.div>
+                ) : (
+                  /* 2. GRANULAR SETTINGS VIEW */
+                  <motion.div
+                    key="settings"
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    transition={{ duration: 0.2 }}
+                    className="flex flex-col"
+                  >
+                    <h5 className="text-base font-serif text-white mb-4 text-center border-b border-white/10 pb-3 italic">
+                      Nastavenie Cookies
+                    </h5>
+
+                    {/* List of Settings */}
+                    <div className="flex flex-col gap-4 mb-6 max-h-[300px] overflow-y-auto pr-1 select-none">
+                      {/* Cookie 1: Necessary */}
+                      <div className="flex items-start justify-between gap-4 p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+                        <div className="flex flex-col gap-0.5 max-w-[78%]">
+                          <span className="text-xs font-bold text-white flex items-center gap-1.5">
+                            Nevyhnutné
+                            <span className="text-[8px] bg-white/10 text-gray-400 py-0.5 px-1.5 rounded-full uppercase tracking-wider font-semibold font-sans">Vždy aktívne</span>
+                          </span>
+                          <span className="text-[10px] text-gray-500 font-light leading-relaxed">
+                            Technicky nutné pre bezpečné fungovanie stránky a zapamätanie vašich preferencií ochrany súkromia.
+                          </span>
+                        </div>
+                        <div className="flex items-center pt-1">
+                          <label className="relative inline-flex items-center cursor-not-allowed">
+                            <input type="checkbox" checked disabled className="sr-only peer" />
+                            <div className="w-8 h-4.5 bg-gold-600/30 rounded-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-gold-400 after:rounded-full after:h-3.5 after:w-3.5 after:transition-all translate-x-3.5" />
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Cookie 2: Analytics */}
+                      <div className="flex items-start justify-between gap-4 p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+                        <div className="flex flex-col gap-0.5 max-w-[78%]">
+                          <span className="text-xs font-bold text-white">Analytické</span>
+                          <span className="text-[10px] text-gray-500 font-light leading-relaxed">
+                            Pomáhajú nám merať návštevnosť, zisťovať záujem o kurzy a neustále zlepšovať funkcie a dizajn nášho webu.
+                          </span>
+                        </div>
+                        <div className="flex items-center pt-1">
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={analytics} 
+                              onChange={(e) => setAnalytics(e.target.checked)}
+                              className="sr-only peer" 
+                            />
+                            <div className="w-8 h-4.5 bg-zinc-700 rounded-full peer peer-checked:after:translate-x-3.5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-gold-500 peer-checked:after:bg-obsidian-950" />
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Cookie 3: Marketing */}
+                      <div className="flex items-start justify-between gap-4 p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+                        <div className="flex flex-col gap-0.5 max-w-[78%]">
+                          <span className="text-xs font-bold text-white">Marketingové</span>
+                          <span className="text-[10px] text-gray-500 font-light leading-relaxed">
+                            Umožňujú nám zobrazovať vám na sociálnych sieťach a iných weboch relevantnú reklamu na naše tanečné kurzy a podujatia.
+                          </span>
+                        </div>
+                        <div className="flex items-center pt-1">
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={marketing} 
+                              onChange={(e) => setMarketing(e.target.checked)}
+                              className="sr-only peer" 
+                            />
+                            <div className="w-8 h-4.5 bg-zinc-700 rounded-full peer peer-checked:after:translate-x-3.5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-gold-500 peer-checked:after:bg-obsidian-950" />
+                          </label>
+                        </div>
+                      </div>
+
+                      {/* Cookie 4: Preferences */}
+                      <div className="flex items-start justify-between gap-4 p-2.5 rounded-xl bg-white/[0.02] border border-white/5">
+                        <div className="flex flex-col gap-0.5 max-w-[78%]">
+                          <span className="text-xs font-bold text-white">Preferenčné</span>
+                          <span className="text-[10px] text-gray-500 font-light leading-relaxed">
+                            Umožňujú zapamätať si vaše individuálne voľby, napríklad predvyplnené formuláre pri registráciách na tréningy.
+                          </span>
+                        </div>
+                        <div className="flex items-center pt-1">
+                          <label className="relative inline-flex items-center cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={preferences} 
+                              onChange={(e) => setPreferences(e.target.checked)}
+                              className="sr-only peer" 
+                            />
+                            <div className="w-8 h-4.5 bg-zinc-700 rounded-full peer peer-checked:after:translate-x-3.5 peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-zinc-400 after:rounded-full after:h-3.5 after:w-3.5 after:transition-all peer-checked:bg-gold-500 peer-checked:after:bg-obsidian-950" />
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Action buttons inside settings */}
+                    <div className="flex items-center gap-3 w-full border-t border-white/10 pt-4">
+                      <button
+                        onClick={() => setIsSettingsOpen(false)}
+                        className="w-1/3 font-sans py-2.5 text-xs rounded-full border border-white/10 text-gray-400 hover:text-white hover:bg-white/5 transition-all cursor-pointer text-center"
+                        type="button"
+                      >
+                        Späť
+                      </button>
+                      <button
+                        onClick={handleSaveSettings}
+                        className="btn-gold w-2/3 py-2.5 rounded-full font-serif text-xs italic tracking-wider shadow-md cursor-pointer text-center"
+                        type="button"
+                      >
+                        Uložiť nastavenia
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
           </motion.div>
         </div>
