@@ -40,7 +40,10 @@ export default function CookiePopup({ onAccept }: CookiePopupProps) {
             (window as any).cookiesAcceptedAlready = true;
           }
         } catch (e) {
-          console.error("Error parsing cookie choices", e);
+          if (process.env.NODE_ENV === "development") {
+            // eslint-disable-next-line no-console
+            console.error("Error parsing cookie choices", e);
+          }
         }
       }
     }

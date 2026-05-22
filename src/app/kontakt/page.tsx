@@ -1,15 +1,50 @@
 "use client";
 
-import React, { useEffect, useState, Suspense } from "react";
+import React, { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+
+// ─── Security constants ───────────────────────────────────
+/** Allowed course values – prevents arbitrary values being inserted into DB */
+const ALLOWED_COURSES = ["svadba", "latinfit", "senior", "ine", "venceky", "vystupenie"] as const;
+/** Minimum delay between submissions (ms) – simple client-side rate limiting */
+const RATE_LIMIT_MS = 60_000; // 60 seconds
+const RATE_LIMIT_KEY = "ellegance_last_contact_submit";
+// ─────────────────────────────────────────────────────────
+
+function validateForm(name: string, contact: string, course: string): string | null {
+  if (!name.trim() || name.trim().length < 2) return "Meno musí mať aspoň 2 znaky.";
+  if (name.length > 100) return "Meno je príliš dlhé (max. 100 znakov).";
+  if (!contact.trim() || contact.trim().length < 5) return "Kontakt musí mať aspoň 5 znakov.";
+  if (contact.length > 200) return "Kontaktný údaj je príliš dlhý (max. 200 znakov).";
+  if (!ALLOWED_COURSES.includes(course as any)) return "Vyberte platnú možnosť kurzu.";
+  return null; // valid
+}
+
+function checkRateLimit(): string | null {
+  try {
+    const last = localStorage.getItem(RATE_LIMIT_KEY);
+    if (last) {
+      const elapsed = Date.now() - parseInt(last, 10);
+      if (elapsed < RATE_LIMIT_MS) {
+        const remaining = Math.ceil((RATE_LIMIT_MS - elapsed) / 1000);
+        return `Správu môžete odoslať znova za ${remaining} sekúnd.`;
+      }
+    }
+  } catch {
+    // localStorage not available (SSR, private mode) — allow submission
+  }
+  return null;
+}
 
 function KontaktForm() {
   const searchParams = useSearchParams();
   const [selectedCourse, setSelectedCourse] = useState("");
   const [name, setName] = useState("");
   const [contact, setContact] = useState("");
+  /** Honeypot field – bots fill this, humans don't */
+  const honeypotRef = useRef<HTMLInputElement>(null);
 
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<boolean | null>(null);
@@ -24,8 +59,30 @@ function KontaktForm() {
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
     setError("");
+
+    // ── Honeypot check: bots fill hidden fields, real users don't
+    if (honeypotRef.current?.value) {
+      // Silently fake success to confuse bots without revealing detection
+      setSuccess(true);
+      return;
+    }
+
+    // ── Client-side rate limiting
+    const rateLimitError = checkRateLimit();
+    if (rateLimitError) {
+      setError(rateLimitError);
+      return;
+    }
+
+    // ── Input validation
+    const validationError = validateForm(name, contact, selectedCourse);
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
+
+    setLoading(true);
     setSuccess(null);
 
     try {
@@ -33,20 +90,27 @@ function KontaktForm() {
         .from("contact_submissions")
         .insert([
           {
-            name,
-            contact,
-            course: selectedCourse,
+            name: name.trim().slice(0, 100),
+            contact: contact.trim().slice(0, 200),
+            course: selectedCourse, // already validated against allowlist above
           },
         ]);
 
       if (submitError) throw submitError;
 
+      // Record timestamp for rate limiting
+      try { localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString()); } catch {}
+
       setSuccess(true);
       setName("");
       setContact("");
       setSelectedCourse("");
-    } catch (err: any) {
-      console.error("Chyba pri odosielaní formulára:", err);
+    } catch (err: unknown) {
+      // Do NOT log raw error to console in production – it exposes Supabase internals
+      if (process.env.NODE_ENV === "development") {
+        // eslint-disable-next-line no-console
+        console.error("[DEV] Chyba pri odosielaní formulára:", err);
+      }
       setError("Prepáčte, nepodarilo sa nám zapísať vašu požiadavku. Skúste to prosím znova.");
       setSuccess(false);
     } finally {
@@ -114,7 +178,20 @@ function KontaktForm() {
                   </button>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="flex flex-col gap-6">
+                <form onSubmit={handleSubmit} className="flex flex-col gap-6" noValidate>
+                  {/* ── Honeypot field: hidden from real users, bots fill it ── */}
+                  <div aria-hidden="true" style={{ position: 'absolute', left: '-9999px', width: '1px', height: '1px', overflow: 'hidden' }}>
+                    <label htmlFor="hp_website">Website</label>
+                    <input
+                      id="hp_website"
+                      name="website"
+                      type="text"
+                      ref={honeypotRef}
+                      tabIndex={-1}
+                      autoComplete="off"
+                    />
+                  </div>
+
                   {/* Field 1: Name */}
                   <div className="flex flex-col gap-1">
                     <label htmlFor="name" className="font-nunito text-[9px] uppercase tracking-[0.3em] text-[#8c7e74] font-bold">1. Vaše meno a priezvisko</label>
@@ -127,6 +204,8 @@ function KontaktForm() {
                       placeholder="Meno a priezvisko..."
                       className="w-full bg-transparent border-b-2 border-dotted border-[#c4b5a9] py-1.5 px-1 text-lg font-handwriting text-[#2a4494] placeholder-[#c4b5a9]/50 focus:border-[#d4af37] focus:outline-none transition-all"
                       required
+                      maxLength={100}
+                      autoComplete="name"
                       disabled={loading}
                     />
                   </div>
@@ -143,6 +222,8 @@ function KontaktForm() {
                       placeholder="Váš e-mail alebo telefón..."
                       className="w-full bg-transparent border-b-2 border-dotted border-[#c4b5a9] py-1.5 px-1 text-lg font-handwriting text-[#2a4494] placeholder-[#c4b5a9]/50 focus:border-[#d4af37] focus:outline-none transition-all"
                       required
+                      maxLength={200}
+                      autoComplete="email"
                       disabled={loading}
                     />
                   </div>
@@ -164,6 +245,8 @@ function KontaktForm() {
                       <option value="latinfit" className="font-sans text-xs">Latin Fit</option>
                       <option value="senior" className="font-sans text-xs">Spoločenské tance pre seniorov</option>
                       <option value="ine" className="font-sans text-xs">Iná požiadavka...</option>
+                      <option value="venceky" className="font-sans text-xs">Venčekové slávnosti</option>
+                      <option value="vystupenie" className="font-sans text-xs">Tanečné vystúpenie</option>
                     </select>
                   </div>
 
