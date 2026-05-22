@@ -307,9 +307,10 @@ function HallSwitcher() {
         </div>
 
         <div className="flex flex-col gap-6 w-full">
-          <Link href="/kontakt" className="btn-gold self-start px-8 py-3 rounded-full text-[9px] font-bold tracking-[0.2em] uppercase hover:scale-105 transition-transform shadow-xl shadow-gold-500/20 text-center">
-            Rezervovať priestor
-          </Link>
+          <p className="text-gray-400 text-xs font-light leading-relaxed border border-white/5 bg-white/[0.02] p-4 rounded-2xl relative overflow-hidden">
+            <span className="text-gold-500 font-bold block mb-1 uppercase tracking-wider text-[9px]">Kapacita a obsadenosť</span>
+            Naše tréningové sály sú takmer nepretržite obsadené riadnymi tréningovými skupinami nášho klubu a individuálnymi lekciami. Možnosti komerčného prenájmu sú preto v súčasnosti veľmi obmedzené.
+          </p>
 
           {/* More Compact Location Info with Shifted Photo */}
           <div className="flex items-center justify-between gap-12 mt-2">
