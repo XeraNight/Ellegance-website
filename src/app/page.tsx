@@ -201,7 +201,7 @@ export default function Home() {
 
             <div className="group relative">
               <div className="absolute -inset-2 bg-gold-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="relative flex items-center gap-6 p-4 cursor-pointer">
+              <Link href="/ponuka" className="relative flex items-center gap-6 p-4 cursor-pointer">
                 <div className="w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
                   <img src={getAssetPath("/images/kurz_spolocenskych_tancov.png")} alt="Kurzy" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 </div>
@@ -216,12 +216,12 @@ export default function Home() {
                     Chystáte sa na ples alebo svadbu? Naše nové kurzy v Košiciach štartujú už čoskoro. Objavte radosť z pohybu.
                   </p>
                 </div>
-              </div>
+              </Link>
             </div>
 
             <div className="group relative">
               <div className="absolute -inset-2 bg-gold-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              <div className="relative flex items-center gap-6 p-4 cursor-pointer">
+              <Link href="/2-percenta" className="relative flex items-center gap-6 p-4 cursor-pointer">
                 <div className="w-24 h-24 md:w-32 md:h-32 flex-shrink-0 rounded-2xl overflow-hidden border border-white/5 shadow-2xl">
                   <img src={getAssetPath("/images/2_zdane.jpg")} alt="2%" className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
                 </div>
@@ -236,7 +236,7 @@ export default function Home() {
                     Pomôžte nám rozvíjať tanečné talenty v Košiciach. Vaša podpora nám umožňuje rásť.
                   </p>
                 </div>
-              </div>
+              </Link>
             </div>
 
           </div>

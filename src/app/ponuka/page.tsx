@@ -261,6 +261,27 @@ export default function PonukaPage() {
                 </div>
               </div>
 
+              {/* Svadobné Choreo Video Showcase */}
+              <div className="p-6 md:p-8 rounded-[2rem] border border-white/5 bg-obsidian-950/30 backdrop-blur-md space-y-6 shadow-inner">
+                <div className="space-y-1">
+                  <span className="text-gold-500 text-[8px] font-black uppercase tracking-widest block">Video ukážky</span>
+                  <h3 className="font-serif text-lg md:text-xl font-bold text-white">Inšpirujte sa našimi novomanželmi</h3>
+                  <p className="text-gray-500 text-xs font-light">Pozrite si ukážku elegantného svadobného valčíka na mieru.</p>
+                </div>
+                
+                <div className="relative aspect-video rounded-2xl overflow-hidden border border-white/10 shadow-2xl group bg-black">
+                  <iframe 
+                    className="w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300"
+                    src="https://www.youtube.com/embed/84qXj7vG54o?autoplay=0&mute=1" 
+                    title="Svadobný tanec Ellegance"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                  {/* Glowing gold border overlay */}
+                  <div className="absolute inset-0 border border-gold-500/0 group-hover:border-gold-500/20 transition-all duration-500 pointer-events-none rounded-2xl" />
+                </div>
+              </div>
+
               {/* Svadobné Balíky - Luxury Voucher Design */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
                 <div className="p-8 rounded-[2rem] border border-white/5 bg-obsidian-850/60 backdrop-blur-sm flex flex-col justify-between h-full relative overflow-hidden shadow-lg hover:border-gold-500/20 transition-all duration-300 group">

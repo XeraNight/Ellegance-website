@@ -95,19 +95,9 @@ export default function RozpisHodinPage() {
                       {/* 15:00 */}
                       <tr className="border-b border-white/5 hover:bg-white/[0.01] transition-colors">
                         <td className="py-1.5 px-3 text-gray-500 text-center font-mono font-medium border-r border-white/5">15:00</td>
-                        <td className="p-1 border-r border-white/5" rowSpan={2}>
-                          <div className="bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-0.5 transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-gray-300 font-light min-h-[56px]">
-                            <span className="font-semibold text-[10px] block">Individuálne lekcie</span>
-                            <span className="text-[8px] text-gray-500 font-medium tracking-wide mt-0.5 uppercase">15:00 - 16:00</span>
-                          </div>
-                        </td>
                         <td className="p-1 border-r border-white/5"></td>
-                        <td className="p-1 border-r border-white/5" rowSpan={2}>
-                          <div className="bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-0.5 transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-gray-300 font-light min-h-[56px]">
-                            <span className="font-semibold text-[10px] block">Individuálne lekcie</span>
-                            <span className="text-[8px] text-gray-500 font-medium tracking-wide mt-0.5 uppercase">15:00 - 16:00</span>
-                          </div>
-                        </td>
+                        <td className="p-1 border-r border-white/5"></td>
+                        <td className="p-1 border-r border-white/5"></td>
                         <td className="p-1 border-r border-white/5"></td>
                         <td className="p-1"></td>
                       </tr>
@@ -115,7 +105,8 @@ export default function RozpisHodinPage() {
                       {/* 15:30 */}
                       <tr className="border-b border-white/5 hover:bg-white/[0.01] transition-colors">
                         <td className="py-1.5 px-3 text-gray-500 text-center font-mono font-medium border-r border-white/5">15:30</td>
-                        {/* Mon & Wed are covered by rowSpan */}
+                        <td className="p-1 border-r border-white/5"></td>
+                        <td className="p-1 border-r border-white/5"></td>
                         <td className="p-1 border-r border-white/5"></td>
                         <td className="p-1 border-r border-white/5"></td>
                         <td className="p-1"></td>
@@ -179,7 +170,6 @@ export default function RozpisHodinPage() {
                             <Sparkles className="w-3.5 h-3.5 text-gold-500 mb-1 animate-pulse" />
                             <span className="font-black text-[10px] text-gold-400 uppercase tracking-widest block">Súťažný tanec (K1)</span>
                             <span className="text-[8px] text-gold-500 font-black mt-1 tracking-widest uppercase">17:30 - 19:00</span>
-                            <span className="text-[7px] text-white/50 font-bold uppercase tracking-[0.15em] mt-0.5 bg-gold-500/20 px-1.5 py-0.5 rounded-full">Top páry</span>
                           </div>
                         </td>
                         <td className="p-1 border-r border-white/5"></td>
@@ -189,7 +179,6 @@ export default function RozpisHodinPage() {
                             <Sparkles className="w-3.5 h-3.5 text-gold-500 mb-1 animate-pulse" />
                             <span className="font-black text-[10px] text-gold-400 uppercase tracking-widest block">Súťažný tanec (K1)</span>
                             <span className="text-[8px] text-gold-500 font-black mt-1 tracking-widest uppercase">17:30 - 19:00</span>
-                            <span className="text-[7px] text-white/50 font-bold uppercase tracking-[0.15em] mt-0.5 bg-gold-500/20 px-1.5 py-0.5 rounded-full">Top páry</span>
                           </div>
                         </td>
                         {/* Friday is free after 18:00 (CP ends at 18:00) */}

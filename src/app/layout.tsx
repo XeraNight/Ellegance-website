@@ -48,6 +48,33 @@ const caveat = Caveat({
 export const metadata: Metadata = {
   title: "Ellegance | Tanečný klub Košice",
   description: "Miesto, kde začína váš tanečný život. Tanečný klub, spoločenské tance, eventy.",
+  // ── Security & Privacy meta ──────────────────────────────────────────────
+  // Instruct crawlers not to follow external links or cache sensitive pages
+  robots: {
+    index: true,
+    follow: true,
+    nocache: false,
+    googleBot: {
+      index: true,
+      follow: true,
+      noimageindex: false,
+    },
+  },
+  // Referrer policy exposed to browsers that parse the meta tag
+  referrer: "strict-origin-when-cross-origin",
+  // Prevent iOS from reformatting phone numbers into clickable links (avoids spoofing)
+  formatDetection: {
+    telephone: false,
+    email: false,
+    address: false,
+  },
+  // Open Graph – prevents content scraping ambiguity
+  openGraph: {
+    title: "Ellegance | Tanečný klub Košice",
+    description: "Miesto, kde začína váš tanečný život. Tanečný klub, spoločenské tance, eventy.",
+    locale: "sk_SK",
+    type: "website",
+  },
 };
 
 export default function RootLayout({

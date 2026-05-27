@@ -1,0 +1,46 @@
+##############################################################################
+# Ellegance website – Security Headers for Static Hosting
+#
+# This file is processed by:
+#   • Cloudflare Pages   → applied automatically ✓
+#   • Netlify            → applied automatically ✓
+#   • GitHub Pages       → NOT supported natively; route traffic through
+#                          Cloudflare to activate these headers.
+#
+# Keep in sync with next.config.ts securityHeaders array.
+# OWASP Top 10 / Mozilla Observatory A+ target.
+##############################################################################
+
+/*
+  # Prevent MIME type sniffing (A02)
+  X-Content-Type-Options: nosniff
+
+  # Prevent clickjacking (A01)
+  X-Frame-Options: DENY
+
+  # Legacy XSS filter
+  X-XSS-Protection: 1; mode=block
+
+  # Referrer Policy – minimal leakage
+  Referrer-Policy: strict-origin-when-cross-origin
+
+  # HSTS – 2-year HTTPS enforcement
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+
+  # DNS Prefetch Control
+  X-DNS-Prefetch-Control: on
+
+  # Cross-Origin Opener Policy – Spectre mitigation
+  Cross-Origin-Opener-Policy: same-origin
+
+  # Cross-Origin Resource Policy – prevent hotlinking
+  Cross-Origin-Resource-Policy: same-origin
+
+  # Cross-Origin Embedder Policy
+  Cross-Origin-Embedder-Policy: unsafe-none
+
+  # Permissions Policy – deny unused browser APIs
+  Permissions-Policy: camera=(), microphone=(), geolocation=(self), payment=(), usb=(), display-capture=(), fullscreen=(self "https://www.youtube.com"), autoplay=(), gyroscope=(), magnetometer=(), accelerometer=(), ambient-light-sensor=(), battery=(), interest-cohort=()
+
+  # Content Security Policy
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https:; connect-src 'self' https://qrmqriyturskjwbcaalr.supabase.co https://cdn.jsdelivr.net wss://qrmqriyturskjwbcaalr.supabase.co; object-src 'none'; media-src 'self' blob:; worker-src 'self' blob:; frame-ancestors 'none'; frame-src https://www.youtube.com https://www.youtube-nocookie.com; base-uri 'self'; form-action 'self'; upgrade-insecure-requests

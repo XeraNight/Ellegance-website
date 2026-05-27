@@ -78,6 +78,14 @@ export default function Footer() {
               <FooterLink href="/fotogaleria" label="Fotogaléria" containerRef={containerRef} />
               <FooterLink href="/sutaze" label="Súťaže" containerRef={containerRef} />
               <FooterLink href="/press-kit" label="Press kit" containerRef={containerRef} />
+            </div>
+
+            {/* Column 3: Pre tanečníkov a rodičov */}
+            <div className="flex flex-col gap-4">
+              <span className="text-gold-500 uppercase tracking-[0.3em] text-[10px] font-bold mb-2">Pre tanečníkov</span>
+              <FooterLink href="/rodicovska-zona" label="Zóna pre rodičov" containerRef={containerRef} />
+              <FooterLink href="/vybava" label="Tanečná výbava" containerRef={containerRef} />
+              <FooterLink href="/pravidla" label="Oficiálne pravidlá SZTŠ" containerRef={containerRef} />
               
               <div className="mt-4 flex flex-col gap-5">
                 <span className="text-white/30 uppercase tracking-[0.2em] text-[9px] font-medium">Sledujte nás</span>
@@ -113,14 +121,6 @@ export default function Footer() {
               </div>
             </div>
 
-            {/* Column 3: Pre tanečníkov a rodičov */}
-            <div className="flex flex-col gap-4">
-              <span className="text-gold-500 uppercase tracking-[0.3em] text-[10px] font-bold mb-2">Pre tanečníkov</span>
-              <FooterLink href="/rodicovska-zona" label="Zóna pre rodičov" containerRef={containerRef} />
-              <FooterLink href="/vybava" label="Tanečná výbava" containerRef={containerRef} />
-              <FooterLink href="/pravidla" label="Oficiálne pravidlá SZTŠ" containerRef={containerRef} />
-            </div>
-
             {/* Column 4: Podpora klubu */}
             <div className="flex flex-col gap-4">
               <span className="text-gold-500 uppercase tracking-[0.3em] text-[10px] font-bold mb-2">Podpora a Darčeky</span>
@@ -137,6 +137,9 @@ export default function Footer() {
 
         {/* Sponsors Section */}
         <div className="border-t border-white/5 pt-10 pb-4">
+          <div className="text-center mb-6">
+            <span className="text-white/60 text-sm font-medium tracking-wide">Partneri</span>
+          </div>
           <div className="flex flex-wrap justify-center items-center gap-4 md:gap-5">
             {SPONSORS.map((sponsor) => {
               const SponsorContent = (

@@ -98,6 +98,29 @@ function KontaktForm() {
 
       if (submitError) throw submitError;
 
+      // ── Send email notification on successful DB save (Formspree / Web3Forms)
+      try {
+        const emailEndpoint = process.env.NEXT_PUBLIC_EMAIL_ENDPOINT || "https://formspree.io/f/mqkrrbyk";
+        await fetch(emailEndpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            name: name.trim(),
+            contact: contact.trim(),
+            course: selectedCourse,
+            _subject: `Nová správa z webu Ellegance od ${name.trim()}`,
+          }),
+        });
+      } catch (emailErr) {
+        if (process.env.NODE_ENV === "development") {
+          // eslint-disable-next-line no-console
+          console.warn("[DEV] E-mailová notifikácia zlyhala:", emailErr);
+        }
+      }
+
       // Record timestamp for rate limiting
       try { localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString()); } catch {}
 

@@ -32,7 +32,7 @@ export default function NewsPopup() {
   const scrollToNews = (e: React.MouseEvent) => {
     e.preventDefault();
     handleClose();
-    const element = document.getElementById("news-grid");
+    const element = document.getElementById("novinky");
     if (element) {
       element.scrollIntoView({ behavior: "smooth" });
     }
