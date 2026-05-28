@@ -662,6 +662,119 @@ function resolveRing(idx: number[], arcs: number[][][]): number[][] {
     return out;
 }
 
+/**
+ * Draw a single ring directly to a CanvasRenderingContext2D.
+ * Handles hemisphere clipping with limb intersection (same algorithm as ringToSegments).
+ */
+function drawRingCanvas(
+    ctx: CanvasRenderingContext2D,
+    ring: number[][],
+    lambda: number,
+    cp: number, sp: number,
+    cg: number, sg: number,
+    R: number, cx: number, cy: number
+): void {
+    const n = ring.length;
+    if (n < 3) return;
+    const proj: ProjectedPoint[] = new Array(n);
+    let visCount = 0;
+    for (let i = 0; i < n; i++) {
+        proj[i] = projectFast(ring[i][0], ring[i][1], lambda, cp, sp, cg, sg, R, cx, cy);
+        if (proj[i].v) visCount++;
+    }
+    if (visCount === 0) return;
+    if (visCount === n) {
+        ctx.moveTo(proj[0].sx, proj[0].sy);
+        for (let i = 1; i < n; i++) ctx.lineTo(proj[i].sx, proj[i].sy);
+        ctx.closePath();
+        return;
+    }
+    let startIdx = -1;
+    for (let i = 0; i < n; i++) {
+        if (!proj[i].v && proj[(i + 1) % n].v) { startIdx = i; break; }
+    }
+    if (startIdx === -1) {
+        // Mixed but no clean transition found — draw visible points
+        let first = true;
+        for (let i = 0; i < n; i++) {
+            if (proj[i].v) {
+                if (first) { ctx.moveTo(proj[i].sx, proj[i].sy); first = false; }
+                else ctx.lineTo(proj[i].sx, proj[i].sy);
+            }
+        }
+        if (!first) ctx.closePath();
+        return;
+    }
+    let inSeg = false;
+    for (let k = 0; k < n; k++) {
+        const i = (startIdx + k) % n;
+        const j = (startIdx + k + 1) % n;
+        const A = proj[i], B = proj[j];
+        if (A.v && B.v) {
+            if (!inSeg) { ctx.moveTo(A.sx, A.sy); inSeg = true; }
+            ctx.lineTo(B.sx, B.sy);
+        } else if (A.v && !B.v) {
+            if (!inSeg) { ctx.moveTo(A.sx, A.sy); inSeg = true; }
+            const inter = limbIntersect(A, B, R, cx, cy);
+            if (inter) ctx.lineTo(inter.sx, inter.sy);
+            ctx.closePath(); inSeg = false;
+        } else if (!A.v && B.v) {
+            const inter = limbIntersect(A, B, R, cx, cy);
+            if (inter) ctx.moveTo(inter.sx, inter.sy);
+            ctx.lineTo(B.sx, B.sy); inSeg = true;
+        }
+    }
+    if (inSeg) ctx.closePath();
+}
+
+function drawCountryCanvas(
+    ctx: CanvasRenderingContext2D,
+    type: string,
+    coords: any,
+    lambda: number,
+    cp: number, sp: number,
+    cg: number, sg: number,
+    R: number, cx: number, cy: number
+): void {
+    if (!coords) return;
+    if (type === "Polygon") {
+        for (const ring of coords) drawRingCanvas(ctx, ring, lambda, cp, sp, cg, sg, R, cx, cy);
+    } else if (type === "MultiPolygon") {
+        for (const poly of coords) for (const ring of poly) drawRingCanvas(ctx, ring, lambda, cp, sp, cg, sg, R, cx, cy);
+    }
+}
+
+function drawGridCanvas(
+    ctx: CanvasRenderingContext2D,
+    lambda: number, phi: number, gamma: number,
+    R: number, cx: number, cy: number,
+    color: string, opacity: number
+): void {
+    ctx.save();
+    ctx.strokeStyle = color;
+    ctx.globalAlpha = opacity;
+    ctx.lineWidth = 0.5;
+    ctx.beginPath();
+    for (let lng = -180; lng < 180; lng += 30) {
+        let inSeg = false;
+        for (let lat = -80; lat <= 80; lat += 2) {
+            const p = project(lng, lat, lambda, phi, gamma, R, cx, cy);
+            if (p.v) { if (!inSeg) { ctx.moveTo(p.sx, p.sy); inSeg = true; } else ctx.lineTo(p.sx, p.sy); }
+            else { inSeg = false; }
+        }
+    }
+    for (let lat = -60; lat <= 60; lat += 30) {
+        let inSeg = false;
+        for (let lng = -180; lng <= 180; lng += 2) {
+            const p = project(lng, lat, lambda, phi, gamma, R, cx, cy);
+            if (p.v) { if (!inSeg) { ctx.moveTo(p.sx, p.sy); inSeg = true; } else ctx.lineTo(p.sx, p.sy); }
+            else { inSeg = false; }
+        }
+    }
+    ctx.stroke();
+    ctx.restore();
+}
+
 function extractFeatures(t: any): any[] {
     const arcs = decArcs(t);
     const gs = t.objects.countries?.geometries;
@@ -872,11 +985,19 @@ export default function MilitaryMap(props: Props) {
     const { activeMarkerLabel, onMarkerSelect } = props;
 
     const containerRef = React.useRef<HTMLDivElement>(null);
-    const svgRef = React.useRef<SVGSVGElement>(null);
-    const pathRefs = React.useRef<Map<string, SVGPathElement>>(new Map());
-    const ghostPathRefs = React.useRef<Map<string, SVGPathElement>>(new Map());
-    const markerRefs = React.useRef<Map<number, SVGGElement>>(new Map());
-    const gridPathRef = React.useRef<SVGPathElement>(null);
+    const canvasRef = React.useRef<HTMLCanvasElement>(null);
+    const ctxRef = React.useRef<CanvasRenderingContext2D | null>(null);
+    // Marker screen positions (updated each rAF frame) for hit detection
+    const markerPositionsRef = React.useRef<{ x: number; y: number; v: boolean }[]>([]);
+    // Ref mirrors of React state/props needed inside rAF closure
+    const hCRef = React.useRef<HoveredCountry | null>(null);
+    const activeMarkerLabelRef = React.useRef<string | null | undefined>(null);
+    const markersRef = React.useRef<MarkerItem[]>([]);
+    const cfgMapRef = React.useRef<Map<string, CountryItem>>(new Map());
+    const mapStyleRef = React.useRef(mapStyle);
+    const gridRef = React.useRef(grid);
+    const starsRef = React.useRef<{ x: number; y: number; r: number; o: number }[]>([]);
+    const showGridRef = React.useRef(grid.show);
 
     const [isClient, setIsClient] = React.useState(false);
     const [dims, setDims] = React.useState({ w: 600, h: 420 });
@@ -917,14 +1038,27 @@ export default function MilitaryMap(props: Props) {
     const lastMouseRef = React.useRef<{ x: number; y: number } | null>(null);
     const userInteractedRef = React.useRef<number>(0); // timestamp of last drag end
 
-    /* SSR guard */
+    /* Keep canvas ctx in sync */
     React.useEffect(() => {
-        setIsClient(true);
-    }, []);
+        const canvas = canvasRef.current;
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d", { alpha: true });
+        ctxRef.current = ctx;
+    }, [isClient]);
+
+    /* Keep ref mirrors in sync with React state/props */
+    React.useEffect(() => { hCRef.current = hC; }, [hC]);
+    React.useEffect(() => { activeMarkerLabelRef.current = activeMarkerLabel; }, [activeMarkerLabel]);
+    React.useEffect(() => { markersRef.current = markers; }, [markers]);
+    React.useEffect(() => { mapStyleRef.current = mapStyle; }, [mapStyle]);
+    React.useEffect(() => { gridRef.current = grid; showGridRef.current = grid.show; }, [grid]);
+
+    /* SSR guard */
+    React.useEffect(() => { setIsClient(true); }, []);
 
     /* Native Wheel Zoom Listener */
     React.useEffect(() => {
-        const el = svgRef.current;
+        const el = canvasRef.current;
         if (!el) return;
         const handleWheel = (e: WheelEvent) => {
             e.preventDefault();
@@ -1110,7 +1244,10 @@ export default function MilitaryMap(props: Props) {
         return out;
     }, [W, H, cx, cy, baseR, interaction.showStars]);
 
-    /* Animation loop — deps stripped to minimum; reads live values from refs each frame */
+    React.useEffect(() => { cfgMapRef.current = cfgMap; }, [cfgMap]);
+    React.useEffect(() => { starsRef.current = stars; }, [stars]);
+
+    /* Animation loop — pure Canvas, zero DOM mutations per frame */
     React.useEffect(() => {
         if (!isClient || countryIndex.length === 0) return;
 
@@ -1119,134 +1256,261 @@ export default function MilitaryMap(props: Props) {
         const idleMs = 3500;
         let hoverFrameCount = 0;
 
+        const TAU = Math.PI * 2;
+
         const step = (now: number) => {
             const dt = Math.min(0.05, (now - lastTime) / 1000);
             lastTime = now;
 
-            // Read live geometry from refs — no stale closure
+            const ctx = ctxRef.current;
+            const canvas = canvasRef.current;
+            if (!ctx || !canvas) { raf = requestAnimationFrame(step); return; }
+
+            // Live geometry from refs
             const { w: W, h: H } = dimsRef.current;
-            const pad = interactionRef.current.rotateX; // not used here — just keeping ref alive
             const _pad = layout.padding;
             const innerW = Math.max(0, W - _pad * 2);
             const innerH = Math.max(0, H - _pad * 2);
             const baseR = Math.max(20, Math.min(innerW, innerH) / 2 - 12);
             const R = baseR * zoomRef.current;
-            const cx = W / 2;
-            const cy = H / 2;
+            const cx = W / 2, cy = H / 2;
 
+            // Rotation update
             const sinceUser = now - userInteractedRef.current;
-
             if (targetRotRef.current && !dragRef.current.active) {
                 const target = targetRotRef.current;
                 const dLambda = target.lambda - rotRef.current.lambda;
                 const dPhi = target.phi - rotRef.current.phi;
                 rotRef.current.lambda += dLambda * 0.08;
                 rotRef.current.phi += dPhi * 0.08;
-                if (Math.abs(dLambda) < 0.05 && Math.abs(dPhi) < 0.05) {
-                    targetRotRef.current = null;
-                }
-            } else if (
-                interactionRef.current.autoRotate &&
-                !dragRef.current.active &&
-                sinceUser > idleMs
-            ) {
+                if (Math.abs(dLambda) < 0.05 && Math.abs(dPhi) < 0.05) targetRotRef.current = null;
+            } else if (interactionRef.current.autoRotate && !dragRef.current.active && sinceUser > idleMs) {
                 rotRef.current.lambda += interactionRef.current.autoRotateSpeed * dt;
             }
 
             const { lambda, phi, gamma } = rotRef.current;
+            const cp = Math.cos(phi * D2R), sp = Math.sin(phi * D2R);
+            const cg = Math.cos(gamma * D2R), sg = Math.sin(gamma * D2R);
 
-            // Precompute trig ONCE per frame (saves 4 Math.cos/sin per projected point)
-            const cp = Math.cos(phi * D2R);
-            const sp = Math.sin(phi * D2R);
-            const cg = Math.cos(gamma * D2R);
-            const sg = Math.sin(gamma * D2R);
+            // ── 1. Clear ─────────────────────────────────────────────────────────
+            ctx.clearRect(0, 0, W, H);
 
-            // Backface-cull: unit vector of the view direction (front of globe faces +X)
-            // A country whose bounding box center projects to rx < 0 is on the back — skip it.
-            // Update country paths
+            // ── 2. Stars ──────────────────────────────────────────────────────────
+            if (interactionRef.current.showStars) {
+                const st = starsRef.current;
+                for (let i = 0; i < st.length; i++) {
+                    const s = st[i];
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r, 0, TAU);
+                    ctx.fillStyle = rgba("#ffffff", s.o);
+                    ctx.fill();
+                }
+            }
+
+            // ── 3. Atmospheric glow ───────────────────────────────────────────────
+            const glowColor = interactionRef.current.glowColor;
+            const glowIntensity = interactionRef.current.glowIntensity;
+            const atmR = R + 50;
+            const atmGrad = ctx.createRadialGradient(cx, cy, R * 0.9, cx, cy, atmR);
+            atmGrad.addColorStop(0, rgba(glowColor, 0));
+            atmGrad.addColorStop(0.4, rgba(glowColor, 0.38 * glowIntensity));
+            atmGrad.addColorStop(1, rgba(glowColor, 0));
+            ctx.beginPath();
+            ctx.arc(cx, cy, atmR, 0, TAU);
+            ctx.fillStyle = atmGrad;
+            ctx.fill();
+
+            // ── 4. Ocean sphere ───────────────────────────────────────────────────
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, TAU);
+            ctx.fillStyle = mapStyleRef.current.oceanColor;
+            ctx.fill();
+            // Ocean gradient overlay
+            const oceanGrad = ctx.createLinearGradient(0, 0, W, H);
+            oceanGrad.addColorStop(0, "rgba(13,15,18,0.3)");
+            oceanGrad.addColorStop(0.5, "rgba(5,5,5,0.05)");
+            oceanGrad.addColorStop(1, "rgba(1,2,3,0.45)");
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, TAU);
+            ctx.fillStyle = oceanGrad;
+            ctx.fill();
+
+            // ── 5. Clip to sphere ─────────────────────────────────────────────────
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, TAU);
+            ctx.clip();
+
+            // ── 6. Ghost land shadows (blurred) ───────────────────────────────────
+            ctx.filter = "blur(3.5px)";
+            ctx.globalAlpha = 0.06;
+            ctx.fillStyle = mapStyleRef.current.landFill;
+            ctx.beginPath();
             for (const c of countryIndex) {
-                // Quick backface cull using bbox center
+                drawCountryCanvas(ctx, c.type, c.coords, lambda, cp, sp, cg, sg, R, cx, cy);
+            }
+            ctx.fill();
+            ctx.filter = "none";
+            ctx.globalAlpha = 1;
+
+            // ── 7. Country fills + strokes ────────────────────────────────────────
+            const ms = mapStyleRef.current;
+            const cfgM = cfgMapRef.current;
+            const hovCode = hCRef.current?.code ?? null;
+
+            // Group: default fill countries (most of them)
+            ctx.beginPath();
+            for (const c of countryIndex) {
+                // Backface cull
                 const centerLng = (c.bbox.minLng + c.bbox.maxLng) / 2;
                 const centerLat = (c.bbox.minLat + c.bbox.maxLat) / 2;
                 const lr = (centerLng - lambda) * D2R;
                 const la = centerLat * D2R;
-                const cl = Math.cos(la);
-                const x0 = cl * Math.cos(lr);
+                const cl2 = Math.cos(la);
+                const x0 = cl2 * Math.cos(lr);
                 const z0 = Math.sin(la);
                 const centerRx = x0 * cp + z0 * sp;
-                // Skip if center is clearly on back (with margin for large countries)
-                const bboxSpan = Math.max(
-                    c.bbox.maxLng - c.bbox.minLng,
-                    c.bbox.maxLat - c.bbox.minLat
-                ) / 180; // normalise 0..2
-                if (centerRx < -(bboxSpan * 0.6)) {
-                    const p = pathRefs.current.get(c.id);
-                    if (p && p.getAttribute("d") !== "") p.setAttribute("d", "");
-                    const g = ghostPathRefs.current.get(c.id);
-                    if (g && g.getAttribute("d") !== "") g.setAttribute("d", "");
-                    continue;
+                const bboxSpan = Math.max(c.bbox.maxLng - c.bbox.minLng, c.bbox.maxLat - c.bbox.minLat) / 180;
+                if (centerRx < -(bboxSpan * 0.6)) continue;
+
+                const cc = cfgM.get(c.id);
+                const isHov = hovCode === c.id;
+                const isSVK = c.id === "SVK";
+                const enabled = cc ? cc.enabled : true;
+
+                // Draw each country individually (fill color varies)
+                const fill = isHov ? ms.hoverColor
+                    : isSVK ? "rgba(212,175,55,0.35)"
+                    : (!enabled && cc) ? ms.disabledColor
+                    : ms.landFill;
+
+                ctx.beginPath();
+                drawCountryCanvas(ctx, c.type, c.coords, lambda, cp, sp, cg, sg, R, cx, cy);
+                ctx.fillStyle = fill;
+                ctx.fill();
+                ctx.strokeStyle = ms.landStroke;
+                ctx.lineWidth = ms.strokeWidth;
+                ctx.stroke();
+            }
+
+            // ── 8. Grid ───────────────────────────────────────────────────────────
+            if (showGridRef.current) {
+                const g = gridRef.current;
+                drawGridCanvas(ctx, lambda, phi, gamma, R, cx, cy, g.color, g.opacity);
+            }
+
+            // ── 9. Sphere shade overlay ────────────────────────────────────────────
+            const shadeGrad = ctx.createRadialGradient(
+                cx - R * 0.15, cy - R * 0.2, 0,
+                cx, cy, R
+            );
+            shadeGrad.addColorStop(0, "rgba(255,255,255,0.1)");
+            shadeGrad.addColorStop(0.6, "rgba(255,255,255,0.0)");
+            shadeGrad.addColorStop(0.85, "rgba(0,0,0,0.35)");
+            shadeGrad.addColorStop(1, "rgba(0,0,0,0.65)");
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, TAU);
+            ctx.fillStyle = shadeGrad;
+            ctx.fill();
+
+            ctx.restore(); // remove clip
+
+            // ── 10. Limb edge ─────────────────────────────────────────────────────
+            ctx.beginPath();
+            ctx.arc(cx, cy, R, 0, TAU);
+            ctx.strokeStyle = rgba(glowColor, 0.3 * glowIntensity);
+            ctx.lineWidth = 1;
+            ctx.stroke();
+
+            // ── 11. Markers ───────────────────────────────────────────────────────
+            const mks = markersRef.current;
+            const activeLbl = activeMarkerLabelRef.current;
+            if (markerPositionsRef.current.length !== mks.length) {
+                markerPositionsRef.current = new Array(mks.length).fill({ x: 0, y: 0, v: false });
+            }
+            for (let i = 0; i < mks.length; i++) {
+                const m = mks[i];
+                const p = projectFast(m.longitude, m.latitude, lambda, cp, sp, cg, sg, R, cx, cy);
+                markerPositionsRef.current[i] = { x: p.sx, y: p.sy, v: p.v };
+                if (!p.v) continue;
+                const fade = clamp(p.rx * 3.5, 0, 1);
+                const isSelected = activeLbl === m.label;
+                const sz = isSelected ? 7.5 : 4.5;
+                const col = isSelected ? "#ffffff" : m.color;
+                // Pulse ring
+                const pulsePhase = (now % 2200) / 2200;
+                const pulseR = sz * (isSelected ? 3.0 : 2.0) * (1 + pulsePhase * 0.75);
+                const pulseAlpha = (isSelected ? 0.5 : 0.3) * (1 - pulsePhase) * fade;
+                ctx.beginPath();
+                ctx.arc(p.sx, p.sy, pulseR, 0, TAU);
+                ctx.fillStyle = rgba(m.color, pulseAlpha);
+                ctx.fill();
+                // Main dot
+                ctx.beginPath();
+                ctx.arc(p.sx, p.sy, sz, 0, TAU);
+                ctx.globalAlpha = fade;
+                ctx.fillStyle = col;
+                ctx.fill();
+                ctx.strokeStyle = "#050505";
+                ctx.lineWidth = 1.5;
+                ctx.stroke();
+                ctx.globalAlpha = 1;
+            }
+
+            // ── 12. Canvas cursor ─────────────────────────────────────────────────
+            if (interactionRef.current.enableDrag) {
+                let overMarker = false;
+                if (lastMouseRef.current) {
+                    const mx = lastMouseRef.current.x, my = lastMouseRef.current.y;
+                    for (const pos of markerPositionsRef.current) {
+                        if (!pos.v) continue;
+                        const ddx = pos.x - mx, ddy = pos.y - my;
+                        if (ddx * ddx + ddy * ddy < 144) { overMarker = true; break; }
+                    }
                 }
-
-                const d = buildSphericalPathFast(
-                    c.type, c.coords, lambda, cp, sp, cg, sg, R, cx, cy
-                );
-                const p = pathRefs.current.get(c.id);
-                if (p) p.setAttribute("d", d);
-                const g = ghostPathRefs.current.get(c.id);
-                if (g) g.setAttribute("d", d);
+                canvas.style.cursor = overMarker ? "pointer" : dragRef.current.active ? "grabbing" : "grab";
             }
 
-            // Update grid
-            if (grid.show && gridPathRef.current) {
-                gridPathRef.current.setAttribute(
-                    "d",
-                    buildGraticule(lambda, phi, gamma, R, cx, cy)
-                );
-            }
-
-            // Update markers
-            for (let i = 0; i < markers.length; i++) {
-                const m = markers[i];
-                const el = markerRefs.current.get(i);
-                if (!el) continue;
-                const p = projectFast(
-                    m.longitude, m.latitude,
-                    lambda, cp, sp, cg, sg, R, cx, cy
-                );
-                if (p.v) {
-                    const fade = clamp(p.rx * 3.5, 0, 1);
-                    el.style.opacity = String(fade);
-                    el.style.display = "";
-                    el.setAttribute("transform", "translate(" + p.sx.toFixed(1) + "," + p.sy.toFixed(1) + ")");
-                } else {
-                    el.style.opacity = "0";
-                    el.style.display = "none";
-                }
-            }
-
-            // Hover hit-test — throttled, skipped during drag
+            // ── 13. Hover hit-test — throttled ────────────────────────────────────
             hoverFrameCount++;
             if (lastMouseRef.current && !dragRef.current.active && hoverFrameCount >= 3) {
                 hoverFrameCount = 0;
-                const m = lastMouseRef.current;
-                const ll = unproject(m.x, m.y, lambda, phi, gamma, R, cx, cy);
+                const mouse = lastMouseRef.current;
+                // Check marker hover first
+                let foundMarker = false;
+                for (let i = 0; i < mks.length; i++) {
+                    const pos = markerPositionsRef.current[i];
+                    if (!pos || !pos.v) continue;
+                    const ddx = pos.x - mouse.x, ddy = pos.y - mouse.y;
+                    if (ddx * ddx + ddy * ddy < 144) {
+                        foundMarker = true;
+                        const m = mks[i];
+                        if (!hM || hM.label !== m.label || hM.screenX !== mouse.x) {
+                            React.startTransition(() => setHM({ screenX: mouse.x, screenY: mouse.y, label: m.label, description: m.description }));
+                        }
+                        break;
+                    }
+                }
+                if (!foundMarker && hM) React.startTransition(() => setHM(null));
+
+                // Country hover
+                const ll = unproject(mouse.x, mouse.y, lambda, phi, gamma, R, cx, cy);
                 if (ll) {
                     const c = findCountryAt(ll.lng, ll.lat, countryIndex);
+                    const curHC = hCRef.current;
                     if (c) {
-                        if (!hC || hC.code !== c.id) {
-                            React.startTransition(() => {
-                                setHC({ screenX: m.x, screenY: m.y, name: c.name, code: c.id });
-                            });
-                        } else if (hC.screenX !== m.x || hC.screenY !== m.y) {
-                            React.startTransition(() => { setHC({ ...hC, screenX: m.x, screenY: m.y }); });
+                        if (!curHC || curHC.code !== c.id) {
+                            React.startTransition(() => setHC({ screenX: mouse.x, screenY: mouse.y, name: c.name, code: c.id }));
+                        } else if (curHC.screenX !== mouse.x || curHC.screenY !== mouse.y) {
+                            React.startTransition(() => setHC({ ...curHC, screenX: mouse.x, screenY: mouse.y }));
                         }
-                    } else if (hC) {
-                        React.startTransition(() => { setHC(null); });
+                    } else if (curHC) {
+                        React.startTransition(() => setHC(null));
                     }
-                } else if (hC) {
-                    React.startTransition(() => { setHC(null); });
+                } else if (hCRef.current) {
+                    React.startTransition(() => setHC(null));
                 }
-            } else if (dragRef.current.active && hC) {
+            } else if (dragRef.current.active && hCRef.current) {
                 React.startTransition(() => setHC(null));
             }
 
@@ -1258,41 +1522,7 @@ export default function MilitaryMap(props: Props) {
     }, [
         isClient,
         countryIndex,
-        markers,
-        grid.show,
         layout.padding,
-    ]);
-
-    /* Sync hover highlight colors to standard elements */
-    React.useEffect(() => {
-        for (const c of countryIndex) {
-            const el = pathRefs.current.get(c.id);
-            if (!el) continue;
-            const cc = cfgMap.get(c.id);
-            const enabled = cc ? cc.enabled : true;
-            
-            // Default highlight Slovakia (SVK) to gold as well for localization
-            const isHov = hC?.code === c.id;
-            const isSVK = c.id === "SVK";
-
-            let fill = mapStyle.landFill;
-            if (isHov) {
-                fill = mapStyle.hoverColor;
-            } else if (isSVK) {
-                fill = "rgba(212, 175, 55, 0.35)"; // Slovakia highlighted subtly
-            } else if (!enabled && cc) {
-                fill = mapStyle.disabledColor;
-            }
-
-            el.setAttribute("fill", fill);
-        }
-    }, [
-        countryIndex,
-        cfgMap,
-        hC,
-        mapStyle.hoverColor,
-        mapStyle.disabledColor,
-        mapStyle.landFill,
     ]);
 
     /* Pointer handlers */
@@ -1310,13 +1540,23 @@ export default function MilitaryMap(props: Props) {
         return Math.sqrt(dx * dx + dy * dy);
     };
 
-    const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
+    const onPointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
         if (!interaction.enableDrag) return;
 
         const m = localMouse(e);
         activePointersRef.current.set(e.pointerId, m);
-
         try { (e.currentTarget as any).setPointerCapture(e.pointerId); } catch {}
+
+        // Check if clicking on a marker
+        for (let i = 0; i < markersRef.current.length; i++) {
+            const pos = markerPositionsRef.current[i];
+            if (!pos || !pos.v) continue;
+            const ddx = pos.x - m.x, ddy = pos.y - m.y;
+            if (ddx * ddx + ddy * ddy < 144) {
+                onMarkerSelect?.(markersRef.current[i].label);
+                return;
+            }
+        }
 
         // Start pinch if 2 pointers active
         if (activePointersRef.current.size === 2) {
@@ -1324,15 +1564,11 @@ export default function MilitaryMap(props: Props) {
             if (dist !== null) {
                 pinchRef.current = { startDist: dist, startZoom: zoomRef.current };
             }
-            // Cancel single-finger drag so pinch takes over
             dragRef.current.active = false;
             return;
         }
 
-        // Single pointer — drag (skip if on marker)
-        const target = e.target as HTMLElement;
-        if (target.closest("g")?.style.cursor === "pointer") return;
-
+        // Single pointer — drag
         const dx = m.x - cx, dy = m.y - cy;
         if (dx * dx + dy * dy > (R + 8) * (R + 8)) return;
         dragRef.current = {
@@ -1345,7 +1581,7 @@ export default function MilitaryMap(props: Props) {
         React.startTransition(() => { setHC(null); setHM(null); });
     };
 
-    const onPointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
+    const onPointerMove = (e: React.PointerEvent<HTMLCanvasElement>) => {
         const m = localMouse(e);
         activePointersRef.current.set(e.pointerId, m);
         lastMouseRef.current = m;
@@ -1376,7 +1612,7 @@ export default function MilitaryMap(props: Props) {
         }
     };
 
-    const onPointerUp = (e: React.PointerEvent<SVGSVGElement>) => {
+    const onPointerUp = (e: React.PointerEvent<HTMLCanvasElement>) => {
         activePointersRef.current.delete(e.pointerId);
         try { (e.currentTarget as any).releasePointerCapture(e.pointerId); } catch {}
 
@@ -1550,11 +1786,10 @@ export default function MilitaryMap(props: Props) {
                 </div>
             )}
 
-            <svg
-                ref={svgRef}
+            <canvas
+                ref={canvasRef}
                 width={W}
                 height={H}
-                viewBox={"0 0 " + W + " " + H}
                 onPointerDown={onPointerDown}
                 onPointerMove={onPointerMove}
                 onPointerUp={onPointerUp}
@@ -1572,180 +1807,7 @@ export default function MilitaryMap(props: Props) {
                     willChange: "transform",
                     transform: "translateZ(0)",
                 }}
-            >
-                <defs>
-                    <filter
-                        id={fL}
-                        x="-40%"
-                        y="-40%"
-                        width="180%"
-                        height="180%"
-                    >
-                        <feGaussianBlur stdDeviation="3.5" result="b" />
-                        <feColorMatrix
-                            in="b"
-                            type="matrix"
-                            values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 0.18 0"
-                        />
-                    </filter>
-
-                    {/* High-end spatial ambient shading */}
-                    <radialGradient id={gShade} cx="35%" cy="30%" r="75%">
-                        <stop offset="0%" stopColor={rgba("#ffffff", 0.1)} />
-                        <stop offset="60%" stopColor={rgba("#ffffff", 0.0)} />
-                        <stop offset="85%" stopColor={rgba("#000000", 0.35)} />
-                        <stop offset="100%" stopColor={rgba("#000000", 0.65)} />
-                    </radialGradient>
-
-                    {/* Atmospherical golden glow */}
-                    <radialGradient id={gAtm} cx="50%" cy="50%" r="50%">
-                        <stop offset="0%" stopColor={rgba(glowColor, 0)} />
-                        <stop
-                            offset={((R / Math.max(R + 50, 1)) * 100).toFixed(1) + "%"}
-                            stopColor={rgba(glowColor, 0)}
-                        />
-                        <stop
-                            offset={(((R + 5) / Math.max(R + 50, 1)) * 100).toFixed(1) + "%"}
-                            stopColor={rgba(glowColor, 0.38 * glowIntensity)}
-                        />
-                        <stop offset="100%" stopColor={rgba(glowColor, 0)} />
-                    </radialGradient>
-
-                    {/* Muted deep ocean tone mapping */}
-                    <linearGradient id={gO} x1="0%" y1="0%" x2="100%" y2="100%">
-                        <stop offset="0%" stopColor={rgba("#0d0f12", 0.3)} />
-                        <stop offset="50%" stopColor={rgba("#050505", 0.05)} />
-                        <stop offset="100%" stopColor={rgba("#010203", 0.45)} />
-                    </linearGradient>
-
-                    {/* Sphere mask clipping */}
-                    <clipPath id={clipDisc}>
-                        <circle cx={cx} cy={cy} r={R} />
-                    </clipPath>
-                </defs>
-
-                {/* Stars Background */}
-                {interaction.showStars &&
-                    stars.map((s, i) => (
-                        <circle
-                            key={"s" + i}
-                            cx={s.x.toFixed(1)}
-                            cy={s.y.toFixed(1)}
-                            r={s.r.toFixed(2)}
-                            fill={rgba("#ffffff", s.o)}
-                        />
-                    ))}
-
-                {/* Atmospheric Glow Aura */}
-                <circle
-                    cx={cx}
-                    cy={cy}
-                    r={R + 50}
-                    fill={"url(#" + gAtm + ")"}
-                    pointerEvents="none"
-                />
-
-                {/* Base Ocean Sphere */}
-                <circle cx={cx} cy={cy} r={R} fill={oceanColor} />
-                <circle cx={cx} cy={cy} r={R} fill={"url(#" + gO + ")"} />
-
-                {/* Masked Terrain Overlay */}
-                <g clipPath={"url(#" + clipDisc + ")"}>
-                    {/* Atmospheric land shadows */}
-                    <g opacity={0.06} filter={"url(#" + fL + ")"}>
-                        {countryIndex.map((c) => (
-                            <path
-                                key={"g" + c.id}
-                                ref={(el) => {
-                                    if (el) ghostPathRefs.current.set(c.id, el);
-                                    else ghostPathRefs.current.delete(c.id);
-                                }}
-                                fill={mapStyle.landFill}
-                                stroke="none"
-                                pointerEvents="none"
-                            />
-                        ))}
-                    </g>
-
-                    {/* Graticule Grid */}
-                    {showGrid && (
-                        <path
-                            ref={gridPathRef}
-                            fill="none"
-                            stroke={gridCol}
-                            strokeWidth={0.5}
-                            strokeOpacity={gridOp}
-                            vectorEffect="non-scaling-stroke"
-                            pointerEvents="none"
-                        />
-                    )}
-
-                    {/* Actual Interactive Landmass Polygons */}
-                    {countryIndex.map((c) => {
-                        return (
-                            <path
-                                key={c.id}
-                                ref={(el) => {
-                                    if (el) pathRefs.current.set(c.id, el);
-                                    else pathRefs.current.delete(c.id);
-                                }}
-                                className="mm-c"
-                                stroke={landStroke}
-                                strokeWidth={strokeWidth}
-                                vectorEffect="non-scaling-stroke"
-                                style={{ cursor: "default" }}
-                            />
-                        );
-                    })}
-                </g>
-
-                {/* Spatial sphere shade overlay */}
-                <circle
-                    cx={cx}
-                    cy={cy}
-                    r={R}
-                    fill={"url(#" + gShade + ")"}
-                    pointerEvents="none"
-                />
-
-                {/* Elegant crisp limb edge outline */}
-                <circle
-                    cx={cx}
-                    cy={cy}
-                    r={R}
-                    fill="none"
-                    stroke={rgba(glowColor, 0.3 * glowIntensity)}
-                    strokeWidth={1}
-                    pointerEvents="none"
-                />
-
-                {/* SVG Active City Markers */}
-                {markers.map((m, i) => {
-                    const isSelected = activeMarkerLabel === m.label;
-                    const sz = isSelected ? 7.5 : 4.5;
-                    const col = isSelected ? "#ffffff" : m.color;
-
-                    return (
-                        <g
-                            key={i}
-                            ref={(el) => {
-                                if (el) markerRefs.current.set(i, el);
-                                else markerRefs.current.delete(i);
-                            }}
-                            onMouseEnter={(e) => handleMarkerEnter(i, e)}
-                            onMouseMove={(e) => handleMarkerMove(i, e)}
-                            onMouseLeave={handleMarkerLeave}
-                            onClick={() => onMarkerSelect?.(m.label)}
-                            style={{ cursor: "pointer", transition: "opacity 0.2s" }}
-                        >
-                            {/* Glowing gold/white expanding radar circle */}
-                            <circle cx={0} cy={0} r={sz * (isSelected ? 3.0 : 2.0)} fill={rgba(col, isSelected ? 0.5 : 0.3)} className="mm-pulse" />
-                            {/* Central solid dot */}
-                            <circle cx={0} cy={0} r={sz} fill={col} stroke="#050505" strokeWidth={1.5} />
-                        </g>
-                    );
-                })}
-            </svg>
+            />
 
             {/* Custom Interactive Tooltip Overlays */}
             {showTooltip && hM && (
