@@ -1694,18 +1694,11 @@ export default function MilitaryMap(props: Props) {
 
             {/* Elegant Golden Zoom Controls */}
             <div
-                style={{
-                    position: "absolute",
-                    right: "16px",
-                    bottom: "16px",
-                    display: "flex",
-                    flexDirection: "column",
-                    gap: "6px",
-                    zIndex: 110,
-                }}
+                className="absolute right-4 bottom-8 md:bottom-6 flex flex-col gap-1.5 z-[110]"
             >
                 <button
                     onClick={() => setZoom((prev) => Math.max(1.0, Math.min(35.0, prev + Math.max(0.35, prev * 0.18))))}
+                    className="active:scale-90 transition-transform duration-75 cursor-pointer"
                     style={{
                         width: "32px",
                         height: "32px",
@@ -1715,18 +1708,17 @@ export default function MilitaryMap(props: Props) {
                         color: "#d4af37",
                         fontSize: "18px",
                         fontWeight: "bold",
-                        cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         backdropFilter: "blur(4px)",
                         WebkitBackdropFilter: "blur(4px)",
-                        transition: "all 0.2s ease",
+                        transition: "border-color 0.15s, background-color 0.15s",
                         outline: "none",
                     }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.borderColor = "#d4af37";
-                        e.currentTarget.style.background = "rgba(212, 175, 55, 0.1)";
+                        e.currentTarget.style.background = "rgba(212, 175, 55, 0.15)";
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.borderColor = "rgba(212, 175, 55, 0.4)";
@@ -1737,6 +1729,7 @@ export default function MilitaryMap(props: Props) {
                 </button>
                 <button
                     onClick={() => setZoom((prev) => Math.max(1.0, Math.min(35.0, prev - Math.max(0.35, prev * 0.18))))}
+                    className="active:scale-90 transition-transform duration-75 cursor-pointer"
                     style={{
                         width: "32px",
                         height: "32px",
@@ -1746,18 +1739,17 @@ export default function MilitaryMap(props: Props) {
                         color: "#d4af37",
                         fontSize: "20px",
                         fontWeight: "bold",
-                        cursor: "pointer",
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
                         backdropFilter: "blur(4px)",
                         WebkitBackdropFilter: "blur(4px)",
-                        transition: "all 0.2s ease",
+                        transition: "border-color 0.15s, background-color 0.15s",
                         outline: "none",
                     }}
                     onMouseEnter={(e) => {
                         e.currentTarget.style.borderColor = "#d4af37";
-                        e.currentTarget.style.background = "rgba(212, 175, 55, 0.1)";
+                        e.currentTarget.style.background = "rgba(212, 175, 55, 0.15)";
                     }}
                     onMouseLeave={(e) => {
                         e.currentTarget.style.borderColor = "rgba(212, 175, 55, 0.4)";

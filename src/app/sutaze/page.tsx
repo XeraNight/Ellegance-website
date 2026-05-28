@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, MapPin, Award, Search } from "lucide-react";
+import { Calendar, MapPin, Award, Search, Navigation } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const MilitaryMap = dynamic(() => import("@/components/MilitaryMap"), {
@@ -95,6 +95,9 @@ export default function SutazePage() {
     return matchesCity && matchesSearch;
   });
 
+  const activeComp = filteredCompetitions.find(c => c.city === selectedCity) || COMPETITIONS[0];
+  const trasaUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(activeComp.venue + ", " + activeComp.city)}`;
+
   return (
     <div className="min-h-screen pt-[58px] pb-8 md:pt-28 md:pb-20 bg-obsidian-900 relative selection:bg-gold-500/30">
       {/* Background Glows */}
@@ -128,7 +131,7 @@ export default function SutazePage() {
             </h3>
 
             {/* 3D SVG Globe Container (Edge-to-edge on mobile, roomy height) */}
-            <div className="w-full aspect-[600/500] md:aspect-[600/480] h-[320px] sm:h-[380px] md:h-auto rounded-none md:rounded-[2rem] border-x-0 border-t-0 border-b border-white/10 md:border border-white/10 bg-obsidian-950/60 overflow-hidden relative group">
+            <div className="w-full aspect-[600/500] md:aspect-[600/480] h-[360px] sm:h-[420px] md:h-auto rounded-none md:rounded-[2rem] border-x-0 border-t-0 border-b border-white/10 md:border border-white/10 bg-obsidian-900 overflow-hidden relative group">
               <MilitaryMap 
                 activeMarkerLabel={selectedCity}
                 onMarkerSelect={(city) => setSelectedCity(selectedCity === city ? null : city)}
@@ -148,18 +151,27 @@ export default function SutazePage() {
                   placeholder="Hľadať súťaže..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-obsidian-950/35 backdrop-blur-sm md:bg-white/5 border border-white/10 hover:border-white/20 focus:border-gold-500/50 rounded-2xl px-4 py-2.5 text-xs font-light text-white focus:outline-none transition-all pl-10"
+                  className="w-full bg-obsidian-800 border border-white/15 hover:border-white/30 focus:border-gold-500 focus:bg-obsidian-700 rounded-2xl pl-10 pr-12 py-2.5 text-xs font-light text-white focus:outline-none transition-all duration-100 shadow-inner"
                 />
                 <Search className="w-3.5 h-3.5 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <a
+                  href={trasaUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  title={`Trasa do ${activeComp.city}`}
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl bg-gold-500/10 border border-gold-500/20 hover:bg-gold-500/20 active:scale-95 transition-all duration-100 flex items-center justify-center cursor-pointer group/nav"
+                >
+                  <Navigation className="w-3.5 h-3.5 text-gold-500 group-hover/nav:text-gold-400 transition-colors rotate-45" />
+                </a>
               </div>
             </div>
 
-            {/* Clear Filters indicator - Floating capsule badge on bottom-left of map on mobile, text button below on desktop */}
+            {/* Clear Filters indicator - Floating capsule badge above sticky bottom sheet on mobile, text button below on desktop */}
             {selectedCity && (
-              <div className="absolute bottom-4 left-6 z-20 md:relative md:bottom-auto md:left-auto md:mt-2">
+              <div className="absolute bottom-14 left-6 z-50 md:relative md:bottom-auto md:left-auto md:mt-2">
                 <button
                   onClick={() => setSelectedCity(null)}
-                  className="px-2.5 py-1.5 rounded-xl bg-obsidian-950/85 backdrop-blur-md border border-gold-500/30 text-[9px] font-bold uppercase tracking-wider text-gold-500 hover:text-gold-400 hover:border-gold-500 transition-all shadow-lg flex items-center gap-1.5"
+                  className="px-2.5 py-1.5 rounded-xl bg-obsidian-800 border border-gold-500/40 text-[9px] font-bold uppercase tracking-wider text-gold-500 hover:text-gold-400 hover:border-gold-500 active:scale-95 hover:scale-102 transition-all duration-100 shadow-lg flex items-center gap-1.5 cursor-pointer"
                 >
                   <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse"></span>
                   Zrušiť filter: {selectedCity}
@@ -168,11 +180,14 @@ export default function SutazePage() {
             )}
           </div>
 
-          {/* RIGHT COLUMN: Competitions List (Scrolls below map on mobile) */}
-          <div className="lg:col-span-5 space-y-6 pt-4 md:pt-0">
+          {/* RIGHT COLUMN: Competitions List (Sticky bottom sheet on mobile, clean list on desktop) */}
+          <div className="lg:col-span-5 sticky top-[340px] sm:top-[400px] md:relative md:top-auto z-40 -mt-12 md:-mt-20 -mx-6 md:-mx-0 w-screen md:w-full bg-obsidian-900 border-t border-x-0 border-b-0 border-gold-500/30 md:border-none rounded-t-[2.5rem] md:rounded-none shadow-2xl md:shadow-none overflow-hidden md:overflow-visible flex flex-col h-[360px] md:h-auto pt-0">
             
+            {/* Drag Handle Indicator for mobile bottom sheet */}
+            <div className="w-12 h-1 bg-white/20 rounded-full mx-auto my-3.5 shrink-0 md:hidden"></div>
+
             {/* List (2 columns on mobile, 1 column on desktop) */}
-            <div className="grid grid-cols-2 md:grid-cols-1 gap-3 md:gap-4 md:max-h-[520px] md:overflow-y-auto pr-1">
+            <div className="grid grid-cols-2 md:grid-cols-1 gap-3 md:gap-4 overflow-y-auto flex-1 min-h-0 px-4 pb-4 md:px-0 md:pb-0 md:max-h-[520px] pr-1">
               <AnimatePresence mode="popLayout">
                 {filteredCompetitions.length === 0 ? (
                   <div className="py-16 text-center rounded-2xl border border-white/5 bg-white/[0.01] col-span-2">
@@ -185,16 +200,19 @@ export default function SutazePage() {
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
+                      transition={{ type: "spring", stiffness: 450, damping: 30, mass: 0.6 }}
+                      whileHover={{ y: -3, scale: 1.01 }}
+                      whileTap={{ scale: 0.98 }}
                       key={comp.id}
-                      onClick={() => setSelectedCity(comp.city)}
-                      className={`p-3.5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border transition-all duration-300 cursor-pointer text-left group w-full relative overflow-hidden ${
+                      onClick={() => setSelectedCity(selectedCity === comp.city ? null : comp.city)}
+                      className={`p-3.5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border transition-colors duration-150 cursor-pointer text-left group w-full relative overflow-hidden ${
                         selectedCity === comp.city
-                          ? "bg-gradient-to-br from-gold-500/[0.06] via-gold-500/[0.01] to-transparent border-gold-500/40 shadow-lg shadow-gold-500/5 scale-[0.99] md:scale-100"
-                          : "bg-obsidian-950/40 border-white/5 hover:border-white/10 hover:bg-white/[0.01]"
+                          ? "bg-gradient-to-br from-gold-500/[0.12] to-obsidian-800 border-gold-500/70 shadow-lg shadow-gold-500/10 col-span-2"
+                          : "bg-obsidian-800 border-white/10 hover:border-white/20 hover:bg-obsidian-700 col-span-1"
                       }`}
                     >
                       {/* Subtle hover background highlight glow */}
-                      <div className="absolute top-0 right-0 w-24 h-24 bg-gold-500/[0.01] rounded-full blur-2xl group-hover:bg-gold-500/[0.03] transition-all duration-500 pointer-events-none"></div>
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-gold-500/[0.02] rounded-full blur-2xl group-hover:bg-gold-500/[0.05] transition-all duration-300 pointer-events-none"></div>
 
                       {/* Header row */}
                       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1.5 md:gap-3 mb-2 md:mb-3 relative z-10">
@@ -237,15 +255,6 @@ export default function SutazePage() {
                                 <span className="hidden md:inline">{comp.venue} ({comp.city})</span>
                               </span>
                             </div>
-                            <a
-                              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(comp.venue + ", " + comp.city)}`}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              onClick={(e) => e.stopPropagation()}
-                              className="ml-1 px-1.5 py-0.5 rounded bg-gold-500/10 text-[7px] md:text-[8px] font-bold text-gold-500 hover:bg-gold-500 hover:text-obsidian-950 transition-all duration-200 shrink-0 uppercase tracking-wider flex items-center gap-0.5"
-                            >
-                              Trasa
-                            </a>
                           </div>
                         </div>
                         <div className="flex items-start gap-1.5 md:gap-2 bg-white/[0.02] border border-white/5 rounded-xl p-1.5 md:p-2.5 border-dashed">
