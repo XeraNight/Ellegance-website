@@ -2,6 +2,7 @@
 
 import React, { useState, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getAssetPath } from "@/lib/utils";
 import { 
   Sparkles, 
   Plus, 
@@ -399,7 +400,7 @@ export default function RodicovskaZonaPage() {
                           <h4 className="text-white text-xs font-bold uppercase tracking-widest">Vizuálna ukážka:</h4>
                           <div className="relative aspect-square w-full rounded-2xl overflow-hidden border border-white/10 shadow-2xl bg-obsidian-950">
                             <img 
-                              src={guide.image} 
+                              src={getAssetPath(guide.image)} 
                               alt={guide.title} 
                               className="w-full h-full object-cover filter brightness-95 hover:scale-105 hover:brightness-100 transition-all duration-500" 
                             />
@@ -588,7 +589,7 @@ export default function RodicovskaZonaPage() {
                   {/* Photo area */}
                   <div className="relative aspect-[4/3] bg-obsidian-900 overflow-hidden border-b border-white/5">
                     <img
-                      src={item.image}
+                      src={getAssetPath(item.image)}
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
                     />

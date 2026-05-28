@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { supabase } from "@/lib/supabase";
+import { getAssetPath } from "@/lib/utils";
 
 // ─── Security constants ───────────────────────────────────
 /** Allowed course values – prevents arbitrary values being inserted into DB */
@@ -146,7 +147,7 @@ function KontaktForm() {
       {/* Background image with blur and dark overlay */}
       <div className="absolute inset-0 z-0">
         <img 
-          src="/images/image.png" 
+          src={getAssetPath("/images/image.png")} 
           alt="Pozadie" 
           className="w-full h-full object-cover opacity-50 filter blur-[0.5px] scale-[1.02]"
         />
@@ -168,7 +169,7 @@ function KontaktForm() {
             {/* Realistic Paper Backdrop - Now transparent PNG */}
             <div className="absolute -inset-6 md:-inset-10 pointer-events-none z-0">
               <img 
-                src="/images/obrázok-removebg-preview(4).png" 
+                src={getAssetPath("/images/handmade_paper.png")} 
                 alt="Ručne robený papier" 
                 className="w-full h-full object-fill pointer-events-none"
               />

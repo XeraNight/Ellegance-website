@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { getAssetPath } from "@/lib/utils";
 import { 
   Sparkles, 
   ShoppingBag, 
@@ -245,7 +246,7 @@ export default function VybavaPage() {
                   {/* Photo area */}
                   <div className="relative aspect-[16/10] bg-obsidian-900 overflow-hidden border border-white/5 rounded-[2rem] group-hover:border-gold-500/20 transition-colors shadow-inner">
                     <img
-                      src={item.imageUrl}
+                      src={getAssetPath(item.imageUrl)}
                       alt={item.title}
                       className="w-full h-full object-cover filter brightness-95 group-hover:scale-105 transition-all duration-500"
                     />
