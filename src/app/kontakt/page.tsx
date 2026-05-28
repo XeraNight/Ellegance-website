@@ -164,18 +164,18 @@ function KontaktForm() {
             initial={{ rotate: -2, scale: 0.95 }}
             whileHover={{ rotate: 0.5, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 200, damping: 15 }}
-            className="relative bg-transparent p-4 sm:p-10 md:p-16 overflow-visible origin-center"
+            className="relative bg-transparent py-8 px-4 sm:p-10 md:p-16 overflow-visible origin-center"
           >
             {/* Realistic Paper Backdrop - Now transparent PNG */}
-            <div className="absolute -inset-4 sm:-inset-6 md:-inset-10 pointer-events-none z-0">
+            <div className="absolute -top-4 -bottom-4 -left-14 -right-14 sm:-inset-6 md:-inset-10 pointer-events-none z-0">
               <img 
                 src={getAssetPath("/images/handmade_paper.png")} 
                 alt="Ručne robený papier" 
-                className="w-full h-full object-fill pointer-events-none"
+                className="w-full h-full object-fill pointer-events-none scale-x-[1.25] sm:scale-x-100"
               />
             </div>
 
-            <div className="relative z-10 max-w-[340px] md:max-w-[400px] mx-auto pl-5 pr-2 sm:pl-7 sm:pr-3">
+            <div className="relative z-10 max-w-[370px] sm:max-w-[340px] md:max-w-[400px] mx-auto px-5 sm:px-6">
               <h1 className="font-serif text-2xl md:text-3.5xl text-[#2a2624] mb-8 text-center border-b border-[#c4b5a9] pb-5 italic">Kontaktný formulár</h1>
 
               {success ? (
