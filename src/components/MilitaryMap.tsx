@@ -329,17 +329,14 @@ function project(
     const lr = (lng - lambda) * D2R;
     const la = lat * D2R;
     const cl = Math.cos(la);
-    // Unrotated unit-sphere position (post-Z-rotation by lambda)
     const x0 = cl * Math.cos(lr);
     const y0 = cl * Math.sin(lr);
     const z0 = Math.sin(la);
-    // Rotate around Y by phi (tilts north pole forward)
     const cp = Math.cos(phi * D2R);
     const sp = Math.sin(phi * D2R);
     const x1 = x0 * cp + z0 * sp;
     const y1 = y0;
     const z1 = -x0 * sp + z0 * cp;
-    // Rotate around X by gamma (rolls around the viewer-facing axis)
     const cg = Math.cos(gamma * D2R);
     const sg = Math.sin(gamma * D2R);
     const rx = x1;
@@ -351,6 +348,39 @@ function project(
         rx,
         ry,
         rz,
+        v: rx >= 0,
+    };
+}
+
+/**
+ * Faster project() with precomputed sin/cos — call this inside the rAF loop.
+ */
+function projectFast(
+    lng: number,
+    lat: number,
+    lambda: number,
+    cp: number, sp: number, // cos/sin of phi
+    cg: number, sg: number, // cos/sin of gamma
+    R: number,
+    cx: number,
+    cy: number
+): ProjectedPoint {
+    const lr = (lng - lambda) * D2R;
+    const la = lat * D2R;
+    const cl = Math.cos(la);
+    const x0 = cl * Math.cos(lr);
+    const y0 = cl * Math.sin(lr);
+    const z0 = Math.sin(la);
+    const x1 = x0 * cp + z0 * sp;
+    const y1 = y0;
+    const z1 = -x0 * sp + z0 * cp;
+    const rx = x1;
+    const ry = y1 * cg - z1 * sg;
+    const rz = y1 * sg + z1 * cg;
+    return {
+        sx: cx + R * ry,
+        sy: cy - R * rz,
+        rx, ry, rz,
         v: rx >= 0,
     };
 }
@@ -493,6 +523,58 @@ function segmentsToPath(segs: ProjectedPoint[][]): string {
     return out;
 }
 
+/**
+ * buildSphericalPath using precomputed trig — fast version for rAF loop.
+ */
+function buildSphericalPathFast(
+    type: string,
+    coords: any,
+    lambda: number,
+    cp: number, sp: number,
+    cg: number, sg: number,
+    R: number,
+    cx: number,
+    cy: number
+): string {
+    if (!coords) return "";
+    const ringFast = (ring: number[][]): ProjectedPoint[][] => {
+        const n = ring.length;
+        if (n < 3) return [];
+        const proj: ProjectedPoint[] = new Array(n);
+        let visCount = 0;
+        for (let i = 0; i < n; i++) {
+            const p = ring[i];
+            proj[i] = projectFast(p[0], p[1], lambda, cp, sp, cg, sg, R, cx, cy);
+            if (proj[i].v) visCount++;
+        }
+        if (visCount === 0) return [];
+        if (visCount === n) return [proj.slice()];
+        let startIdx = -1;
+        for (let i = 0; i < n; i++) {
+            if (!proj[i].v && proj[(i + 1) % n].v) { startIdx = i; break; }
+        }
+        if (startIdx === -1) return [proj.slice()];
+        const segments: ProjectedPoint[][] = [];
+        let cur: ProjectedPoint[] = [];
+        for (let k = 0; k < n; k++) {
+            const i = (startIdx + k) % n;
+            const j = (startIdx + k + 1) % n;
+            const A = proj[i], B = proj[j];
+            if (A.v && B.v) { cur.push(B); }
+            else if (A.v && !B.v) { const inter = limbIntersect(A, B, R, cx, cy); if (inter) cur.push(inter); if (cur.length >= 2) segments.push(cur); cur = []; }
+            else if (!A.v && B.v) { const inter = limbIntersect(A, B, R, cx, cy); if (inter) cur.push(inter); cur.push(B); }
+        }
+        return segments;
+    };
+    let out = "";
+    if (type === "Polygon") {
+        for (const ring of coords) out += segmentsToPath(ringFast(ring));
+    } else if (type === "MultiPolygon") {
+        for (const poly of coords) for (const ring of poly) out += segmentsToPath(ringFast(ring));
+    }
+    return out;
+}
+
 function buildSphericalPath(
     type: string,
     coords: any,
@@ -503,24 +585,9 @@ function buildSphericalPath(
     cx: number,
     cy: number
 ): string {
-    if (!coords) return "";
-    if (type === "Polygon") {
-        let out = "";
-        for (const ring of coords) {
-            out += segmentsToPath(ringToSegments(ring, lambda, phi, gamma, R, cx, cy));
-        }
-        return out;
-    }
-    if (type === "MultiPolygon") {
-        let out = "";
-        for (const poly of coords) {
-            for (const ring of poly) {
-                out += segmentsToPath(ringToSegments(ring, lambda, phi, gamma, R, cx, cy));
-            }
-        }
-        return out;
-    }
-    return "";
+    const cp = Math.cos(phi * D2R), sp = Math.sin(phi * D2R);
+    const cg = Math.cos(gamma * D2R), sg = Math.sin(gamma * D2R);
+    return buildSphericalPathFast(type, coords, lambda, cp, sp, cg, sg, R, cx, cy);
 }
 
 /**
@@ -817,7 +884,10 @@ export default function MilitaryMap(props: Props) {
     const [err, setErr] = React.useState(false);
     const [hM, setHM] = React.useState<HoveredMarker | null>(null);
     const [hC, setHC] = React.useState<HoveredCountry | null>(null);
-    const [zoom, setZoom] = React.useState(16.0); // Starts beautifully zoomed in on Slovakia!
+    // zoom as a ref — changes never trigger React re-render/rAF restart
+    const zoomRef = React.useRef(16.0);
+    // Separate display state only for +/- buttons (lightweight, only set on button click)
+    const [zoomDisplay, setZoomDisplay] = React.useState(16.0);
 
     // Live rotation state held in refs to avoid React reconciliation per frame.
     const rotRef = React.useRef({
@@ -825,6 +895,11 @@ export default function MilitaryMap(props: Props) {
         phi: interaction.rotateY,
         gamma: interaction.rotateX,
     });
+    // Geometry refs — rAF loop reads these directly, avoiding closure stale values
+    const dimsRef = React.useRef(dims);
+    React.useEffect(() => { dimsRef.current = dims; }, [dims]);
+    const interactionRef = React.useRef(interaction);
+    React.useEffect(() => { interactionRef.current = interaction; }, [interaction]);
     
     // Lerping variables for smooth auto-centering on active select
     const targetRotRef = React.useRef<({ lambda: number; phi: number } | null)>(null);
@@ -853,16 +928,13 @@ export default function MilitaryMap(props: Props) {
         if (!el) return;
         const handleWheel = (e: WheelEvent) => {
             e.preventDefault();
-            setZoom((prev) => {
-                const sensitivity = prev * 0.0012;
-                const next = prev - e.deltaY * sensitivity;
-                return Math.max(1.0, Math.min(35.0, next));
-            });
+            const prev = zoomRef.current;
+            const sensitivity = prev * 0.0012;
+            const next = Math.max(1.0, Math.min(35.0, prev - e.deltaY * sensitivity));
+            zoomRef.current = next;
         };
         el.addEventListener("wheel", handleWheel, { passive: false });
-        return () => {
-            el.removeEventListener("wheel", handleWheel);
-        };
+        return () => { el.removeEventListener("wheel", handleWheel); };
     }, [isClient]);
 
     /* Set target coordinates when activeMarkerLabel changes */
@@ -939,13 +1011,13 @@ export default function MilitaryMap(props: Props) {
 
     // Hooks must run unconditionally above. The loader check is moved to the bottom.
 
-    /* Geometry */
+    /* Geometry — rAF loop reads from dimsRef + zoomRef each frame; R here is render-only for SVG decorations */
     const { w: W, h: H } = dims;
     const pad = layout.padding;
     const innerW = Math.max(0, W - pad * 2);
     const innerH = Math.max(0, H - pad * 2);
     const baseR = Math.max(20, Math.min(innerW, innerH) / 2 - 12);
-    const R = baseR * zoom;
+    const R = baseR * zoomRef.current; // read-only at render; does NOT trigger re-renders
     const cx = W / 2;
     const cy = H / 2;
 
@@ -1016,7 +1088,7 @@ export default function MilitaryMap(props: Props) {
         return m;
     }, [countries]);
 
-    /* Stars */
+    /* Stars — use baseR (unzoomed) so this never recomputes during zoom */
     const stars = React.useMemo(() => {
         if (!interaction.showStars) return [];
         const rnd = mulberry32(0x5e6d_a17c);
@@ -1027,7 +1099,7 @@ export default function MilitaryMap(props: Props) {
             const y = rnd() * H;
             const dx = x - cx,
                 dy = y - cy;
-            if (dx * dx + dy * dy < (R + 15) * (R + 15)) continue;
+            if (dx * dx + dy * dy < (baseR + 15) * (baseR + 15)) continue;
             out.push({
                 x,
                 y,
@@ -1036,59 +1108,87 @@ export default function MilitaryMap(props: Props) {
             });
         }
         return out;
-    }, [W, H, cx, cy, R, interaction.showStars]);
+    }, [W, H, cx, cy, baseR, interaction.showStars]);
 
-    /* Animation loop */
+    /* Animation loop — deps stripped to minimum; reads live values from refs each frame */
     React.useEffect(() => {
         if (!isClient || countryIndex.length === 0) return;
-        if (W <= 0 || H <= 0 || R <= 0) return;
 
         let raf = 0;
         let lastTime = typeof performance !== "undefined" ? performance.now() : 0;
-        const idleMs = 3500; // time after drag or active selection to resume auto-rotate
-        let hoverFrameCount = 0; // throttle hover hit-test to every 3 frames
+        const idleMs = 3500;
+        let hoverFrameCount = 0;
 
         const step = (now: number) => {
             const dt = Math.min(0.05, (now - lastTime) / 1000);
             lastTime = now;
 
+            // Read live geometry from refs — no stale closure
+            const { w: W, h: H } = dimsRef.current;
+            const pad = interactionRef.current.rotateX; // not used here — just keeping ref alive
+            const _pad = layout.padding;
+            const innerW = Math.max(0, W - _pad * 2);
+            const innerH = Math.max(0, H - _pad * 2);
+            const baseR = Math.max(20, Math.min(innerW, innerH) / 2 - 12);
+            const R = baseR * zoomRef.current;
+            const cx = W / 2;
+            const cy = H / 2;
+
             const sinceUser = now - userInteractedRef.current;
 
-            // Handle Target Lerp Centering on Active Marker Select
             if (targetRotRef.current && !dragRef.current.active) {
                 const target = targetRotRef.current;
                 const dLambda = target.lambda - rotRef.current.lambda;
                 const dPhi = target.phi - rotRef.current.phi;
-                
-                // Direct interpolations
                 rotRef.current.lambda += dLambda * 0.08;
                 rotRef.current.phi += dPhi * 0.08;
-
-                // Stop active lerp when extremely close
                 if (Math.abs(dLambda) < 0.05 && Math.abs(dPhi) < 0.05) {
                     targetRotRef.current = null;
                 }
             } else if (
-                interaction.autoRotate &&
+                interactionRef.current.autoRotate &&
                 !dragRef.current.active &&
                 sinceUser > idleMs
             ) {
-                rotRef.current.lambda += interaction.autoRotateSpeed * dt;
+                rotRef.current.lambda += interactionRef.current.autoRotateSpeed * dt;
             }
 
             const { lambda, phi, gamma } = rotRef.current;
 
+            // Precompute trig ONCE per frame (saves 4 Math.cos/sin per projected point)
+            const cp = Math.cos(phi * D2R);
+            const sp = Math.sin(phi * D2R);
+            const cg = Math.cos(gamma * D2R);
+            const sg = Math.sin(gamma * D2R);
+
+            // Backface-cull: unit vector of the view direction (front of globe faces +X)
+            // A country whose bounding box center projects to rx < 0 is on the back — skip it.
             // Update country paths
             for (const c of countryIndex) {
-                const d = buildSphericalPath(
-                    c.type,
-                    c.coords,
-                    lambda,
-                    phi,
-                    gamma,
-                    R,
-                    cx,
-                    cy
+                // Quick backface cull using bbox center
+                const centerLng = (c.bbox.minLng + c.bbox.maxLng) / 2;
+                const centerLat = (c.bbox.minLat + c.bbox.maxLat) / 2;
+                const lr = (centerLng - lambda) * D2R;
+                const la = centerLat * D2R;
+                const cl = Math.cos(la);
+                const x0 = cl * Math.cos(lr);
+                const z0 = Math.sin(la);
+                const centerRx = x0 * cp + z0 * sp;
+                // Skip if center is clearly on back (with margin for large countries)
+                const bboxSpan = Math.max(
+                    c.bbox.maxLng - c.bbox.minLng,
+                    c.bbox.maxLat - c.bbox.minLat
+                ) / 180; // normalise 0..2
+                if (centerRx < -(bboxSpan * 0.6)) {
+                    const p = pathRefs.current.get(c.id);
+                    if (p && p.getAttribute("d") !== "") p.setAttribute("d", "");
+                    const g = ghostPathRefs.current.get(c.id);
+                    if (g && g.getAttribute("d") !== "") g.setAttribute("d", "");
+                    continue;
+                }
+
+                const d = buildSphericalPathFast(
+                    c.type, c.coords, lambda, cp, sp, cg, sg, R, cx, cy
                 );
                 const p = pathRefs.current.get(c.id);
                 if (p) p.setAttribute("d", d);
@@ -1109,35 +1209,22 @@ export default function MilitaryMap(props: Props) {
                 const m = markers[i];
                 const el = markerRefs.current.get(i);
                 if (!el) continue;
-                const p = project(
-                    m.longitude,
-                    m.latitude,
-                    lambda,
-                    phi,
-                    gamma,
-                    R,
-                    cx,
-                    cy
+                const p = projectFast(
+                    m.longitude, m.latitude,
+                    lambda, cp, sp, cg, sg, R, cx, cy
                 );
                 if (p.v) {
                     const fade = clamp(p.rx * 3.5, 0, 1);
                     el.style.opacity = String(fade);
                     el.style.display = "";
-                    el.setAttribute(
-                        "transform",
-                        "translate(" +
-                            p.sx.toFixed(1) +
-                            "," +
-                            p.sy.toFixed(1) +
-                            ")"
-                    );
+                    el.setAttribute("transform", "translate(" + p.sx.toFixed(1) + "," + p.sy.toFixed(1) + ")");
                 } else {
                     el.style.opacity = "0";
                     el.style.display = "none";
                 }
             }
 
-            // Evaluate hover hit-test — throttled to every 3 frames and skipped during drag
+            // Hover hit-test — throttled, skipped during drag
             hoverFrameCount++;
             if (lastMouseRef.current && !dragRef.current.active && hoverFrameCount >= 3) {
                 hoverFrameCount = 0;
@@ -1148,30 +1235,18 @@ export default function MilitaryMap(props: Props) {
                     if (c) {
                         if (!hC || hC.code !== c.id) {
                             React.startTransition(() => {
-                                setHC({
-                                    screenX: m.x,
-                                    screenY: m.y,
-                                    name: c.name,
-                                    code: c.id,
-                                });
+                                setHC({ screenX: m.x, screenY: m.y, name: c.name, code: c.id });
                             });
                         } else if (hC.screenX !== m.x || hC.screenY !== m.y) {
-                            React.startTransition(() => {
-                                setHC({ ...hC, screenX: m.x, screenY: m.y });
-                            });
+                            React.startTransition(() => { setHC({ ...hC, screenX: m.x, screenY: m.y }); });
                         }
                     } else if (hC) {
-                        React.startTransition(() => {
-                            setHC(null);
-                        });
+                        React.startTransition(() => { setHC(null); });
                     }
                 } else if (hC) {
-                    React.startTransition(() => {
-                        setHC(null);
-                    });
+                    React.startTransition(() => { setHC(null); });
                 }
             } else if (dragRef.current.active && hC) {
-                // Clear tooltip immediately on drag start
                 React.startTransition(() => setHC(null));
             }
 
@@ -1184,14 +1259,8 @@ export default function MilitaryMap(props: Props) {
         isClient,
         countryIndex,
         markers,
-        R,
-        cx,
-        cy,
-        W,
-        H,
         grid.show,
-        interaction.autoRotate,
-        interaction.autoRotateSpeed,
+        layout.padding,
     ]);
 
     /* Sync hover highlight colors to standard elements */
@@ -1253,7 +1322,7 @@ export default function MilitaryMap(props: Props) {
         if (activePointersRef.current.size === 2) {
             const dist = getPinchDist();
             if (dist !== null) {
-                pinchRef.current = { startDist: dist, startZoom: zoom };
+                pinchRef.current = { startDist: dist, startZoom: zoomRef.current };
             }
             // Cancel single-finger drag so pinch takes over
             dragRef.current.active = false;
@@ -1281,21 +1350,21 @@ export default function MilitaryMap(props: Props) {
         activePointersRef.current.set(e.pointerId, m);
         lastMouseRef.current = m;
 
-        // Pinch-to-zoom — two fingers
+        // Pinch-to-zoom — two fingers, write directly to ref (no re-render)
         if (activePointersRef.current.size >= 2 && pinchRef.current) {
             const dist = getPinchDist();
             if (dist !== null) {
                 const ratio = dist / pinchRef.current.startDist;
                 const next = clamp(pinchRef.current.startZoom * ratio, 1.0, 35.0);
-                setZoom(next);
+                zoomRef.current = next;
                 userInteractedRef.current = performance.now();
             }
-            return; // don't pan while pinching
+            return;
         }
 
         // Single-finger drag
         if (dragRef.current.active) {
-            const sens = interaction.dragSensitivity / zoom;
+            const sens = interaction.dragSensitivity / zoomRef.current;
             const dx = m.x - dragRef.current.startX;
             const dy = m.y - dragRef.current.startY;
             rotRef.current.lambda = dragRef.current.startLambda - dx * sens;
@@ -1740,7 +1809,10 @@ export default function MilitaryMap(props: Props) {
                 className="absolute right-4 bottom-8 md:bottom-6 flex flex-col gap-1.5 z-[110]"
             >
                 <button
-                    onClick={() => setZoom((prev) => Math.max(1.0, Math.min(35.0, prev + Math.max(0.35, prev * 0.18))))}
+                    onClick={() => {
+                        zoomRef.current = Math.max(1.0, Math.min(35.0, zoomRef.current + Math.max(0.35, zoomRef.current * 0.18)));
+                        userInteractedRef.current = performance.now();
+                    }}
                     className="active:scale-90 transition-transform duration-75 cursor-pointer"
                     style={{
                         width: "32px",
@@ -1771,7 +1843,10 @@ export default function MilitaryMap(props: Props) {
                     +
                 </button>
                 <button
-                    onClick={() => setZoom((prev) => Math.max(1.0, Math.min(35.0, prev - Math.max(0.35, prev * 0.18))))}
+                    onClick={() => {
+                        zoomRef.current = Math.max(1.0, Math.min(35.0, zoomRef.current - Math.max(0.35, zoomRef.current * 0.18)));
+                        userInteractedRef.current = performance.now();
+                    }}
                     className="active:scale-90 transition-transform duration-75 cursor-pointer"
                     style={{
                         width: "32px",
