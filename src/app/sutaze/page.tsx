@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, MapPin, Award, Star, Search, ChevronRight } from "lucide-react";
+import { Calendar, MapPin, Award, Search } from "lucide-react";
 import dynamic from "next/dynamic";
 
 const MilitaryMap = dynamic(() => import("@/components/MilitaryMap"), {
@@ -83,18 +83,9 @@ const COMPETITIONS = [
   }
 ];
 
-const CITIES = [
-  { name: "Bratislava", x: 60, y: 290 },
-  { name: "Žilina", x: 240, y: 140 },
-  { name: "Banská Bystrica", x: 320, y: 210 },
-  { name: "Poprad", x: 440, y: 150 },
-  { name: "Košice", x: 520, y: 190 }
-];
-
 export default function SutazePage() {
   const [selectedCity, setSelectedCity] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const [hoveredCity, setHoveredCity] = useState<string | null>(null);
 
   const filteredCompetitions = COMPETITIONS.filter(comp => {
     const matchesCity = selectedCity ? comp.city === selectedCity : true;
@@ -105,9 +96,9 @@ export default function SutazePage() {
   });
 
   return (
-    <div className="min-h-screen pt-28 pb-20 bg-obsidian-900 relative overflow-hidden selection:bg-gold-500/30">
+    <div className="min-h-screen pt-[58px] pb-8 md:pt-28 md:pb-20 bg-obsidian-900 relative selection:bg-gold-500/30">
       {/* Background Glows */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none">
+      <div className="absolute top-0 left-0 w-full h-full pointer-events-none overflow-hidden">
         <div className="absolute top-1/4 -left-20 w-96 h-96 bg-gold-500/5 rounded-full blur-[120px]"></div>
         <div className="absolute bottom-1/4 -right-20 w-96 h-96 bg-gold-500/5 rounded-full blur-[120px]"></div>
       </div>
@@ -115,7 +106,7 @@ export default function SutazePage() {
       <div className="max-w-6xl mx-auto px-6 relative z-10">
         
         {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-16">
+        <div className="hidden md:block text-center max-w-2xl mx-auto mb-10 md:mb-16">
           <span className="text-gold-500 uppercase tracking-[0.4em] text-[10px] font-black mb-3 block">
             Kde nás môžete podporiť
           </span>
@@ -128,55 +119,63 @@ export default function SutazePage() {
           <div className="h-px w-24 mx-auto bg-gradient-to-r from-transparent via-gold-500/40 to-transparent mt-6"></div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 md:gap-12 items-start">
           
-          {/* LEFT COLUMN: Map Area */}
-          <div className="lg:col-span-7 flex flex-col items-center">
-            <h3 className="text-white text-xs font-bold uppercase tracking-widest mb-6 self-start flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-gold-500" /> Interaktívna mapa turnajov
+          {/* LEFT COLUMN: Map & Search Area (Sticky on mobile below header) */}
+          <div className="lg:col-span-7 flex flex-col items-center sticky top-[58px] z-30 bg-obsidian-900/95 backdrop-blur-md md:relative md:top-0 md:z-10 md:bg-transparent -mx-6 md:-mx-0 px-0 pt-0 pb-0 border-b-0 md:border-b-0 md:px-0 md:pt-0 md:pb-0 shadow-lg md:shadow-none w-screen md:w-full relative">
+            <h3 className="text-white text-xs font-bold uppercase tracking-widest mb-4 md:mb-6 self-start flex items-center gap-2 md:block hidden">
+              <MapPin className="w-4 h-4 text-gold-500 inline-block mr-2" /> Interaktívna mapa turnajov
             </h3>
 
-            {/* 3D SVG Globe Container */}
-            <div className="w-full aspect-[600/480] min-h-[480px] rounded-[2rem] border border-white/10 bg-obsidian-950/60 backdrop-blur-md overflow-hidden shadow-2xl relative group">
+            {/* 3D SVG Globe Container (Edge-to-edge on mobile, roomy height) */}
+            <div className="w-full aspect-[600/500] md:aspect-[600/480] h-[320px] sm:h-[380px] md:h-auto rounded-none md:rounded-[2rem] border-x-0 border-t-0 border-b border-white/10 md:border border-white/10 bg-obsidian-950/60 overflow-hidden relative group">
               <MilitaryMap 
                 activeMarkerLabel={selectedCity}
                 onMarkerSelect={(city) => setSelectedCity(selectedCity === city ? null : city)}
+                layout={{
+                  cornerRadius: 0,
+                  padding: 0,
+                  showBorder: false,
+                }}
               />
             </div>
 
-            {/* Clear Filters indicator */}
-            {selectedCity && (
-              <button
-                onClick={() => setSelectedCity(null)}
-                className="mt-4 text-[9px] font-bold uppercase tracking-wider text-gold-500/60 hover:text-gold-500 border-b border-gold-500/20 hover:border-gold-500/60 pb-0.5"
-              >
-                Zrušiť filter mesta: {selectedCity} (zobraziť všetky)
-              </button>
-            )}
-          </div>
-
-          {/* RIGHT COLUMN: Competitions List */}
-          <div className="lg:col-span-5 space-y-6">
-            
-            {/* Search and Filters Bar */}
-            <div className="flex items-center gap-4 w-full text-left">
-              <div className="relative flex-1">
+            {/* Search Bar - Placed as absolute floating overlay on mobile (top-4), standard search box on desktop */}
+            <div className="absolute top-4 left-0 right-0 max-w-[280px] sm:max-w-[320px] mx-auto px-4 z-20 md:relative md:top-0 md:left-auto md:right-auto md:max-w-none md:px-0 md:mt-4 md:z-auto text-left">
+              <div className="relative shadow-2xl md:shadow-none">
                 <input
                   type="text"
                   placeholder="Hľadať súťaže..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-gold-500/50 rounded-2xl px-4 py-3 text-xs font-light text-white focus:outline-none transition-all pl-10"
+                  className="w-full bg-obsidian-950/35 backdrop-blur-sm md:bg-white/5 border border-white/10 hover:border-white/20 focus:border-gold-500/50 rounded-2xl px-4 py-2.5 text-xs font-light text-white focus:outline-none transition-all pl-10"
                 />
-                <Search className="w-4 h-4 text-gray-500 absolute left-3.5 top-3.5" />
+                <Search className="w-3.5 h-3.5 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
               </div>
             </div>
 
-            {/* List */}
-            <div className="space-y-4 max-h-[500px] overflow-y-auto pr-2 scrollbar-thin">
+            {/* Clear Filters indicator - Floating capsule badge on bottom-left of map on mobile, text button below on desktop */}
+            {selectedCity && (
+              <div className="absolute bottom-4 left-6 z-20 md:relative md:bottom-auto md:left-auto md:mt-2">
+                <button
+                  onClick={() => setSelectedCity(null)}
+                  className="px-2.5 py-1.5 rounded-xl bg-obsidian-950/85 backdrop-blur-md border border-gold-500/30 text-[9px] font-bold uppercase tracking-wider text-gold-500 hover:text-gold-400 hover:border-gold-500 transition-all shadow-lg flex items-center gap-1.5"
+                >
+                  <span className="w-1.5 h-1.5 rounded-full bg-gold-500 animate-pulse"></span>
+                  Zrušiť filter: {selectedCity}
+                </button>
+              </div>
+            )}
+          </div>
+
+          {/* RIGHT COLUMN: Competitions List (Scrolls below map on mobile) */}
+          <div className="lg:col-span-5 space-y-6 pt-4 md:pt-0">
+            
+            {/* List (2 columns on mobile, 1 column on desktop) */}
+            <div className="grid grid-cols-2 md:grid-cols-1 gap-3 md:gap-4 md:max-h-[520px] md:overflow-y-auto pr-1">
               <AnimatePresence mode="popLayout">
                 {filteredCompetitions.length === 0 ? (
-                  <div className="py-16 text-center rounded-2xl border border-white/5 bg-white/[0.01]">
+                  <div className="py-16 text-center rounded-2xl border border-white/5 bg-white/[0.01] col-span-2">
                     <p className="text-gray-400 text-sm font-light">Nenašli sa žiadne vyhovujúce súťaže.</p>
                   </div>
                 ) : (
@@ -188,47 +187,73 @@ export default function SutazePage() {
                       exit={{ opacity: 0, y: -10 }}
                       key={comp.id}
                       onClick={() => setSelectedCity(comp.city)}
-                      className={`p-6 rounded-[2rem] border transition-all duration-300 cursor-pointer text-left group ${
+                      className={`p-3.5 md:p-6 rounded-[1.5rem] md:rounded-[2rem] border transition-all duration-300 cursor-pointer text-left group w-full relative overflow-hidden ${
                         selectedCity === comp.city
-                          ? "bg-gradient-to-br from-gold-500/[0.05] via-gold-500/[0.01] to-transparent border-gold-500/40 shadow-lg"
+                          ? "bg-gradient-to-br from-gold-500/[0.06] via-gold-500/[0.01] to-transparent border-gold-500/40 shadow-lg shadow-gold-500/5 scale-[0.99] md:scale-100"
                           : "bg-obsidian-950/40 border-white/5 hover:border-white/10 hover:bg-white/[0.01]"
                       }`}
                     >
+                      {/* Subtle hover background highlight glow */}
+                      <div className="absolute top-0 right-0 w-24 h-24 bg-gold-500/[0.01] rounded-full blur-2xl group-hover:bg-gold-500/[0.03] transition-all duration-500 pointer-events-none"></div>
+
                       {/* Header row */}
-                      <div className="flex justify-between items-start gap-4 mb-3.5">
-                        <div className="space-y-1">
-                          <span className={`text-[8px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full ${
+                      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-1.5 md:gap-3 mb-2 md:mb-3 relative z-10">
+                        <div className="space-y-1 min-w-0">
+                          <span className={`text-[7px] md:text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full ${
                             comp.status === "Organizujeme" ? "bg-gold-500/10 text-gold-500 border border-gold-500/20" : "bg-white/5 text-gray-400"
                           }`}>
                             {comp.status}
                           </span>
-                          <h3 className="font-serif text-base md:text-lg font-bold text-white group-hover:text-gold-500 transition-colors leading-tight">
+                          <h3 className="font-serif text-[11px] sm:text-xs md:text-base font-bold text-white group-hover:text-gold-500 transition-colors leading-tight line-clamp-2">
                             {comp.title}
                           </h3>
                         </div>
-                        <span className="text-[10px] font-light text-gray-500 bg-white/5 border border-white/10 px-3 py-1 rounded-full shrink-0 font-mono">
+                        <span className="text-[7px] md:text-[9px] font-light text-gray-500 bg-white/5 border border-white/10 px-1.5 py-0.5 rounded-full shrink-0 font-mono">
                           {comp.type}
                         </span>
                       </div>
 
                       {/* Description */}
-                      <p className="text-gray-400 text-xs font-light leading-relaxed mb-4">
+                      <p className="text-gray-400 text-[9px] sm:text-[10px] md:text-xs font-light leading-relaxed mb-3 md:mb-4 relative z-10 line-clamp-2 md:line-clamp-none">
                         {comp.description}
                       </p>
 
-                      {/* Meta Details */}
-                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3.5 border-t border-white/5 text-[10px] text-gray-500 font-sans">
-                        <div className="flex items-center gap-2">
-                          <Calendar className="w-3.5 h-3.5 text-gold-500/60" />
-                          <span>{comp.date}</span>
+                      {/* Meta Details (Neatly separated boxes) */}
+                      <div className="mt-2.5 pt-2.5 border-t border-white/5 space-y-1.5 md:space-y-2 text-[8px] md:text-[10px] text-gray-500 font-sans relative z-10">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 md:gap-2">
+                          <div className="flex items-center gap-1.5 md:gap-2 bg-white/[0.02] border border-white/5 rounded-xl p-1.5 md:p-2.5">
+                            <Calendar className="w-3 h-3 md:w-3.5 md:h-3.5 text-gold-500/75 shrink-0" />
+                            <div className="space-y-0.5 min-w-0 flex-1">
+                              <span className="text-[6.5px] md:text-[8px] uppercase tracking-wider text-gray-500 block leading-none">Dátum</span>
+                              <span className="text-gray-200 font-light block truncate leading-tight text-[8px] md:text-[10px]">{comp.date}</span>
+                            </div>
+                          </div>
+                          <div className="flex items-center gap-1.5 md:gap-2 bg-white/[0.02] border border-white/5 rounded-xl p-1.5 md:p-2.5 overflow-hidden">
+                            <MapPin className="w-3 h-3 md:w-3.5 md:h-3.5 text-gold-500/75 shrink-0" />
+                            <div className="space-y-0.5 min-w-0 flex-1">
+                              <span className="text-[6.5px] md:text-[8px] uppercase tracking-wider text-gray-500 block leading-none">Miesto</span>
+                              <span className="text-gray-200 font-light truncate block leading-tight text-[8px] md:text-[10px]">
+                                <span className="md:hidden">{comp.city}</span>
+                                <span className="hidden md:inline">{comp.venue} ({comp.city})</span>
+                              </span>
+                            </div>
+                            <a
+                              href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(comp.venue + ", " + comp.city)}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              onClick={(e) => e.stopPropagation()}
+                              className="ml-1 px-1.5 py-0.5 rounded bg-gold-500/10 text-[7px] md:text-[8px] font-bold text-gold-500 hover:bg-gold-500 hover:text-obsidian-950 transition-all duration-200 shrink-0 uppercase tracking-wider flex items-center gap-0.5"
+                            >
+                              Trasa
+                            </a>
+                          </div>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <MapPin className="w-3.5 h-3.5 text-gold-500/60" />
-                          <span className="truncate">{comp.venue} ({comp.city})</span>
-                        </div>
-                        <div className="flex items-center gap-2 col-span-full border-t border-white/5 pt-2 border-dashed">
-                          <Award className="w-3.5 h-3.5 text-gold-500/60" />
-                          <span className="truncate">Kategórie: <strong className="text-gray-300 font-light">{comp.categories}</strong></span>
+                        <div className="flex items-start gap-1.5 md:gap-2 bg-white/[0.02] border border-white/5 rounded-xl p-1.5 md:p-2.5 border-dashed">
+                          <Award className="w-3 h-3 md:w-3.5 md:h-3.5 text-gold-500/75 shrink-0 mt-0.5" />
+                          <div className="space-y-0.5 min-w-0 flex-1">
+                            <span className="text-[6.5px] md:text-[8px] uppercase tracking-wider text-gray-500 block leading-none">Kategórie</span>
+                            <span className="text-gray-300 font-light truncate block leading-tight text-[8px] md:text-[10px]">{comp.categories}</span>
+                          </div>
                         </div>
                       </div>
                     </motion.div>
@@ -237,80 +262,7 @@ export default function SutazePage() {
               </AnimatePresence>
             </div>
           </div>
-
         </div>
-
-        {/* Parent's Guide Section */}
-        <div className="mt-20 border-t border-white/5 pt-16 text-left">
-          <div className="max-w-3xl mb-12">
-            <span className="text-gold-500 uppercase tracking-[0.4em] text-[10px] font-black mb-3 block">
-              Dôležité informácie pre rodiny
-            </span>
-            <h2 className="text-3xl md:text-4xl font-serif font-bold text-white tracking-tight mb-4">
-              Sprievodca rodiča <span className="text-gold-500 font-light italic">na súťažiach</span>
-            </h2>
-            <p className="text-gray-400 text-sm font-light leading-relaxed">
-              Súťažný tanec prináša nezabudnuteľné zážitky, no vyžaduje si aj pochopenie pravidiel a dôveru v trénera. Prečítajte si, ako prebieha prihlasovanie a ako sa správne správať na parkete a mimo neho.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {/* Box 1: Prihlasovanie */}
-            <div className="p-8 rounded-[2rem] bg-obsidian-950/50 border border-white/5 relative overflow-hidden group hover:border-gold-500/20 transition-all duration-300">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gold-500/5 rounded-full blur-2xl group-hover:bg-gold-500/10 transition-all duration-500"></div>
-              <h3 className="font-serif text-lg font-bold text-white mb-3 flex items-center gap-3">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gold-500/10 text-gold-500 text-xs font-mono font-bold">1</span>
-                Prihlasovanie na súťaže
-              </h3>
-              <p className="text-gray-400 text-xs font-light leading-relaxed">
-                Upozorňujeme rodičov, že <strong className="text-white font-medium">prihlasovanie detí na oficiálne súťaže SZTŠ vykonáva výhradne tréner</strong> ako oficiálny zástupca nášho klubu. Prihlásenie neprebieha individuálne zo strany rodičov. 
-              </p>
-              <div className="mt-3 p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-[10px] text-gray-500 font-sans leading-relaxed">
-                <strong className="text-gold-500 font-bold uppercase tracking-wider block mb-1">Postup:</strong>
-                Rodičia sa pred každou súťažou osobne alebo správou dohodnú s trénerom (buď ho kontaktujú sami, alebo tréner osloví ich), aby včas potvrdili účasť tanečného páru a tréner vedel vyhotoviť oficiálnu klubovú prihlášku.
-              </div>
-            </div>
-
-            {/* Box 2: Štartovné poplatky */}
-            <div className="p-8 rounded-[2rem] bg-obsidian-950/50 border border-white/5 relative overflow-hidden group hover:border-gold-500/20 transition-all duration-300">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-gold-500/5 rounded-full blur-2xl group-hover:bg-gold-500/10 transition-all duration-500"></div>
-              <h3 className="font-serif text-lg font-bold text-white mb-3 flex items-center gap-3">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gold-500/10 text-gold-500 text-xs font-mono font-bold">2</span>
-                Štartovné a registrácia
-              </h3>
-              <p className="text-gray-400 text-xs font-light leading-relaxed">
-                Štartovné poplatky za tanečné páry sú úplne oddelené od bežných vstupeniek pre divákov. <strong className="text-white font-medium">Štartovné sa neplatí vopred, ale až priamo na mieste konania.</strong>
-              </p>
-              <div className="mt-3 p-3.5 rounded-xl bg-white/[0.02] border border-white/5 text-[10px] text-gray-500 font-sans leading-relaxed">
-                <strong className="text-gold-500 font-bold uppercase tracking-wider block mb-1">Kde platiť:</strong>
-                Po príchode vyhľadajte stolík usporiadateľského klubu (zvyčajne označený ako „Prezentácia“), kde zaplatíte štartovné a vyzdvihnete si štartovné číslo. Vstupenky pre sprevádzajúcich rodičov sa kupujú samostatne na pokladni pre divákov.
-              </div>
-            </div>
-
-            {/* Box 3: Dôvera v trénera */}
-            <div className="p-8 rounded-[2rem] bg-obsidian-950/50 border border-white/5 relative overflow-hidden group hover:border-gold-500/20 transition-all duration-300 md:col-span-2">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-gold-500/5 rounded-full blur-3xl group-hover:bg-gold-500/10 transition-all duration-500"></div>
-              <h3 className="font-serif text-lg font-bold text-white mb-3 flex items-center gap-3">
-                <span className="flex items-center justify-center w-8 h-8 rounded-full bg-gold-500/10 text-gold-500 text-xs font-mono font-bold">3</span>
-                Profesionálny odstup a porotovanie (Kódex SZTŠ)
-              </h3>
-              <p className="text-gray-400 text-xs font-light leading-relaxed">
-                Náš klubový tréner TK Ellegance je na mnohých celoštátnych súťažiach nominovaný ako <strong className="text-white font-medium">oficiálny rozhodca SZTŠ</strong>. Podľa prísnych medzinárodných aj národných športových pravidiel platí, že <strong className="text-gold-500 font-medium">porotcovia nesmú počas celej súťaže verbálne ani neverbálne komunikovať so svojimi klubovými pármi</strong>, pomáhať im na tanečnej ploche ani stáť v ich blízkosti.
-              </p>
-              <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="p-4 rounded-xl bg-white/[0.01] border border-white/5 text-[10px] text-gray-500 leading-relaxed">
-                  <strong className="text-white font-medium block mb-1">Rešpekt k pravidlám:</strong>
-                  Prosíme rodičov, aby dbali na toto nariadenie. Ak je tréner v porote, nečakajte od neho povzbudzovanie na ploche. Musí ostať striktne nestranný, inak hrozí diskvalifikácia páru. Dôverujte jeho profesionalite.
-                </div>
-                <div className="p-4 rounded-xl bg-gold-500/[0.02] border border-gold-500/10 text-[10px] text-gold-500/85 leading-relaxed">
-                  <strong className="text-gold-500 font-bold uppercase tracking-wider block mb-1">💡 Trénerský Pro Tip pre rodičov:</strong>
-                  Ak ste na súťaži noví, nebuďte v tom sami! V hľadisku je vždy skvelá skupina skúsenejších rodičov z nášho klubu TK Ellegance. Neváhajte sa s nimi poradiť a spojiť sily – radi vám vysvetlia zákulisné chody a pomôžu s akoukoľvek otázkou.
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-
       </div>
     </div>
   );

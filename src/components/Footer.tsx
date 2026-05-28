@@ -60,7 +60,7 @@ export default function Footer() {
             />
           </Link>
 
-          <div ref={containerRef} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12 md:gap-16 w-full max-w-7xl mx-auto text-left">
+          <div ref={containerRef} className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-16 w-full max-w-7xl mx-auto text-left">
             {/* Column 1: Hlavná navigácia */}
             <div className="flex flex-col gap-4">
               <span className="text-gold-500 uppercase tracking-[0.3em] text-[10px] font-bold mb-2">Navigácia</span>
@@ -140,10 +140,10 @@ export default function Footer() {
           <div className="text-center mb-6">
             <span className="text-white/60 text-sm font-medium tracking-wide">Partneri</span>
           </div>
-          <div className="flex flex-wrap justify-center items-center gap-4 md:gap-5">
+          <div className="flex flex-wrap justify-center items-center gap-3 md:gap-5">
             {SPONSORS.map((sponsor) => {
               const SponsorContent = (
-                <div className="relative w-32 h-16 md:w-36 md:h-18 rounded-xl flex items-center justify-center p-3 shadow-lg overflow-hidden transition-all duration-500
+                <div className="relative w-24 h-12 sm:w-28 sm:h-14 md:w-36 md:h-18 rounded-xl flex items-center justify-center p-2 md:p-3 shadow-lg overflow-hidden transition-all duration-500
                                 bg-gradient-to-br from-[#d4af37] via-[#aa8122] to-[#d4af37]
                                 border border-white/20">
                   <div className="absolute top-0 left-[-100%] w-full h-full bg-gradient-to-r from-transparent via-white/20 to-transparent group-hover:left-[100%] transition-all duration-1000"></div>

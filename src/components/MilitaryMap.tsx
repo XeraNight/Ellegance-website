@@ -742,7 +742,7 @@ const DEFAULT_INTERACTION: InteractionConfig = {
     autoRotateSpeed: 1.5,
     rotateX: 0,
     rotateY: 48.5,    // Tilt focused on Slovakia (48.5° N)
-    rotateZ: -19.5,   // Polar spin focused on Slovakia (19.5° E)
+    rotateZ: 19.5,   // Polar spin focused on Slovakia (19.5° E)
     enableDrag: true,
     dragSensitivity: 0.22,
     glowColor: "#d4af37", // Elegant gold atmosphere glow
@@ -868,9 +868,9 @@ export default function MilitaryMap(props: Props) {
         if (activeMarkerLabel) {
             const m = markers.find(x => x.label === activeMarkerLabel);
             if (m) {
-                // Centering equations: target lambda = -lng, target phi = lat
+                // Centering equations: target lambda = lng, target phi = lat
                 targetRotRef.current = {
-                    lambda: -m.longitude,
+                    lambda: m.longitude,
                     phi: m.latitude
                 };
                 userInteractedRef.current = performance.now(); // temporary pause auto-spin
@@ -1226,6 +1226,13 @@ export default function MilitaryMap(props: Props) {
 
     const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
         if (!interaction.enableDrag) return;
+        
+        // Prevent pointer capture if clicking on a marker so click handler can fire
+        const target = e.target as HTMLElement;
+        if (target.closest("g")?.style.cursor === "pointer") {
+            return;
+        }
+
         const m = localMouse(e);
         const dx = m.x - cx,
             dy = m.y - cy;
