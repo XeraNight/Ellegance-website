@@ -836,6 +836,9 @@ export default function MilitaryMap(props: Props) {
         startLambda: 0,
         startPhi: 0,
     });
+    // Track active pointers for pinch-to-zoom
+    const activePointersRef = React.useRef<Map<number, { x: number; y: number }>>(new Map());
+    const pinchRef = React.useRef<{ startDist: number; startZoom: number } | null>(null);
     const lastMouseRef = React.useRef<{ x: number; y: number } | null>(null);
     const userInteractedRef = React.useRef<number>(0); // timestamp of last drag end
 
@@ -1043,6 +1046,7 @@ export default function MilitaryMap(props: Props) {
         let raf = 0;
         let lastTime = typeof performance !== "undefined" ? performance.now() : 0;
         const idleMs = 3500; // time after drag or active selection to resume auto-rotate
+        let hoverFrameCount = 0; // throttle hover hit-test to every 3 frames
 
         const step = (now: number) => {
             const dt = Math.min(0.05, (now - lastTime) / 1000);
@@ -1133,8 +1137,10 @@ export default function MilitaryMap(props: Props) {
                 }
             }
 
-            // Evaluate hover hit-test
-            if (lastMouseRef.current && !dragRef.current.active) {
+            // Evaluate hover hit-test — throttled to every 3 frames and skipped during drag
+            hoverFrameCount++;
+            if (lastMouseRef.current && !dragRef.current.active && hoverFrameCount >= 3) {
+                hoverFrameCount = 0;
                 const m = lastMouseRef.current;
                 const ll = unproject(m.x, m.y, lambda, phi, gamma, R, cx, cy);
                 if (ll) {
@@ -1164,6 +1170,9 @@ export default function MilitaryMap(props: Props) {
                         setHC(null);
                     });
                 }
+            } else if (dragRef.current.active && hC) {
+                // Clear tooltip immediately on drag start
+                React.startTransition(() => setHC(null));
             }
 
             raf = requestAnimationFrame(step);
@@ -1224,18 +1233,38 @@ export default function MilitaryMap(props: Props) {
         return { x: e.clientX - r.left, y: e.clientY - r.top };
     };
 
+    const getPinchDist = () => {
+        const pts = Array.from(activePointersRef.current.values());
+        if (pts.length < 2) return null;
+        const dx = pts[0].x - pts[1].x;
+        const dy = pts[0].y - pts[1].y;
+        return Math.sqrt(dx * dx + dy * dy);
+    };
+
     const onPointerDown = (e: React.PointerEvent<SVGSVGElement>) => {
         if (!interaction.enableDrag) return;
-        
-        // Prevent pointer capture if clicking on a marker so click handler can fire
-        const target = e.target as HTMLElement;
-        if (target.closest("g")?.style.cursor === "pointer") {
+
+        const m = localMouse(e);
+        activePointersRef.current.set(e.pointerId, m);
+
+        try { (e.currentTarget as any).setPointerCapture(e.pointerId); } catch {}
+
+        // Start pinch if 2 pointers active
+        if (activePointersRef.current.size === 2) {
+            const dist = getPinchDist();
+            if (dist !== null) {
+                pinchRef.current = { startDist: dist, startZoom: zoom };
+            }
+            // Cancel single-finger drag so pinch takes over
+            dragRef.current.active = false;
             return;
         }
 
-        const m = localMouse(e);
-        const dx = m.x - cx,
-            dy = m.y - cy;
+        // Single pointer — drag (skip if on marker)
+        const target = e.target as HTMLElement;
+        if (target.closest("g")?.style.cursor === "pointer") return;
+
+        const dx = m.x - cx, dy = m.y - cy;
         if (dx * dx + dy * dy > (R + 8) * (R + 8)) return;
         dragRef.current = {
             active: true,
@@ -1244,19 +1273,27 @@ export default function MilitaryMap(props: Props) {
             startLambda: rotRef.current.lambda,
             startPhi: rotRef.current.phi,
         };
-        try {
-            (e.currentTarget as any).setPointerCapture(e.pointerId);
-        } catch {}
-        React.startTransition(() => {
-            setHC(null);
-            setHM(null);
-        });
+        React.startTransition(() => { setHC(null); setHM(null); });
     };
 
     const onPointerMove = (e: React.PointerEvent<SVGSVGElement>) => {
         const m = localMouse(e);
+        activePointersRef.current.set(e.pointerId, m);
         lastMouseRef.current = m;
 
+        // Pinch-to-zoom — two fingers
+        if (activePointersRef.current.size >= 2 && pinchRef.current) {
+            const dist = getPinchDist();
+            if (dist !== null) {
+                const ratio = dist / pinchRef.current.startDist;
+                const next = clamp(pinchRef.current.startZoom * ratio, 1.0, 35.0);
+                setZoom(next);
+                userInteractedRef.current = performance.now();
+            }
+            return; // don't pan while pinching
+        }
+
+        // Single-finger drag
         if (dragRef.current.active) {
             const sens = interaction.dragSensitivity / zoom;
             const dx = m.x - dragRef.current.startX;
@@ -1271,22 +1308,27 @@ export default function MilitaryMap(props: Props) {
     };
 
     const onPointerUp = (e: React.PointerEvent<SVGSVGElement>) => {
+        activePointersRef.current.delete(e.pointerId);
+        try { (e.currentTarget as any).releasePointerCapture(e.pointerId); } catch {}
+
+        // End pinch when fewer than 2 pointers remain
+        if (activePointersRef.current.size < 2) {
+            if (pinchRef.current) {
+                pinchRef.current = null;
+                userInteractedRef.current = performance.now();
+            }
+        }
+
         if (dragRef.current.active) {
             dragRef.current.active = false;
             userInteractedRef.current = performance.now();
-            try {
-                (e.currentTarget as any).releasePointerCapture(e.pointerId);
-            } catch {}
         }
     };
 
     const onPointerLeave = () => {
         lastMouseRef.current = null;
         if (!dragRef.current.active) {
-            React.startTransition(() => {
-                setHC(null);
-                setHM(null);
-            });
+            React.startTransition(() => { setHC(null); setHM(null); });
         }
     };
 
@@ -1336,7 +1378,9 @@ export default function MilitaryMap(props: Props) {
     const { glowColor, glowIntensity, enableDrag } = interaction;
 
     const loading = !feats && !err;
-    const uid = "globe-" + Math.random().toString(36).slice(2, 6);
+    // Stable ID — never regenerate during re-renders
+    const uidRef = React.useRef("globe-" + Math.random().toString(36).slice(2, 6));
+    const uid = uidRef.current;
     const fL = "l-" + uid;
     const gO = "o-" + uid;
     const gShade = "s-" + uid;
@@ -1391,12 +1435,11 @@ export default function MilitaryMap(props: Props) {
                 touchAction: "none",
                 userSelect: "none",
                 WebkitUserSelect: "none",
+                willChange: "transform",
             }}
         >
             <style>
-                {`.mm-c{transition:fill 150ms ease,filter 150ms ease;will-change:fill}
-                  .mm-c:hover{filter:brightness(1.15)}
-                  @keyframes mm-pulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.75);opacity:.02}}
+                {`@keyframes mm-pulse{0%,100%{transform:scale(1);opacity:.5}50%{transform:scale(1.75);opacity:.02}}
                   .mm-pulse{animation:mm-pulse 2.2s cubic-bezier(0.2, 0.8, 0.2, 1) infinite;transform-box:fill-box;transform-origin:center;pointer-events:none}`}
             </style>
 
