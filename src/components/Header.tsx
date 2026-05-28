@@ -138,10 +138,11 @@ export default function Header() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: NAV_LINKS.length * 0.1 }}
+                className="pt-6"
               >
                 <Link 
                   href="/kontakt"
-                  className="text-gold-500 text-sm font-black uppercase tracking-[0.3em] mt-12 block"
+                  className="btn-gold px-8 py-3.5 rounded-full text-[11px] font-bold uppercase tracking-[0.2em] hover:scale-105 transition-transform shrink-0 shadow-[0_0_15px_rgba(212,175,55,0.2)] block text-center"
                 >
                   Kontaktujte nás
                 </Link>

@@ -95,8 +95,10 @@ export default function SutazePage() {
     return matchesCity && matchesSearch;
   });
 
-  const activeComp = filteredCompetitions.find(c => c.city === selectedCity) || COMPETITIONS[0];
-  const trasaUrl = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(activeComp.venue + ", " + activeComp.city)}`;
+  const activeComp = filteredCompetitions.find(c => c.city === selectedCity);
+  const trasaUrl = activeComp
+    ? `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(activeComp.venue + ", " + activeComp.city)}`
+    : "";
 
   return (
     <div className="min-h-screen pt-[58px] pb-8 md:pt-28 md:pb-20 bg-obsidian-900 relative selection:bg-gold-500/30">
@@ -155,13 +157,24 @@ export default function SutazePage() {
                 />
                 <Search className="w-3.5 h-3.5 text-gray-500 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <a
-                  href={trasaUrl}
-                  target="_blank"
+                  href={activeComp ? trasaUrl : undefined}
+                  onClick={(e) => {
+                    if (!activeComp) {
+                      e.preventDefault();
+                    }
+                  }}
+                  target={activeComp ? "_blank" : undefined}
                   rel="noopener noreferrer"
-                  title={`Trasa do ${activeComp.city}`}
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl bg-gold-500/10 border border-gold-500/20 hover:bg-gold-500/20 active:scale-95 transition-all duration-100 flex items-center justify-center cursor-pointer group/nav"
+                  title={activeComp ? `Trasa do ${activeComp.city}` : "Vyberte súťaž pre navigáciu"}
+                  className={`absolute right-1.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-100 ${
+                    activeComp
+                      ? "bg-gold-500/10 border border-gold-500/20 hover:bg-gold-500/20 active:scale-95 cursor-pointer group/nav"
+                      : "bg-white/5 border border-white/5 opacity-40 cursor-not-allowed"
+                  }`}
                 >
-                  <Navigation className="w-3.5 h-3.5 text-gold-500 group-hover/nav:text-gold-400 transition-colors rotate-45" />
+                  <Navigation className={`w-3.5 h-3.5 rotate-45 transition-colors ${
+                    activeComp ? "text-gold-500 group-hover/nav:text-gold-400" : "text-gray-500"
+                  }`} />
                 </a>
               </div>
             </div>
