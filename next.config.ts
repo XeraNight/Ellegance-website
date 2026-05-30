@@ -139,9 +139,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  output: "export",
-  basePath:
-    process.env.NODE_ENV === "production" ? "/Ellegance-website" : undefined,
+  // Configured for Vercel dynamic hosting with custom domain support
   trailingSlash: true,
   images: {
     unoptimized: true,

@@ -99,20 +99,17 @@ function KontaktForm() {
 
       if (submitError) throw submitError;
 
-      // ── Send email notification on successful DB save (Formspree / Web3Forms)
+      // ── Send email notification on successful DB save (Resend Serverless API)
       try {
-        const emailEndpoint = process.env.NEXT_PUBLIC_EMAIL_ENDPOINT || "https://formspree.io/f/mqkrrbyk";
-        await fetch(emailEndpoint, {
+        await fetch("/api/send-email", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Accept: "application/json",
           },
           body: JSON.stringify({
             name: name.trim(),
             contact: contact.trim(),
             course: selectedCourse,
-            _subject: `Nová správa z webu Ellegance od ${name.trim()}`,
           }),
         });
       } catch (emailErr) {
@@ -311,8 +308,19 @@ function KontaktForm() {
             <div className="flex flex-col gap-8 font-sans">
               <div className="flex items-start gap-4">
                 <div className="mt-1 text-gold-500"><svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg></div>
-                <div>
-                  <h4 className="text-white font-bold text-xs uppercase tracking-widest mb-2">Adresa klubu</h4>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between gap-4 mb-2">
+                    <h4 className="text-white font-bold text-xs uppercase tracking-widest">Adresa klubu</h4>
+                    <a
+                      href="https://www.google.com/maps/place/Fejova+1,+040+01+Ko%C5%A1ice"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-gold-400 hover:text-gold-300 text-[10px] uppercase tracking-wider font-bold border border-gold-500/30 hover:border-gold-500 px-2 py-1 rounded transition-all duration-300 flex items-center gap-1 shadow-[0_0_10px_rgba(212,175,55,0.05)]"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
+                      Ukázať na mape
+                    </a>
+                  </div>
                   <p className="text-sm text-gray-400 font-light leading-relaxed">Tanečný klub Ellegance<br />Fejova 1, 040 01 Košice</p>
                 </div>
               </div>

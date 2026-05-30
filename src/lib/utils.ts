@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export const BASE_PATH = process.env.NODE_ENV === 'production' ? '/Ellegance-website' : '';
+export const BASE_PATH = '';
 
 export function getAssetPath(path: string) {
   const cleanPath = path.startsWith('/') ? path.substring(1) : path;
