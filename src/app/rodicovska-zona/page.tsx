@@ -124,7 +124,7 @@ interface BazaarItem {
 const BAZAAR_ITEMS: BazaarItem[] = [
   {
     id: "baz-1",
-    title: "Súťažné šaty na Latinu (Deti)",
+    title: "úťažné šaty na Latinu (Deti)",
     size: "134 - 140 cm",
     price: "85 €",
     condition: "Ako nové (oblečené 3x)",
