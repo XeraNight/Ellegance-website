@@ -63,7 +63,7 @@ export default function Footer() {
           <div ref={containerRef} className="grid grid-cols-2 lg:grid-cols-4 gap-8 md:gap-16 w-full max-w-7xl mx-auto text-left">
             {/* Column 1: Hlavná navigácia */}
             <div className="flex flex-col gap-4">
-              <span className="text-gold-500 uppercase tracking-[0.3em] text-[10px] font-bold mb-2">Navigácia</span>
+              <span className="text-gold-500 uppercase tracking-[0.3em] text-[11px] md:text-[13px] font-bold mb-2">Navigácia</span>
               <FooterLink href="/ponuka" label="Ponuka" containerRef={containerRef} />
               <FooterLink href="/rozpis-hodin" label="Rozpis hodín" containerRef={containerRef} />
               <FooterLink href="/komercna-ponuka" label="Komerčná ponuka" containerRef={containerRef} />
@@ -73,7 +73,7 @@ export default function Footer() {
 
             {/* Column 2: O klube a Médiá */}
             <div className="flex flex-col gap-4">
-              <span className="text-gold-500 uppercase tracking-[0.3em] text-[10px] font-bold mb-2">Klub a Médiá</span>
+              <span className="text-gold-500 uppercase tracking-[0.3em] text-[11px] md:text-[13px] font-bold mb-2">Klub a Médiá</span>
               <FooterLink href="/" label="Domov" containerRef={containerRef} />
               <FooterLink href="/fotogaleria" label="Fotogaléria" containerRef={containerRef} />
               <FooterLink href="/sutaze" label="Súťaže" containerRef={containerRef} />
@@ -82,13 +82,13 @@ export default function Footer() {
 
             {/* Column 3: Pre tanečníkov a rodičov */}
             <div className="flex flex-col gap-4">
-              <span className="text-gold-500 uppercase tracking-[0.3em] text-[10px] font-bold mb-2">Pre tanečníkov</span>
+              <span className="text-gold-500 uppercase tracking-[0.3em] text-[11px] md:text-[13px] font-bold mb-2">Pre tanečníkov</span>
               <FooterLink href="/rodicovska-zona" label="Zóna pre rodičov" containerRef={containerRef} />
               <FooterLink href="/vybava" label="Tanečná výbava" containerRef={containerRef} />
               <FooterLink href="/pravidla" label="Oficiálne pravidlá SZTŠ" containerRef={containerRef} />
               
               <div className="mt-4 flex flex-col gap-5">
-                <span className="text-white/30 uppercase tracking-[0.2em] text-[9px] font-medium">Sledujte nás</span>
+                <span className="text-white/30 uppercase tracking-[0.2em] text-[10px] md:text-xs font-medium">Sledujte nás</span>
                 
                 <div className="relative flex items-center gap-x-3">
                   {/* Instagram */}
@@ -123,11 +123,11 @@ export default function Footer() {
 
             {/* Column 4: Podpora klubu */}
             <div className="flex flex-col gap-4">
-              <span className="text-gold-500 uppercase tracking-[0.3em] text-[10px] font-bold mb-2">Podpora a Darčeky</span>
+              <span className="text-gold-500 uppercase tracking-[0.3em] text-[11px] md:text-[13px] font-bold mb-2">Podpora a Darčeky</span>
               <FooterLink href="/darcekove-poukazky" label="Darčekové poukážky" containerRef={containerRef} />
               {/* <FooterLink href="/merch" label="Klubový merch" containerRef={containerRef} /> */}
               <Link href="/2-percenta" className="mt-2 p-4 rounded-xl bg-white/5 border border-white/10 hover:border-gold-500/40 hover:bg-gold-500/[0.03] transition-all duration-300 block group/card">
-                <p className="text-[10px] text-gray-500 group-hover/card:text-gold-500 leading-relaxed uppercase tracking-wider transition-colors">
+                <p className="text-[11px] md:text-xs text-zinc-400 group-hover/card:text-gold-500 leading-relaxed uppercase tracking-wider transition-colors">
                   Podporte nás 2% z vašich daní a pomôžte nám vychovávať nové talenty.
                 </p>
               </Link>
@@ -176,14 +176,14 @@ export default function Footer() {
 
         {/* Bottom Copyright */}
         <div className="mt-10 pt-6 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 text-center">
-          <span className="text-gray-400 text-[10px] uppercase tracking-widest">
+          <span className="text-gray-400 text-[11px] md:text-xs uppercase tracking-widest">
             © {new Date().getFullYear()} Ellegance Dance Club. Všetky práva vyhradené.
           </span>
           <div className="flex gap-8">
-            <Link href="/privacy" className="text-gray-400 text-[9px] uppercase tracking-[0.2em] hover:text-gold-500 transition-colors">Ochrana osobných údajov</Link>
+            <Link href="/privacy" className="text-gray-400 text-[10px] md:text-xs uppercase tracking-[0.2em] hover:text-gold-500 transition-colors">Ochrana osobných údajov</Link>
             <button 
               onClick={() => window.dispatchEvent(new Event("openCookieSettings"))} 
-              className="text-gray-400 text-[9px] uppercase tracking-[0.2em] hover:text-gold-500 transition-colors focus:outline-none cursor-pointer"
+              className="text-gray-400 text-[10px] md:text-xs uppercase tracking-[0.2em] hover:text-gold-500 transition-colors focus:outline-none cursor-pointer"
             >
               Nastavenie Cookies
             </button>

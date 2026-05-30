@@ -124,7 +124,7 @@ interface BazaarItem {
 const BAZAAR_ITEMS: BazaarItem[] = [
   {
     id: "baz-1",
-    title: "úťažné šaty na Latinu (Deti)",
+    title: "Súťažné šaty na Latinu (Deti)",
     size: "134 - 140 cm",
     price: "85 €",
     condition: "Ako nové (oblečené 3x)",
@@ -306,7 +306,7 @@ export default function RodicovskaZonaPage() {
           <h1 className="text-4xl md:text-5xl font-serif font-bold text-white tracking-tight mb-4">
             Zóna pre <span className="text-gold-500 font-light italic">rodičov</span>
           </h1>
-          <p className="text-gray-400 text-sm font-light leading-relaxed">
+          <p className="text-zinc-300 text-sm font-light leading-relaxed">
             Praktické návody pre prípravu mladých tanečníkov na súťaže a bezpečný klubový bazár pre výmenu oblečenia a topánok.
           </p>
           <div className="h-px w-24 mx-auto bg-gradient-to-r from-transparent via-gold-500/40 to-transparent mt-6"></div>
@@ -320,7 +320,7 @@ export default function RodicovskaZonaPage() {
             </div>
             <div>
               <h2 className="text-xl md:text-2xl font-serif text-white font-bold">Návody a súťažná vizáž</h2>
-              <p className="text-gray-500 text-xs font-light">Ako správne pripraviť dieťa na tanečný parket</p>
+              <p className="text-zinc-400 text-xs font-light">Ako správne pripraviť dieťa na tanečný parket</p>
             </div>
           </div>
 
@@ -337,7 +337,7 @@ export default function RodicovskaZonaPage() {
                       : "bg-white/[0.01] border-white/5 hover:bg-white/[0.03] hover:border-white/10"
                   }`}
                 >
-                  <span className={`text-[8px] font-black uppercase tracking-widest px-2 py-0.5 rounded-full w-fit ${
+                  <span className={`text-[10px] md:text-[11px] font-black uppercase tracking-widest px-2.5 py-0.5 rounded-full w-fit ${
                     guide.category === "Dievčatá" ? "bg-pink-500/10 text-pink-400" :
                     guide.category === "Chlapci" ? "bg-blue-500/10 text-blue-400" : "bg-gold-500/10 text-gold-500"
                   }`}>
@@ -346,7 +346,7 @@ export default function RodicovskaZonaPage() {
                   <h3 className={`font-serif text-sm font-bold transition-colors ${activeGuide === guide.id ? "text-gold-500" : "text-white"}`}>
                     {guide.title}
                   </h3>
-                  <p className="text-gray-500 text-[10px] font-light line-clamp-2 leading-relaxed">
+                  <p className="text-zinc-400 text-xs font-light line-clamp-2 leading-relaxed">
                     {guide.subtitle}
                   </p>
                 </button>
@@ -372,9 +372,9 @@ export default function RodicovskaZonaPage() {
                           <h3 className="font-serif text-xl md:text-2xl font-bold text-white mb-1">{guide.title}</h3>
                           <p className="text-gold-500/80 text-xs font-light tracking-wide">{guide.subtitle}</p>
                         </div>
-                        <div className="flex gap-3 text-[9px] font-bold uppercase tracking-widest">
-                          <span className="bg-white/5 border border-white/10 text-gray-400 px-3 py-1.5 rounded-full shrink-0">Obtiažnosť: {guide.difficulty}</span>
-                          <span className="bg-white/5 border border-white/10 text-gray-400 px-3 py-1.5 rounded-full shrink-0">Čas: {guide.time}</span>
+                        <div className="flex gap-3 text-[10px] md:text-xs font-bold uppercase tracking-widest">
+                          <span className="bg-white/5 border border-white/10 text-zinc-300 px-3 py-1.5 rounded-full shrink-0">Obtiažnosť: {guide.difficulty}</span>
+                          <span className="bg-white/5 border border-white/10 text-zinc-300 px-3 py-1.5 rounded-full shrink-0">Čas: {guide.time}</span>
                         </div>
                       </div>
 
@@ -389,7 +389,7 @@ export default function RodicovskaZonaPage() {
                                 <span className="w-6 h-6 shrink-0 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center font-mono text-[10px] font-bold text-gold-400">
                                   {i + 1}
                                 </span>
-                                <p className="text-xs text-gray-300 leading-relaxed font-light">{step}</p>
+                                <p className="text-sm text-zinc-200 leading-relaxed font-light">{step}</p>
                               </div>
                             ))}
                           </div>
@@ -405,7 +405,7 @@ export default function RodicovskaZonaPage() {
                               className="w-full h-full object-cover filter brightness-95 hover:scale-105 hover:brightness-100 transition-all duration-500" 
                             />
                           </div>
-                          <span className="text-[9px] text-gray-500 text-center block italic">Vzorový vzhľad podľa pravidiel SZTŠ</span>
+                          <span className="text-[10px] md:text-xs text-zinc-400 text-center block italic">Vzorový vzhľad podľa pravidiel SZTŠ</span>
                         </div>
                       </div>
 
@@ -433,7 +433,7 @@ export default function RodicovskaZonaPage() {
             </div>
             <div>
               <h2 className="text-xl md:text-2xl font-serif text-white font-bold">Súťažný sprievodca pre rodičov</h2>
-              <p className="text-gray-500 text-xs font-light">Všetko, čo potrebujete vedieť o prihlasovaní a priebehu súťažného dňa</p>
+              <p className="text-zinc-400 text-xs font-light">Všetko, čo potrebujete vedieť o prihlasovaní a priebehu súťažného dňa</p>
             </div>
           </div>
 
@@ -446,7 +446,7 @@ export default function RodicovskaZonaPage() {
                 </div>
                 <div>
                   <h3 className="font-serif text-lg font-bold text-white">Prihlasovanie na súťaže</h3>
-                  <p className="text-gold-500/80 text-[10px] uppercase tracking-wider font-bold">Oficiálny klubový proces</p>
+                  <p className="text-gold-500/80 text-[11px] md:text-xs uppercase tracking-wider font-bold">Oficiálny klubový proces</p>
                 </div>
               </div>
 
@@ -454,7 +454,7 @@ export default function RodicovskaZonaPage() {
               <div className="p-4 rounded-2xl border border-gold-500/20 bg-gold-500/[0.02] flex gap-3.5 items-start">
                 <AlertCircle className="w-5 h-5 text-gold-500 shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-gold-500 text-[10px] font-black uppercase tracking-widest block mb-1">Dôležité upozornenie:</span>
+                  <span className="text-gold-500 text-xs font-black uppercase tracking-widest block mb-1">Dôležité upozornenie:</span>
                   <p className="text-gray-200 text-xs leading-relaxed font-normal">
                     Deti na všetky súťaže <strong>prihlasuje výhradne hlavný tréner</strong> ako oficiálny a licencovaný zástupca klubu. Rodičia neprihlasujú deti individuálne.
                   </p>
@@ -468,24 +468,24 @@ export default function RodicovskaZonaPage() {
                   <div className="flex gap-4 items-start p-3 rounded-2xl bg-white/[0.01] border border-white/5">
                     <span className="w-6 h-6 shrink-0 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center font-mono text-[10px] font-bold text-gold-400">1</span>
                     <div>
-                      <h5 className="text-white text-xs font-bold mb-0.5">Vzájomná dohoda a nahlásenie</h5>
-                      <p className="text-[11px] text-gray-400 leading-relaxed font-light">Rodič aktívne osloví trénera s predstihom, prípadne tréner sám kontaktuje rodičov detí s návrhom, aby sa spoločne skoordinovali, kto má záujem a je výkonnostne pripravený súťažiť.</p>
+                      <h5 className="text-white text-sm font-bold mb-1">Vzájomná dohoda a nahlásenie</h5>
+                      <p className="text-xs md:text-sm text-zinc-300 leading-relaxed font-light">Rodič aktívne osloví trénera s predstihom, prípadne tréner sám kontaktuje rodičov detí s návrhom, aby sa spoločne skoordinovali, kto má záujem a je výkonnostne pripravený súťažiť.</p>
                     </div>
                   </div>
 
                   <div className="flex gap-4 items-start p-3 rounded-2xl bg-white/[0.01] border border-white/5">
                     <span className="w-6 h-6 shrink-0 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center font-mono text-[10px] font-bold text-gold-400">2</span>
                     <div>
-                      <h5 className="text-white text-xs font-bold mb-0.5">Potvrdenie (Rodič)</h5>
-                      <p className="text-[11px] text-gray-400 leading-relaxed font-light">Rodič definitívne potvrdí účasť a nahlási potrebné údaje (výkonnostná trieda, veková kategória a mená páru/dieťaťa) trénerovi do stanoveného interného termínu (deadline). <strong>Štartovné sa neplatí vopred nášmu klubu, ale hradí sa až priamo na mieste konania súťaže pri registračnom stolíku usporiadateľského klubu (kde preberáte aj štartové číslo). Táto platba je úplne oddelená od bežných vstupeniek pre divákov.</strong></p>
+                      <h5 className="text-white text-sm font-bold mb-1">Potvrdenie (Rodič)</h5>
+                      <p className="text-xs md:text-sm text-zinc-300 leading-relaxed font-light">Rodič definitívne potvrdí účasť a nahlási potrebné údaje (výkonnostná trieda, veková kategória a mená páru/dieťaťa) trénerovi do stanoveného interného termínu (deadline). <strong>Štartovné sa neplatí vopred nášmu klubu, ale hradí sa až priamo na mieste konania súťaže pri registračnom stolíku usporiadateľského klubu (kde preberáte aj štartové číslo). Táto platba je úplne oddelená od bežných vstupeniek pre divákov.</strong></p>
                     </div>
                   </div>
 
                   <div className="flex gap-4 items-start p-3 rounded-2xl bg-white/[0.01] border border-white/5">
                     <span className="w-6 h-6 shrink-0 rounded-full bg-gold-500/10 border border-gold-500/30 flex items-center justify-center font-mono text-[10px] font-bold text-gold-400">3</span>
                     <div>
-                      <h5 className="text-white text-xs font-bold mb-0.5">Oficiálna registrácia (Klub)</h5>
-                      <p className="text-[11px] text-gray-400 leading-relaxed font-light">Tréner ako splnomocnený zástupca tanečného klubu Ellegance vykoná hromadnú registráciu detí cez oficiálny portál SZTŠ.</p>
+                      <h5 className="text-white text-sm font-bold mb-1">Oficiálna registrácia (Klub)</h5>
+                      <p className="text-xs md:text-sm text-zinc-300 leading-relaxed font-light">Tréner ako splnomocnený zástupca tanečného klubu Ellegance vykoná hromadnú registráciu detí cez oficiálny portál SZTŠ.</p>
                     </div>
                   </div>
                 </div>
@@ -500,7 +500,7 @@ export default function RodicovskaZonaPage() {
                 </div>
                 <div>
                   <h3 className="font-serif text-lg font-bold text-white">Súťažný deň & Etiketa</h3>
-                  <p className="text-gold-500/80 text-[10px] uppercase tracking-wider font-bold">Kódex správania a harmonogram</p>
+                  <p className="text-gold-500/80 text-[11px] md:text-xs uppercase tracking-wider font-bold">Kódex správania a harmonogram</p>
                 </div>
               </div>
 
@@ -511,13 +511,13 @@ export default function RodicovskaZonaPage() {
                     <Clock className="w-4 h-4 shrink-0" />
                     <span>Príchod: 1.5 až 2 hodiny vopred</span>
                   </div>
-                  <p className="text-[11px] text-gray-400 leading-relaxed font-light">
+                  <p className="text-sm text-zinc-300 leading-relaxed font-light">
                     Na miesto konania dorazte s dostatočným predstihom. Tento čas je nevyhnutný na vyzdvihnutie štartovného čísla, rozcvičenie, doladenie účesov, oblečenia a aklimatizáciu dieťaťa v súťažnej hale.
                   </p>
                 </div>
 
                 <h4 className="text-white text-xs font-bold uppercase tracking-widest pt-2">Ako sa správať na súťaži:</h4>
-                <div className="space-y-3 text-[11px] text-gray-300 font-light leading-relaxed">
+                <div className="space-y-3 text-sm text-gray-300 font-light leading-relaxed">
                   <div className="flex gap-2">
                     <span className="text-gold-500 font-bold">✓</span>
                     <p><strong>Dôvera a rešpekt k trénerovi:</strong> Upozorňujeme, že pokiaľ je tréner na súťaži nominovaný ako oficiálny porotca SZTŠ, podľa prísnych pravidiel zväzu <em>nesmie počas svojej rozhodcovskej funkcie prísť do žiadneho kontaktu so svojimi zverencami ani im nijako pomáhať/radiť na parkete alebo v zákulisí</em>. V takejto situácii preberajú plnú podporu a logistiku rodičia a tréner musí zachovať absolútnu neutralitu.</p>
@@ -545,7 +545,7 @@ export default function RodicovskaZonaPage() {
               </div>
               <div>
                 <h2 className="text-xl md:text-2xl font-serif text-white font-bold">Klubový minibazár</h2>
-                <p className="text-gray-500 text-xs font-light">Burza súťažného oblečenia a tanečnej obuvi medzi rodičmi</p>
+                <p className="text-zinc-400 text-xs font-light">Burza súťažného oblečenia a tanečnej obuvi medzi rodičmi</p>
               </div>
             </div>
 
@@ -565,7 +565,7 @@ export default function RodicovskaZonaPage() {
                   setIsAddModalOpen(true);
                   formOpenedAtRef.current = recordFormOpenTime();
                 }}
-                className="btn-gold flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-transform shrink-0"
+                className="btn-gold flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-widest hover:scale-105 transition-transform shrink-0"
               >
                 <Plus className="w-3.5 h-3.5" /> Pridať inzerát
               </button>
@@ -593,7 +593,7 @@ export default function RodicovskaZonaPage() {
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
                     />
-                    <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest text-gold-500">
+                    <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-gold-500">
                       {item.category}
                     </div>
                     <div className="absolute bottom-4 right-4 bg-gold-500 text-obsidian-900 px-4 py-1.5 rounded-2xl font-serif text-base font-bold shadow-lg flex items-center gap-1">
@@ -607,20 +607,20 @@ export default function RodicovskaZonaPage() {
                       <h3 className="font-serif text-base font-bold text-white group-hover:text-gold-500 transition-colors leading-tight line-clamp-1">
                         {item.title}
                       </h3>
-                      <p className="text-gray-400 text-[11px] font-light leading-relaxed line-clamp-3">
+                      <p className="text-zinc-300 text-xs font-light leading-relaxed line-clamp-3">
                         {item.description}
                       </p>
                     </div>
 
                     {/* Metadata details */}
-                    <div className="pt-4 border-t border-white/5 space-y-2 text-[10px] text-gray-500">
+                    <div className="pt-4 border-t border-white/5 space-y-2 text-xs text-zinc-400">
                       <div className="flex justify-between">
                         <span>Veľkosť:</span>
-                        <strong className="text-gray-300 font-medium">{item.size}</strong>
+                        <strong className="text-zinc-200 font-medium">{item.size}</strong>
                       </div>
                       <div className="flex justify-between">
                         <span>Stav:</span>
-                        <strong className="text-gray-300 font-medium">{item.condition}</strong>
+                        <strong className="text-zinc-200 font-medium">{item.condition}</strong>
                       </div>
                       <div className="flex justify-between items-center pt-2 border-t border-white/5 border-dashed text-gold-500">
                         <span className="flex items-center gap-1.5"><Phone className="w-3 h-3" /> Kontakt:</span>
@@ -672,7 +672,7 @@ export default function RodicovskaZonaPage() {
                   <div className="flex-1 overflow-y-auto space-y-4 pr-1.5 max-h-[50vh] sm:max-h-[55vh] custom-scrollbar scroll-smooth">
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="space-y-1">
-                      <label className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Názov veci *</label>
+                      <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">Názov veci *</label>
                       <input
                         type="text"
                         placeholder="napr. Súťažné šaty"
@@ -683,7 +683,7 @@ export default function RodicovskaZonaPage() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Kategória *</label>
+                      <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">Kategória *</label>
                       <select
                         value={newCategory}
                         onChange={(e) => setNewCategory(e.target.value)}
@@ -702,7 +702,7 @@ export default function RodicovskaZonaPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="space-y-1">
-                      <label className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Veľkosť *</label>
+                      <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">Veľkosť *</label>
                       <input
                         type="text"
                         placeholder="napr. 134 alebo 34"
@@ -713,7 +713,7 @@ export default function RodicovskaZonaPage() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Cena *</label>
+                      <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">Cena *</label>
                       <input
                         type="text"
                         placeholder="napr. 45€"
@@ -724,7 +724,7 @@ export default function RodicovskaZonaPage() {
                       />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Stav *</label>
+                      <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">Stav *</label>
                       <input
                         type="text"
                         placeholder="napr. Ako nové"
@@ -737,7 +737,7 @@ export default function RodicovskaZonaPage() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Kontakt (Meno + Mobil/E-mail) *</label>
+                    <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">Kontakt (Meno + Mobil/E-mail) *</label>
                     <input
                       type="text"
                       placeholder="napr. Anna H. (0905 111 222)"
@@ -749,7 +749,7 @@ export default function RodicovskaZonaPage() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Fotografia *</label>
+                    <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">Fotografia *</label>
                     {newImage ? (
                       <div className="relative aspect-[4/3] w-full rounded-2xl overflow-hidden border border-gold-500/30 group">
                         <img src={newImage} alt="Náhľad" className="w-full h-full object-cover" />
@@ -777,8 +777,8 @@ export default function RodicovskaZonaPage() {
                             <Upload className="w-5 h-5" />
                           </div>
                           <div>
-                            <span className="text-[10px] text-gray-300 font-bold block">Nahrať fotku zo zariadenia</span>
-                            <span className="text-[9px] text-gray-500 block mt-0.5">Podporované formáty: PNG, JPG, WEBP (max. 5MB)</span>
+                             <span className="text-[11px] md:text-xs text-gray-300 font-bold block">Nahrať fotku zo zariadenia</span>
+                            <span className="text-[10px] md:text-xs text-gray-500 block mt-0.5">Podporované formáty: PNG, JPG, WEBP (max. 5MB)</span>
                           </div>
                         </div>
                       </label>
@@ -797,7 +797,7 @@ export default function RodicovskaZonaPage() {
                   </div>
 
                   <div className="space-y-1">
-                    <label className="text-[9px] uppercase tracking-widest font-bold text-gray-500">Popis veci</label>
+                    <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">Popis veci</label>
                     <textarea
                       placeholder="Popíšte bližšie stav, materiál, strih, farbu..."
                       rows={3}
@@ -821,7 +821,7 @@ export default function RodicovskaZonaPage() {
 
                   {/* Consent and Solemn declaration slider for bot protection (disguised) */}
                   <div className="space-y-1 relative pt-2">
-                    <label className="text-[9px] uppercase tracking-widest font-bold text-gray-500 flex items-center gap-1.5">
+                    <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500 flex items-center gap-1.5">
                       <ShieldCheck className="w-3.5 h-3.5 text-gold-500 animate-pulse" /> Čestné prehlásenie a súhlas s pravidlami bazáru *
                     </label>
                     <div className="relative w-full h-12 bg-white/[0.03] border border-white/10 rounded-2xl flex items-center overflow-hidden group hover:border-gold-500/30 transition-all">
