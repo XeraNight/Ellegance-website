@@ -117,31 +117,31 @@ export default function RozpisHodinPage() {
                         <td className="py-1.5 px-3 text-gray-500 text-center font-mono font-medium border-r border-white/5">16:00</td>
                         {/* Monday K3 */}
                         <td className="p-1 border-r border-white/5" rowSpan={3}>
-                          <div className="bg-white/[0.02] border border-white/10 hover:bg-white/5 hover:border-gold-500/30 hover:-translate-y-0.5 transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-gray-400 font-light min-h-[86px]">
-                            <span className="font-semibold text-[10px] text-gray-300 uppercase tracking-wider block">Súťažný tanec (K3)</span>
-                            <span className="text-[8px] text-gray-500 font-bold mt-1 tracking-widest uppercase">16:00 - 17:30</span>
+                          <div className="bg-slate-500/[0.03] border border-slate-500/30 hover:bg-slate-500/10 hover:border-slate-400/60 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(148,163,184,0.08)] transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-slate-300 font-light min-h-[86px]">
+                            <span className="font-semibold text-[10px] text-slate-200 uppercase tracking-wider block">Súťažný tanec (K3)</span>
+                            <span className="text-[8px] text-slate-400/60 font-bold mt-1 tracking-widest uppercase">16:00 - 17:30</span>
                           </div>
                         </td>
                         {/* Tuesday K2 */}
                         <td className="p-1 border-r border-white/5" rowSpan={3}>
-                          <div className="bg-gold-500/5 border border-gold-500/30 shadow-[0_0_8px_rgba(212,175,55,0.06)] hover:bg-gold-500/15 hover:border-gold-500/60 hover:-translate-y-0.5 transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-gold-400/90 font-light min-h-[86px]">
-                            <span className="font-semibold text-[10px] text-gold-400 uppercase tracking-widest block">Súťažný tanec (K2)</span>
-                            <span className="text-[8px] text-gold-500/60 font-bold mt-1 tracking-widest uppercase">16:00 - 17:30</span>
+                          <div className="bg-amber-600/[0.04] border border-amber-600/40 shadow-[0_0_8px_rgba(245,158,11,0.06)] hover:bg-amber-500/15 hover:border-amber-500/70 hover:-translate-y-0.5 hover:shadow-[0_4px_15px_rgba(245,158,11,0.08)] transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-amber-300 font-light min-h-[86px]">
+                            <span className="font-semibold text-[10px] text-amber-200 uppercase tracking-widest block">Súťažný tanec (K2)</span>
+                            <span className="text-[8px] text-amber-500/60 font-bold mt-1 tracking-widest uppercase">16:00 - 17:30</span>
                           </div>
                         </td>
                         <td className="p-1 border-r border-white/5"></td>
                         {/* Thursday K2 */}
                         <td className="p-1 border-r border-white/5" rowSpan={3}>
-                          <div className="bg-gold-500/5 border border-gold-500/30 shadow-[0_0_8px_rgba(212,175,55,0.06)] hover:bg-gold-500/15 hover:border-gold-500/60 hover:-translate-y-0.5 transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-gold-400/90 font-light min-h-[86px]">
-                            <span className="font-semibold text-[10px] text-gold-400 uppercase tracking-widest block">Súťažný tanec (K2)</span>
-                            <span className="text-[8px] text-gold-500/60 font-bold mt-1 tracking-widest uppercase">16:00 - 17:30</span>
+                          <div className="bg-amber-600/[0.04] border border-amber-600/40 shadow-[0_0_8px_rgba(245,158,11,0.06)] hover:bg-amber-500/15 hover:border-amber-500/70 hover:-translate-y-0.5 hover:shadow-[0_4px_15px_rgba(245,158,11,0.08)] transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-amber-300 font-light min-h-[86px]">
+                            <span className="font-semibold text-[10px] text-amber-200 uppercase tracking-widest block">Súťažný tanec (K2)</span>
+                            <span className="text-[8px] text-amber-500/60 font-bold mt-1 tracking-widest uppercase">16:00 - 17:30</span>
                           </div>
                         </td>
                         {/* Friday CP */}
                         <td className="p-1" rowSpan={4}>
-                          <div className="bg-gold-500/5 border border-gold-500/30 hover:bg-gold-500/15 hover:border-gold-500/60 hover:-translate-y-0.5 hover:shadow-[0_3px_15px_rgba(212,175,55,0.12)] transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-gold-400 font-light min-h-[116px]">
+                          <div className="bg-orange-500/[0.04] border border-orange-500/30 hover:bg-orange-500/15 hover:border-orange-400/60 hover:-translate-y-0.5 hover:shadow-[0_4px_15px_rgba(249,115,22,0.12)] transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-orange-300 font-light min-h-[116px]">
                             <span className="font-bold text-[10px] uppercase tracking-wider block">Súťažný tanec (CP)</span>
-                            <span className="text-[8px] text-gold-500/60 font-bold mt-1 tracking-widest uppercase">16:00 - 18:00</span>
+                            <span className="text-[8px] text-orange-500/60 font-bold mt-1 tracking-widest uppercase">16:00 - 18:00</span>
                           </div>
                         </td>
                       </tr>
@@ -207,24 +207,24 @@ export default function RozpisHodinPage() {
                         <td className="py-1.5 px-3 text-gray-500 text-center font-mono font-medium border-r border-white/5">19:00</td>
                         {/* Monday Spol. Tance */}
                         <td className="p-1 border-r border-white/5" rowSpan={3}>
-                          <div className="bg-gold-500/10 border border-gold-500 shadow-[0_0_12px_rgba(212,175,55,0.12)] hover:bg-gold-500/15 hover:border-gold-500/50 hover:-translate-y-0.5 transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-white min-h-[86px]">
+                          <div className="bg-emerald-600/[0.04] border border-emerald-600/40 shadow-[0_0_12px_rgba(16,185,129,0.08)] hover:bg-emerald-500/15 hover:border-emerald-500/60 hover:-translate-y-0.5 hover:shadow-[0_4px_15px_rgba(16,185,129,0.12)] transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-emerald-300 min-h-[86px]">
                             <span className="font-bold text-[10px] uppercase tracking-wider block">Spoločenské tance</span>
-                            <span className="text-[8px] text-gold-400 mt-1 font-bold tracking-wider uppercase">19:00 - 20:30 (Dospelí)</span>
+                            <span className="text-[8px] text-emerald-400/70 mt-1 font-bold tracking-wider uppercase">19:00 - 20:30 (Dospelí)</span>
                           </div>
                         </td>
                         {/* Tuesday Spol. Tance */}
                         <td className="p-1 border-r border-white/5" rowSpan={3}>
-                          <div className="bg-gold-500/10 border border-gold-500 shadow-[0_0_12px_rgba(212,175,55,0.12)] hover:bg-gold-500/15 hover:border-gold-500/50 hover:-translate-y-0.5 transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-white min-h-[86px]">
+                          <div className="bg-emerald-600/[0.04] border border-emerald-600/40 shadow-[0_0_12px_rgba(16,185,129,0.08)] hover:bg-emerald-500/15 hover:border-emerald-500/60 hover:-translate-y-0.5 hover:shadow-[0_4px_15px_rgba(16,185,129,0.12)] transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-emerald-300 min-h-[86px]">
                             <span className="font-bold text-[10px] uppercase tracking-wider block">Spoločenské tance</span>
-                            <span className="text-[8px] text-gold-400 mt-1 font-bold tracking-wider uppercase">19:00 - 20:30 (Dospelí)</span>
+                            <span className="text-[8px] text-emerald-400/70 mt-1 font-bold tracking-wider uppercase">19:00 - 20:30 (Dospelí)</span>
                           </div>
                         </td>
                         <td className="p-1 border-r border-white/5"></td>
                         {/* Thursday Tango */}
                         <td className="p-1 border-r border-white/5" rowSpan={3}>
-                          <div className="bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-0.5 transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-white min-h-[86px]">
+                          <div className="bg-rose-600/[0.04] border border-rose-600/40 shadow-[0_0_12px_rgba(244,63,94,0.08)] hover:bg-rose-500/15 hover:border-rose-500/60 hover:-translate-y-0.5 hover:shadow-[0_4px_15px_rgba(244,63,94,0.12)] transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-rose-300 min-h-[86px]">
                             <span className="font-bold text-[10px] uppercase tracking-wider block">Tango Argentíno</span>
-                            <span className="text-[8px] text-gray-400 mt-1 font-bold tracking-wider uppercase">19:00 - 20:30</span>
+                            <span className="text-[8px] text-rose-400/70 mt-1 font-bold tracking-wider uppercase">19:00 - 20:30</span>
                           </div>
                         </td>
                         <td className="p-1"></td>
@@ -306,24 +306,24 @@ export default function RozpisHodinPage() {
                         <td className="py-1.5 px-3 text-gray-500 text-center font-mono font-medium border-r border-white/5">16:00</td>
                         {/* Monday Deti 1 */}
                         <td className="p-1 border-r border-white/5" rowSpan={2}>
-                          <div className="bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-0.5 transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-gray-300 min-h-[56px]">
+                          <div className="bg-pink-500/[0.03] border border-pink-500/30 hover:bg-pink-500/10 hover:border-pink-400/60 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(236,72,153,0.08)] transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-pink-300 min-h-[56px]">
                             <span className="font-bold text-[10px] uppercase tracking-wider block">Deti 1</span>
-                            <span className="text-[8px] text-gray-400 font-bold mt-1 tracking-widest uppercase">16:00 - 17:00</span>
+                            <span className="text-[8px] text-pink-400/60 font-bold mt-1 tracking-widest uppercase">16:00 - 17:00</span>
                           </div>
                         </td>
                         <td className="p-1 border-r border-white/5"></td>
                         {/* Wednesday Deti 1 */}
                         <td className="p-1 border-r border-white/5" rowSpan={2}>
-                          <div className="bg-white/5 border border-white/10 hover:bg-white/10 hover:-translate-y-0.5 transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-gray-300 min-h-[56px]">
+                          <div className="bg-pink-500/[0.03] border border-pink-500/30 hover:bg-pink-500/10 hover:border-pink-400/60 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(236,72,153,0.08)] transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-pink-300 min-h-[56px]">
                             <span className="font-bold text-[10px] uppercase tracking-wider block">Deti 1</span>
-                            <span className="text-[8px] text-gray-400 font-bold mt-1 tracking-widest uppercase">16:00 - 17:00</span>
+                            <span className="text-[8px] text-pink-400/60 font-bold mt-1 tracking-widest uppercase">16:00 - 17:00</span>
                           </div>
                         </td>
                         {/* Thursday K3 */}
                         <td className="p-1 border-r border-white/5" rowSpan={3}>
-                          <div className="bg-white/[0.02] border border-white/10 hover:bg-white/5 hover:border-gold-500/30 hover:-translate-y-0.5 transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-gray-400 font-light min-h-[86px]">
-                            <span className="font-semibold text-[10px] text-gray-300 uppercase tracking-wider block">Súťažný tanec (K3)</span>
-                            <span className="text-[8px] text-gray-500 font-bold mt-1 tracking-widest uppercase">16:00 - 17:30</span>
+                          <div className="bg-slate-500/[0.03] border border-slate-500/30 hover:bg-slate-500/10 hover:border-slate-400/60 hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(148,163,184,0.08)] transition-all p-2 rounded-lg text-center h-full flex flex-col items-center justify-center text-slate-300 font-light min-h-[86px]">
+                            <span className="font-semibold text-[10px] text-slate-200 uppercase tracking-wider block">Súťažný tanec (K3)</span>
+                            <span className="text-[8px] text-slate-400/60 font-bold mt-1 tracking-widest uppercase">16:00 - 17:30</span>
                           </div>
                         </td>
                         <td className="p-1"></td>
