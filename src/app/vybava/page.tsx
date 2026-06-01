@@ -4,17 +4,10 @@ import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAssetPath } from "@/lib/utils";
 import { 
-  Sparkles, 
-  ShoppingBag, 
-  AlertCircle, 
   Check, 
   Tag, 
-  Trophy, 
-  Clock, 
-  Star, 
   ArrowRight,
-  ShieldCheck,
-  HelpCircle
+  ShieldCheck
 } from "lucide-react";
 
 interface EquipmentItem {

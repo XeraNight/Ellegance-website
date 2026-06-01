@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Calendar, Clock, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export default function RozpisHodinPage() {
   const [selectedSala, setSelectedSala] = useState<"hlavna" | "vedlajsia">("hlavna");
