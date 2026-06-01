@@ -12,29 +12,20 @@ import { Heart, Award, ArrowRight, Sparkles } from "lucide-react";
 
 const CATEGORY_IMAGES: Record<string, string[]> = {
   latin: [
-    "/images/IMG_1693.jpeg",
-    "/images/image copy 4.png",
-    "/images/image.png"
+    "/images/image copy 5.png"
   ],
   svadba: [
-    "/images/IMG_1710.jpeg",
-    "/images/IMG_1699.jpeg",
-    "/images/image copy.png"
+    "/images/image copy 8.png",
+    "/images/image copy 9.png"
   ],
   spolocenske: [
-    "/images/kurz_spolocenskych_tancov.png",
-    "/images/IMG_1686.jpeg",
-    "/images/IMG_1658.jpeg"
+    "/images/image copy 7.png"
   ],
   tango: [
-    "/images/miculesqu.png",
-    "/images/IMG_1693.jpeg",
-    "/images/main_page_photo.jpg"
+    "/images/image copy 6.png"
   ],
   deti: [
-    "/images/IMG_1680.jpeg",
-    "/images/image copy 3.png",
-    "/images/image copy 2.png"
+    "/images/image copy 11.png"
   ],
 };
 
@@ -287,6 +278,13 @@ export default function PonukaPage() {
                 <div className="p-8 rounded-[2rem] border border-white/5 bg-obsidian-850/60 backdrop-blur-sm flex flex-col justify-between h-full relative overflow-hidden shadow-lg hover:border-gold-500/20 transition-all duration-300 group">
                   <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-white/[0.02] to-transparent pointer-events-none rounded-bl-full" />
                   <div>
+                    <div className="relative aspect-[16/10] w-full bg-obsidian-900 overflow-hidden border border-white/5 rounded-[1.5rem] mb-6 shadow-inner">
+                      <img
+                        src={getAssetPath("/images/image copy 8.png")}
+                        alt="Svadobná Pohoda"
+                        className="w-full h-full object-cover filter brightness-95 group-hover:scale-105 transition-all duration-500"
+                      />
+                    </div>
                     <span className="text-gold-500/60 text-[9px] font-bold uppercase tracking-widest mb-3 block">Základný Balík</span>
                     <h3 className="font-serif text-2xl font-bold text-white mb-4 group-hover:text-gold-500 transition-colors">Svadobná Pohoda</h3>
                     <div className="text-4xl font-serif font-bold text-white mb-6">140€</div>
@@ -315,6 +313,13 @@ export default function PonukaPage() {
                     Najobľúbenejšie
                   </div>
                   <div>
+                    <div className="relative aspect-[16/10] w-full bg-obsidian-900 overflow-hidden border border-white/5 rounded-[1.5rem] mb-6 shadow-inner">
+                      <img
+                        src={getAssetPath("/images/image copy 9.png")}
+                        alt="Svadobná Hviezda"
+                        className="w-full h-full object-cover filter brightness-95 group-hover:scale-105 transition-all duration-500"
+                      />
+                    </div>
                     <span className="text-gold-500 text-[9px] font-bold uppercase tracking-widest mb-3 block">Premium Balík</span>
                     <h3 className="font-serif text-2xl font-bold text-white mb-4">Svadobná Hviezda</h3>
                     <div className="text-4xl font-serif font-bold text-gold-500 mb-6">250€</div>
