@@ -7,7 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import Image from "next/image";
 import IPhoneMockup from "@/components/IPhoneMockup";
 import InstagramOverlay from "@/components/InstagramOverlay";
-import { Maximize2, X, Download, Eye } from "lucide-react";
+import { Maximize2, X, Download } from "lucide-react";
 
 export default function PressKitPage() {
   const [instaMode, setInstaMode] = useState<"feed" | "reels">("feed");

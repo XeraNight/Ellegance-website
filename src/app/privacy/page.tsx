@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Shield, FileText, CheckCircle2, Scale, MapPin, User, Clock, Lock, Mail, Phone } from "lucide-react";
+import { Shield, FileText, CheckCircle2, Scale, User, Clock, Lock } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function PrivacyPage() {

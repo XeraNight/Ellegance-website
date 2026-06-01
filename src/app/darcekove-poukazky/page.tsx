@@ -3,19 +3,14 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
-  Gift, 
   Mail, 
   Printer, 
   CheckCircle2, 
-  Sparkles, 
-  ChevronRight, 
   CreditCard, 
   Eye, 
-  Info,
   Clock,
   AlertCircle
 } from "lucide-react";
-import { getAssetPath } from "@/lib/utils";
 
 type DesignTheme = "midnight" | "champagne" | "rosegold";
 type DeliveryType = "digital" | "physical";

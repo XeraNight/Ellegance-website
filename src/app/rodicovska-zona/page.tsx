@@ -5,7 +5,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { getAssetPath } from "@/lib/utils";
 import { supabase } from "@/lib/supabase";
 import { 
-  Sparkles, 
   Plus, 
   ShoppingBag, 
   BookOpen, 
@@ -15,13 +14,11 @@ import {
   Phone, 
   Tag, 
   HelpCircle,
-  Eye,
   Upload,
   ShieldCheck,
   Trophy,
   Clock,
   Calendar,
-  ClipboardList,
   Trash2
 } from "lucide-react";
 
@@ -30,8 +27,6 @@ import {
   isValidContact,
   isValidPrice,
   validateImageFile,
-  checkRateLimit,
-  formatRemainingTime,
   recordFormOpenTime,
   isHumanInteractionTime,
 } from "@/lib/security";
@@ -168,10 +163,6 @@ export default function RodicovskaZonaPage() {
     return getAssetPath(imagePath);
   };
 
-  useEffect(() => {
-    fetchBazaarItems();
-  }, []);
-
   const fetchBazaarItems = async () => {
     try {
       const { data, error } = await supabase
@@ -204,6 +195,10 @@ export default function RodicovskaZonaPage() {
       console.error("Exception fetching bazaar items:", err);
     }
   };
+
+  useEffect(() => {
+    fetchBazaarItems();
+  }, []);
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

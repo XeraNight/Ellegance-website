@@ -312,7 +312,7 @@ function KontaktForm() {
                   <div className="flex items-center justify-between gap-4 mb-2">
                     <h4 className="text-white font-bold text-xs uppercase tracking-widest">Adresa klubu</h4>
                     <a
-                      href="https://www.google.com/maps/place/Fejova+1,+040+01+Ko%C5%A1ice"
+                      href="https://www.google.com/maps/search/?api=1&query=Tane%C4%8Dn%C3%BD+klub+Ellegance+Fejova+1+Ko%C5%A1ice"
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-gold-400 hover:text-gold-300 text-[10px] uppercase tracking-wider font-bold border border-gold-500/30 hover:border-gold-500 px-2 py-1 rounded transition-all duration-300 flex items-center gap-1 shadow-[0_0_10px_rgba(212,175,55,0.05)]"

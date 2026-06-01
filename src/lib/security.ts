@@ -213,7 +213,6 @@ const ALLOWED_INTERNAL_PATHS = new Set([
   "/sutaze",
   "/kontakt",
   "/fotogaleria",
-  "/eventy-a-vystupenia",
   "/pravidla",
   "/privacy",
   "/press-kit",

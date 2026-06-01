@@ -3,14 +3,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { getAssetPath, cn } from "@/lib/utils";
-import { motion, AnimatePresence, useMotionValue, useTransform, animate, useInView } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, animate, useInView } from "framer-motion";
 
 const HERO_IMAGES = [
-  getAssetPath("/images/IMG_1658.jpeg"),
-  getAssetPath("/images/IMG_1680.jpeg"),
+  getAssetPath("/images/IMG_1710.jpeg"),
   getAssetPath("/images/IMG_1686.jpeg"),
-  getAssetPath("/images/IMG_1693.jpeg"),
-  getAssetPath("/images/IMG_1699.jpeg"),
+  getAssetPath("/images/d66319cd-ce83-45f6-9fea-97d6b4e680d8.JPG"),
+  getAssetPath("/images/512F4A0F-AFDE-4CB4-B708-235B7FDBA9D1.JPG"),
+  getAssetPath("/IMG_1940.JPG"),
 ];
 
 function Counter({ end, suffix = "", prefix = "" }: { end: number, suffix?: string, prefix?: string }) {
@@ -101,10 +101,6 @@ export default function SutaznyTanecPage() {
               <Link href="/kontakt" className="btn-gold px-12 py-4 rounded-full text-xs font-bold uppercase tracking-[0.2em] hover:scale-105 transition-transform">
                 Pridajte sa k nám
               </Link>
-              <div className="hidden md:flex flex-col gap-1">
-                <span className="text-[10px] text-gray-500 uppercase tracking-widest">Sledujte nás</span>
-                <span className="text-white text-xs font-serif italic">#ellegance_danceclub</span>
-              </div>
             </div>
           </motion.div>
         </div>
