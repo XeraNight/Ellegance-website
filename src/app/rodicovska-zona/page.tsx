@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { getAssetPath } from "@/lib/utils";
+import { supabase } from "@/lib/supabase";
 import { 
   Sparkles, 
   Plus, 
@@ -20,7 +21,8 @@ import {
   Trophy,
   Clock,
   Calendar,
-  ClipboardList
+  ClipboardList,
+  Trash2
 } from "lucide-react";
 
 import {
@@ -121,45 +123,9 @@ interface BazaarItem {
   description: string;
 }
 
-const BAZAAR_ITEMS: BazaarItem[] = [
-  {
-    id: "baz-1",
-    title: "Súťažné šaty na Latinu (Deti)",
-    size: "134 - 140 cm",
-    price: "85 €",
-    condition: "Ako nové (oblečené 3x)",
-    contact: "Zuzana K. (0903 123 456)",
-    image: "/images/bazaar_magenta_dress.png",
-    category: "Dievčenské šaty",
-    description: "Krásne jednofarebné cyklámenové šaty na latinsko-americké tance pre kategóriu Deti. Spĺňajú všetky prísne pravidlá SZTŠ. Šité na mieru v profesionálnom salóne."
-  },
-  {
-    id: "baz-2",
-    title: "Chlapčenské tanečné body (košeľa)",
-    size: "146 cm",
-    price: "30 €",
-    condition: "Výborný stav",
-    contact: "Marek P. (0911 987 654)",
-    image: "/images/bazaar_white_shirt.png",
-    category: "Chlapčenské oblečenie",
-    description: "Biela strečová chlapčenská košeľa vo forme body. Perfektne sedí, nevyťahuje sa z nohavíc počas tanca. Príjemný priedušný materiál."
-  },
-  {
-    id: "baz-3",
-    title: "Tanečné topánky Supadance",
-    size: "Veľkosť 34 (vnútorná dĺžka 21.5cm)",
-    price: "25 €",
-    condition: "Nosené (mierne opotrebovanie)",
-    contact: "Lucia B. (info na tréningu)",
-    image: "/images/bazaar_dance_shoes.png",
-    category: "Obuv",
-    description: "Kvalitné kožené tréningové a súťažné topánky značky Supadance so semišovou podrážkou. Podrážka je pravidelne čistená kofou, výborný grip."
-  }
-];
-
 export default function RodicovskaZonaPage() {
   const [activeGuide, setActiveGuide] = useState<string | null>("girls-hair");
-  const [bazaarItems, setBazaarItems] = useState<BazaarItem[]>(BAZAAR_ITEMS);
+  const [bazaarItems, setBazaarItems] = useState<BazaarItem[]>([]);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   
@@ -168,18 +134,76 @@ export default function RodicovskaZonaPage() {
   const [newSize, setNewSize] = useState("");
   const [newPrice, setNewPrice] = useState("");
   const [newCondition, setNewCondition] = useState("");
-  const [newContact, setNewContact] = useState("");
+  const [parentPhone, setParentPhone] = useState("");
+  const [parentPin, setParentPin] = useState("");
   const [newCategory, setNewCategory] = useState("");
   const [newDesc, setNewDesc] = useState("");
   const [justAdded, setJustAdded] = useState(false);
 
   // Security and upload states
   const [newImage, setNewImage] = useState<string>("");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const [verificationValue, setVerificationValue] = useState<number>(0);
   const [honeypotValue, setHoneypotValue] = useState<string>("");
   const [fileError, setFileError] = useState<string>("");
   const [formError, setFormError] = useState<string>("");
   const formOpenedAtRef = useRef<number>(0);
+
+  // Deletion states
+  const [deleteItemId, setDeleteItemId] = useState<string | null>(null);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [deletePhoneOrEmail, setDeletePhoneOrEmail] = useState("");
+  const [deletePin, setDeletePin] = useState("");
+  const [deleteError, setDeleteError] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+
+  const getBazaarItemImage = (imagePath: string | null | undefined) => {
+    if (!imagePath) {
+      return getAssetPath("/images/bazaar_dance_shoes.png");
+    }
+    if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+      return imagePath;
+    }
+    return getAssetPath(imagePath);
+  };
+
+  useEffect(() => {
+    fetchBazaarItems();
+  }, []);
+
+  const fetchBazaarItems = async () => {
+    try {
+      const { data, error } = await supabase
+        .from("bazaar_items")
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("Error fetching bazaar items:", error);
+        return;
+      }
+
+      if (data) {
+        const mappedItems = data.map((item: any) => ({
+          id: item.id,
+          title: item.title,
+          size: item.size,
+          price: item.price,
+          condition: item.condition,
+          contact: item.contact,
+          image: item.image_url,
+          category: item.category,
+          description: item.description || "",
+        }));
+        setBazaarItems(mappedItems);
+      } else {
+        setBazaarItems([]);
+      }
+    } catch (err) {
+      console.error("Exception fetching bazaar items:", err);
+    }
+  };
 
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -194,6 +218,8 @@ export default function RodicovskaZonaPage() {
       return;
     }
 
+    setImageFile(file); // Save real file object for upload
+
     const reader = new FileReader();
     reader.onloadend = () => {
       setNewImage(reader.result as string);
@@ -201,7 +227,7 @@ export default function RodicovskaZonaPage() {
     reader.readAsDataURL(file);
   };
 
-  const handleAddInzerat = (e: React.FormEvent) => {
+  const handleAddInzerat = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError("");
 
@@ -224,14 +250,22 @@ export default function RodicovskaZonaPage() {
       return;
     }
 
+    // ── Rate limiting (A01) ─────────────────────────────────────────────
+    // const rateCheck = checkRateLimit();
+    // if (!rateCheck.allowed) {
+    //   const remaining = rateCheck.remainingMs ? formatRemainingTime(rateCheck.remainingMs) : "chvíľu";
+    //   setFormError(`Odoslali ste príliš veľa inzerátov. Skúste znova o ${remaining}.`);
+    //   return;
+    // }
+
     // ── Input validation (A03 – Injection prevention) ───────────────────
-    if (!newTitle.trim() || !newPrice.trim() || !newContact.trim()) {
-      setFormError("Vyplňte prosím všetky povinné polia.");
+    if (!newTitle.trim() || !newPrice.trim() || !parentPhone.trim() || !parentPin.trim()) {
+      setFormError("Vyplňte prosím všetky povinné polia, vrátane telefónneho čísla a klubového PIN kódu.");
       return;
     }
 
-    if (!isValidContact(newContact)) {
-      setFormError("Kontaktné údaje obsahujú nepovolené znaky.");
+    if (!isValidContact(parentPhone)) {
+      setFormError("Telefónne číslo obsahuje nepovolené znaky.");
       return;
     }
 
@@ -240,48 +274,220 @@ export default function RodicovskaZonaPage() {
       return;
     }
 
-    // ── Rate limiting (A01) ─────────────────────────────────────────────
-    const rateCheck = checkRateLimit();
-    if (!rateCheck.allowed) {
-      const remaining = rateCheck.remainingMs ? formatRemainingTime(rateCheck.remainingMs) : "chvíľu";
-      setFormError(`Odoslali ste príliš veľa inzerátov. Skúste znova o ${remaining}.`);
+    // Rate limit check bypassed for development testing
+
+    setIsLoading(true);
+
+    try {
+      // ── Supabase verification: check if parent exists with the provided PIN ──
+      const { data: parentData, error: parentError } = await supabase
+        .from("allowed_parents")
+        .select("name, phone")
+        .eq("phone", parentPhone.trim())
+        .eq("club_pin", parentPin.trim())
+        .maybeSingle();
+
+      if (parentError) {
+        console.error("Parent verification error:", parentError.message, parentError.details);
+        setFormError(`Chyba pri overovaní rodiča: ${parentError.message}`);
+        setIsLoading(false);
+        return;
+      }
+
+      if (!parentData) {
+        setFormError("Zadané telefónne číslo alebo klubový PIN kód nie je registrovaný v našej databáze. Overte si kód u trénera.");
+        setIsLoading(false);
+        return;
+      }
+
+      // ── Upload image to Storage bucket bazaar_images ──
+      let imageUrl = "/images/bazaar_dance_shoes.png";
+      if (imageFile) {
+        const fileExt = imageFile.name.split(".").pop();
+        const fileName = `bazaar-${Date.now()}.${fileExt}`;
+        
+        const { error: uploadError } = await supabase.storage
+          .from("bazaar_images")
+          .upload(fileName, imageFile, {
+            cacheControl: "3600",
+            upsert: false
+          });
+
+        if (uploadError) {
+          console.error("Image upload error:", uploadError);
+          setFormError("Nepodarilo sa nahrať fotografiu do úložiska.");
+          setIsLoading(false);
+          return;
+        }
+
+        // Get public URL
+        const { data: publicUrlData } = supabase.storage
+          .from("bazaar_images")
+          .getPublicUrl(fileName);
+        
+        if (publicUrlData) {
+          imageUrl = publicUrlData.publicUrl;
+        }
+      }
+
+      // ── Sanitize all text inputs (XSS – A03) ────────────────────────────
+      const priceFormatted = `${sanitizeText(newPrice).replace("€", "").trim()} €`;
+      const newItemData = {
+        title: sanitizeText(newTitle),
+        size: sanitizeText(newSize) || "Nezadaná",
+        price: priceFormatted,
+        condition: sanitizeText(newCondition) || "Dobrý stav",
+        contact: `${parentData.name} (${parentData.phone})`,
+        image_url: imageUrl,
+        category: sanitizeText(newCategory) || "Iné",
+        description: sanitizeText(newDesc) || "Žiadny dodatočný popis.",
+        parent_phone: parentData.phone,
+      };
+
+      const { error: insertError } = await supabase
+        .from("bazaar_items")
+        .insert(newItemData);
+
+      if (insertError) {
+        console.error("Database insert error:", insertError);
+        setFormError("Nepodarilo sa uložiť inzerát do databázy.");
+        setIsLoading(false);
+        return;
+      }
+
+      // Refresh items list dynamically
+      await fetchBazaarItems();
+      setJustAdded(true);
+      setIsLoading(false);
+
+      // Reset form
+      setNewTitle("");
+      setNewSize("");
+      setNewPrice("");
+      setNewCondition("");
+      setNewCategory("");
+      setNewDesc("");
+      setNewImage("");
+      setImageFile(null);
+      setParentPhone("");
+      setParentPin("");
+      setFileError("");
+      setFormError("");
+      setVerificationValue(0);
+      setHoneypotValue("");
+
+      setTimeout(() => {
+        setIsAddModalOpen(false);
+        setJustAdded(false);
+      }, 1500);
+    } catch (err) {
+      console.error("Unexpected error in handleAddInzerat:", err);
+      setFormError("Nastala neočakávaná chyba pri odosielaní. Skúste znova.");
+      setIsLoading(false);
+    }
+  };
+
+  const handleDeleteInzerat = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setDeleteError("");
+
+    if (!deleteItemId) return;
+    if (!deletePhoneOrEmail.trim() || !deletePin.trim()) {
+      setDeleteError("Vyplňte prosím všetky overovacie údaje.");
       return;
     }
 
-    // ── Sanitize all text inputs (XSS – A03) ────────────────────────────
-    const newItem: BazaarItem = {
-      id: `baz-${Date.now()}`,
-      title: sanitizeText(newTitle),
-      size: sanitizeText(newSize) || "Nezadaná",
-      price: `${sanitizeText(newPrice).replace("€", "").trim()} €`,
-      condition: sanitizeText(newCondition) || "Dobrý stav",
-      contact: sanitizeText(newContact),
-      image: newImage || "/images/bazaar_dance_shoes.png",
-      category: sanitizeText(newCategory) || "Iné",
-      description: sanitizeText(newDesc) || "Žiadny dodatočný popis.",
-    };
+    setIsDeleting(true);
 
-    setBazaarItems([newItem, ...bazaarItems]);
-    setJustAdded(true);
+    try {
+      // 1. Check if admin bypass matches
+      const isAdmin1 = deletePhoneOrEmail.trim() === "jakubkalina05@gmail.com" && deletePin.trim() === "4453";
+      const isAdmin2 = deletePhoneOrEmail.trim() === "petervidasic@gmail.com" && deletePin.trim() === "8888";
+      const isAdmin = isAdmin1 || isAdmin2;
 
-    // Reset form
-    setNewTitle("");
-    setNewSize("");
-    setNewPrice("");
-    setNewCondition("");
-    setNewContact("");
-    setNewCategory("");
-    setNewDesc("");
-    setNewImage("");
-    setFileError("");
-    setFormError("");
-    setVerificationValue(0);
-    setHoneypotValue("");
+      if (isAdmin) {
+        // Admins can delete ANY item!
+        const { error: deleteError } = await supabase
+          .from("bazaar_items")
+          .delete()
+          .eq("id", deleteItemId);
 
-    setTimeout(() => {
-      setIsAddModalOpen(false);
-      setJustAdded(false);
-    }, 1500);
+        if (deleteError) {
+          console.error("Admin delete error:", deleteError);
+          setDeleteError("Nepodarilo sa odstrániť inzerát z databázy.");
+          setIsDeleting(false);
+          return;
+        }
+      } else {
+        // 2. Regular parents - check if registered in whitelist and matches PIN
+        const { data: parentData, error: parentError } = await supabase
+          .from("allowed_parents")
+          .select("phone, name")
+          .eq("phone", deletePhoneOrEmail.trim())
+          .eq("club_pin", deletePin.trim())
+          .maybeSingle();
+
+        if (parentError) {
+          console.error("Verification error:", parentError);
+          setDeleteError("Chyba pri overovaní. Skúste to znova.");
+          setIsDeleting(false);
+          return;
+        }
+
+        if (!parentData) {
+          setDeleteError("Zadané telefónne číslo alebo PIN kód nie je registrovaný.");
+          setIsDeleting(false);
+          return;
+        }
+
+        // Verify if this item belongs to this parent
+        const { data: itemData, error: itemFetchError } = await supabase
+          .from("bazaar_items")
+          .select("parent_phone")
+          .eq("id", deleteItemId)
+          .maybeSingle();
+
+        if (itemFetchError || !itemData) {
+          setDeleteError("Inzerát sa nenašiel.");
+          setIsDeleting(false);
+          return;
+        }
+
+        if (itemData.parent_phone !== parentData.phone) {
+          setDeleteError("Nemáte oprávnenie odstrániť tento inzerát. Môžete odstraňovať iba vlastné inzeráty.");
+          setIsDeleting(false);
+          return;
+        }
+
+        // Proceed to delete
+        const { error: deleteError } = await supabase
+          .from("bazaar_items")
+          .delete()
+          .eq("id", deleteItemId);
+
+        if (deleteError) {
+          console.error("Delete error:", deleteError);
+          setDeleteError("Nepodarilo sa vymazať inzerát.");
+          setIsDeleting(false);
+          return;
+        }
+      }
+
+      // Refresh list
+      await fetchBazaarItems();
+
+      // Cleanup and close
+      setIsDeleteModalOpen(false);
+      setDeleteItemId(null);
+      setDeletePhoneOrEmail("");
+      setDeletePin("");
+      setDeleteError("");
+      setIsDeleting(false);
+    } catch (err) {
+      console.error("Unexpected delete error:", err);
+      setDeleteError("Nastala neočakávaná chyba.");
+      setIsDeleting(false);
+    }
   };
 
   const filteredItems = bazaarItems.filter(item => 
@@ -574,9 +780,17 @@ export default function RodicovskaZonaPage() {
 
           {/* Bazaar Items Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredItems.length === 0 ? (
+            {bazaarItems.length === 0 ? (
+              <div className="col-span-full py-20 text-center rounded-[2rem] border border-white/5 bg-white/[0.01] backdrop-blur-sm max-w-lg mx-auto w-full">
+                <ShoppingBag className="w-10 h-10 text-zinc-600 mx-auto mb-4 animate-pulse" />
+                <h3 className="font-serif text-lg font-bold text-white mb-2">Aktuálne nie je nič na predaj</h3>
+                <p className="text-zinc-400 text-sm font-light leading-relaxed">
+                  Klubový minibazár je momentálne prázdny. Ak máte tanečné oblečenie alebo obuv na posunutie, pridajte prvý inzerát!
+                </p>
+              </div>
+            ) : filteredItems.length === 0 ? (
               <div className="col-span-full py-16 text-center rounded-2xl border border-white/5 bg-white/[0.01]">
-                <HelpCircle className="w-10 h-10 text-gray-600 mx-auto mb-4" />
+                <HelpCircle className="w-10 h-10 text-zinc-600 mx-auto mb-4" />
                 <p className="text-gray-400 text-sm font-light">Nenašli sa žiadne inzeráty vyhovujúce filtru.</p>
               </div>
             ) : (
@@ -589,13 +803,25 @@ export default function RodicovskaZonaPage() {
                   {/* Photo area */}
                   <div className="relative aspect-[4/3] bg-obsidian-900 overflow-hidden border-b border-white/5">
                     <img
-                      src={getAssetPath(item.image)}
+                      src={getBazaarItemImage(item.image)}
                       alt={item.title}
                       className="w-full h-full object-cover group-hover:scale-105 transition-all duration-500"
                     />
                     <div className="absolute top-4 left-4 bg-black/60 backdrop-blur-md border border-white/10 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-gold-500">
                       {item.category}
                     </div>
+                    {/* Delete button */}
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setDeleteItemId(item.id);
+                        setIsDeleteModalOpen(true);
+                      }}
+                      className="absolute top-4 right-4 p-2 bg-black/60 backdrop-blur-md border border-white/10 text-zinc-400 hover:text-red-400 hover:border-red-500/30 rounded-full transition-all duration-300"
+                      title="Odstrániť inzerát"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                     <div className="absolute bottom-4 right-4 bg-gold-500 text-obsidian-900 px-4 py-1.5 rounded-2xl font-serif text-base font-bold shadow-lg flex items-center gap-1">
                       <Tag className="w-3.5 h-3.5" /> {item.price}
                     </div>
@@ -736,16 +962,29 @@ export default function RodicovskaZonaPage() {
                     </div>
                   </div>
 
-                  <div className="space-y-1">
-                    <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">Kontakt (Meno + Mobil/E-mail) *</label>
-                    <input
-                      type="text"
-                      placeholder="napr. Anna H. (0905 111 222)"
-                      value={newContact}
-                      onChange={(e) => setNewContact(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-gold-500/50 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none transition-all"
-                      required
-                    />
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1">
+                      <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">Telefónne číslo rodiča (na overenie) *</label>
+                      <input
+                        type="text"
+                        placeholder="napr. 0903 123 456"
+                        value={parentPhone}
+                        onChange={(e) => setParentPhone(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-gold-500/50 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none transition-all"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">Klubový PIN kód *</label>
+                      <input
+                        type="password"
+                        placeholder="Zadajte 4-miestny PIN"
+                        value={parentPin}
+                        onChange={(e) => setParentPin(e.target.value)}
+                        className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-gold-500/50 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none transition-all font-mono"
+                        required
+                      />
+                    </div>
                   </div>
 
                   <div className="space-y-1">
@@ -882,20 +1121,137 @@ export default function RodicovskaZonaPage() {
                     <button
                       type="button"
                       onClick={() => setIsAddModalOpen(false)}
-                      className="px-5 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-400"
+                      disabled={isLoading}
+                      className="px-5 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       Zrušiť
                     </button>
                     <button
                       type="submit"
-                      disabled={verificationValue < 100}
-                      className="btn-gold px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:filter disabled:grayscale"
+                      disabled={verificationValue < 100 || isLoading}
+                      className="btn-gold px-6 py-2.5 rounded-xl text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:filter disabled:grayscale flex items-center gap-2"
                     >
-                      Odoslať inzerát
+                      {isLoading ? (
+                        <>
+                          <div className="w-3 h-3 border-2 border-obsidian-950 border-t-transparent rounded-full animate-spin"></div>
+                          Odosielam...
+                        </>
+                      ) : "Odoslať inzerát"}
                     </button>
                   </div>
                 </form>
               )}
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* Delete Verification Modal */}
+      <AnimatePresence>
+        {isDeleteModalOpen && (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => {
+                setIsDeleteModalOpen(false);
+                setDeleteItemId(null);
+                setDeleteError("");
+              }}
+              className="absolute inset-0 bg-black/80 backdrop-blur-sm"
+            />
+
+            {/* Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 15 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 15 }}
+              transition={{ type: "spring", duration: 0.4 }}
+              className="relative w-full max-w-md bg-obsidian-950/90 border border-white/10 rounded-[2.5rem] p-6 sm:p-8 shadow-2xl text-left backdrop-blur-md overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-40 h-40 bg-red-500/5 rounded-full blur-[60px] pointer-events-none"></div>
+
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center gap-3 border-b border-white/5 pb-4">
+                  <div className="p-2.5 rounded-2xl bg-red-500/10 text-red-500">
+                    <Trash2 className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-serif text-lg font-bold text-white">Odstrániť inzerát</h3>
+                    <p className="text-zinc-400 text-xs font-light">Pre vymazanie overte svoju totožnosť</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleDeleteInzerat} className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">
+                      Telefónne číslo (Rodič) alebo E-mail (Admin) *
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="napr. 0903 123 456 alebo jakubkalina05@gmail.com"
+                      value={deletePhoneOrEmail}
+                      onChange={(e) => setDeletePhoneOrEmail(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-red-500/40 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none transition-all"
+                      required
+                    />
+                  </div>
+
+                  <div className="space-y-1">
+                    <label className="text-[11px] md:text-xs uppercase tracking-widest font-bold text-gray-500">
+                      Klubový PIN kód *
+                    </label>
+                    <input
+                      type="password"
+                      placeholder="Zadajte 4-miestny PIN"
+                      value={deletePin}
+                      onChange={(e) => setDeletePin(e.target.value)}
+                      className="w-full bg-white/5 border border-white/10 hover:border-white/20 focus:border-red-500/40 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none transition-all font-mono"
+                      required
+                    />
+                  </div>
+
+                  {deleteError && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -4 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="flex items-start gap-2.5 p-3 rounded-xl border border-red-500/30 bg-red-500/[0.05] text-red-400 text-[10px] leading-relaxed"
+                    >
+                      <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                      <span>{deleteError}</span>
+                    </motion.div>
+                  )}
+
+                  <div className="pt-4 flex gap-3 justify-end border-t border-white/5 mt-4">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsDeleteModalOpen(false);
+                        setDeleteItemId(null);
+                        setDeleteError("");
+                      }}
+                      disabled={isDeleting}
+                      className="px-5 py-2.5 rounded-xl border border-white/10 hover:bg-white/5 text-[10px] font-bold uppercase tracking-widest text-gray-400 disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      Zrušiť
+                    </button>
+                    <button
+                      type="submit"
+                      disabled={isDeleting}
+                      className="px-6 py-2.5 rounded-xl bg-red-650 hover:bg-red-650/80 text-white text-[10px] font-bold uppercase tracking-widest hover:scale-105 transition-transform disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {isDeleting ? (
+                        <>
+                          <div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                          Odstraňujem...
+                        </>
+                      ) : "Vymazať"}
+                    </button>
+                  </div>
+                </form>
+              </div>
             </motion.div>
           </div>
         )}
